@@ -1,11 +1,14 @@
-<!--The content below is only a placeholder and can be replaced.-->
-<div style="text-align:center">
-  <h1>
-    Welcome to {{ title }}!
+<aside>
+  <app-left-menu></app-left-menu>
+</aside>
+
 <div class="container">
   <header>
     <app-loader></app-loader>
     <app-header></app-header>
   </header>
 
-<router-outlet></router-outlet>
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+</div>
