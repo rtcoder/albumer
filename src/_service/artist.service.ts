@@ -6,16 +6,15 @@ import {SearchResultInterface} from '../_interface/search-result.interface';
 @Injectable({
   providedIn: 'root'
 })
-export class SearchService {
+export class ArtistService {
 
   searchOption = [];
-  postUrl = 'http://localhost:8002/albums';
+  postUrl: string = 'https://jsonplaceholder.typicode.com/posts';
 
   constructor(private http: HttpClient) {
   }
 
   getResults(searchFor: string): Observable<SearchResultInterface[]> {
-    return this.http.get<SearchResultInterface[]>(this.postUrl);
     return of(<SearchResultInterface[]>[
       {
         id: 1,
@@ -48,5 +47,6 @@ export class SearchService {
         type: 'album'
       },
     ]);
+    return this.http.get<SearchResultInterface[]>(this.postUrl);
   }
 }
