@@ -1,12 +1,17 @@
 @import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
 @import "assets/scss/variables";
 
+a {
+  text-decoration: none;
+}
+
 * {
   margin: 0;
   padding: 0;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  border-radius: 0 !important;
 }
 
 mat-icon {
@@ -48,23 +53,24 @@ body {
         height: 50px;
         display: flex;
         z-index: 1;
-
-        app-loader {
-          position: fixed;
-          z-index: 99999;
-          width: 100vw;
-          left: 0;
-        }
       }
 
       main {
         display: flex;
         width: calc(100vw - 50px);
-        min-height: 100%;
+        min-height: calc(100% - 50px);
+        margin-top: 50px;
+
 
         > *:not(router-outlet) {
           flex: 1;
           display: flex;
+        }
+
+        .container {
+          width: 100%;
+          padding: 10px;
+          flex-direction: column;
         }
       }
     }

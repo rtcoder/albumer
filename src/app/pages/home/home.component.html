@@ -1,0 +1,15 @@
+<div class="container">
+  <ng-container *ngFor="let type of iconsByTypeKeys">
+    <a [routerLink]="['/' + type + 's']">
+      <mat-card class="card">
+        <mat-card-header>
+          <div mat-card-avatar>
+            <mat-icon>{{iconsByType[type]}}</mat-icon>
+          </div>
+          <mat-card-title>{{typeDictionaryEnum[type]}}</mat-card-title>
+          <mat-card-subtitle>{{countData[type + 's']}}</mat-card-subtitle>
+        </mat-card-header>
+      </mat-card>
+    </a>
+  </ng-container>
+</div>

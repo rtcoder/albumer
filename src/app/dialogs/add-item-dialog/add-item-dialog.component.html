@@ -1,0 +1,28 @@
+<h1 mat-dialog-title>Dodaj</h1>
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Typ</mat-label>
+    <mat-select [(ngModel)]="type">
+      <mat-option [value]="key" *ngFor="let key of typeDictionaryEnumKeys">{{typeDictionaryEnum[key]}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Nazwa</mat-label>
+    <input matInput [(ngModel)]="name">
+  </mat-form-field>
+
+  <ng-container *ngIf="['album', 'book'].includes(type)">
+    <mat-form-field class="example-full-width" style="width: 100%">
+      <mat-label>Autor</mat-label>
+      <input #autocompleteInput [(ngModel)]="artist" (input)="getArtists($event)" [matAutocomplete]="auto" matInput>
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="selectArtistOption($event)">
+        <mat-option *ngFor="let artist of artists" [value]="artist">{{artist}}</mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </ng-container>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>Anuluj</button>
+  <button mat-button (click)="sendData()">Dodaj</button>
+</div>

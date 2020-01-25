@@ -1,0 +1,42 @@
+.container {
+  justify-content: space-around;
+  align-content: flex-start;
+  flex-wrap: wrap;
+  flex-direction: row !important;
+
+  .card {
+    width: 200px;
+    height: 80px;
+    cursor: pointer;
+    margin: 10px;
+
+    mat-card-header {
+      display: flex;
+      align-items: center;
+
+      .mat-card-header-text {
+        display: flex;
+        align-items: center;
+      }
+
+      mat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+    }
+
+    &:hover {
+      background: #09d;
+      color: #fff;
+
+      .mat-card-subtitle {
+        color: rgba(255, 255, 255, 0.55);
+      }
+    }
+  }
+
+}

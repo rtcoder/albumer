@@ -3,20 +3,19 @@ import {NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {HomeComponent} from '../components/home/home.component';
-import {LeftMenuComponent} from '../components/left-menu/left-menu.component';
+import {HomeComponent} from './pages/home/home.component';
+import {LeftMenuComponent} from './components/left-menu/left-menu.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {HeaderComponent} from '../components/header/header.component';
-import {SearchService} from '../_service/search.service';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {HeaderComponent} from './components/header/header.component';
+import {HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MaterialModule} from './material.module';
-import {PageNotFoundComponent} from '../components/page-not-found/page-not-found.component';
-import {GenreListComponent} from '../components/genre/list/genre-list.component';
-import {GenreNewComponent} from '../components/genre/new/genre-new.component';
-import {GenreSingleComponent} from '../components/genre/single/genre-single.component';
-import {LoaderComponent} from '../components/loader/loader.component';
-import {LoaderInterceptor} from '../_interceptor/loader.interceptor';
+import {MaterialModule} from './modules/material.module';
+import {PageNotFoundComponent} from './pages/page-not-found/page-not-found.component';
+import {AddItemDialogComponent} from './dialogs/add-item-dialog/add-item-dialog.component';
+import {FirebaseModule} from './modules/firebase.module';
+import {AlbumsComponent} from './pages/albums/albums.component';
+import {BooksComponent} from './pages/books/books.component';
+import {ArtistsComponent} from './pages/artists/artists.component';
 
 @NgModule({
   declarations: [
@@ -25,10 +24,10 @@ import {LoaderInterceptor} from '../_interceptor/loader.interceptor';
     LeftMenuComponent,
     HeaderComponent,
     PageNotFoundComponent,
-    GenreListComponent,
-    GenreNewComponent,
-    GenreSingleComponent,
-    LoaderComponent
+    AddItemDialogComponent,
+    AlbumsComponent,
+    BooksComponent,
+    ArtistsComponent
   ],
   imports: [
     BrowserModule,
@@ -38,15 +37,10 @@ import {LoaderInterceptor} from '../_interceptor/loader.interceptor';
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
+    FirebaseModule
   ],
-  providers: [
-    SearchService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: LoaderInterceptor,
-      multi: true
-    }
-  ],
+  entryComponents: [AddItemDialogComponent],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {

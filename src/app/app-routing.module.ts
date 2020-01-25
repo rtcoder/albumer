@@ -1,7 +1,10 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {HomeComponent} from '../components/home/home.component';
-import {PageNotFoundComponent} from '../components/page-not-found/page-not-found.component';
+import {HomeComponent} from './pages/home/home.component';
+import {PageNotFoundComponent} from './pages/page-not-found/page-not-found.component';
+import {AlbumsComponent} from './pages/albums/albums.component';
+import {BooksComponent} from './pages/books/books.component';
+import {ArtistsComponent} from './pages/artists/artists.component';
 
 const routes: Routes = [
   {
@@ -9,8 +12,16 @@ const routes: Routes = [
     component: HomeComponent
   },
   {
-    path: 'genre/:id',
-    component: HomeComponent
+    path: 'albums',
+    component: AlbumsComponent
+  },
+  {
+    path: 'books',
+    component: BooksComponent
+  },
+  {
+    path: 'artists',
+    component: ArtistsComponent
   },
   {path: '**', component: PageNotFoundComponent}
 
