@@ -54,10 +54,7 @@ export class TableActionsComponent implements OnInit {
 
   delete() {
     if (confirm('Czy na pewno chcesz usunąć ten element?')) {
-    // console.log(this.key)
       this.service.deleteItem(this.key);
     }
-
   }
-
 }

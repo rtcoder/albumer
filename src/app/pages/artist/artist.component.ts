@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AlbumService} from '../../services/album.service';
 import {AlbumInterface} from '../../interfaces/album.interface';
 import {ArtistService} from '../../services/artist.service';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {ArtistInterface} from '../../interfaces/artist.interface';
 import {BookInterface} from '../../interfaces/book.interface';
 import {BookService} from '../../services/book.service';
@@ -12,10 +12,11 @@ import {BookService} from '../../services/book.service';
   templateUrl: './artist.component.html',
   styleUrls: ['./artist.component.scss']
 })
-export class ArtistComponent implements OnInit {
+export class ArtistComponent implements OnInit, OnDestroy {
   albums: AlbumInterface[] = [];
   books: BookInterface[] = [];
   artist: ArtistInterface;
+  mySubscription: any;
 
   constructor(
     private albumService: AlbumService,
@@ -24,10 +25,16 @@ export class ArtistComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {
-    this.loadData();
+    this.mySubscription = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.router.navigated = false;
+        this.loadData();
+      }
+    });
   }
 
   ngOnInit() {
+    this.loadData();
   }
 
   loadData() {
@@ -64,5 +71,15 @@ export class ArtistComponent implements OnInit {
         );
       }
     });
+  }
+
+  ngOnDestroy() {
+
+    if (this.mySubscription) {
+
+      this.mySubscription.unsubscribe();
+
+    }
+
   }
 }

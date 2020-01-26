@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {AlbumService} from '../../services/album.service';
 import {ArtistService} from '../../services/artist.service';
 import {BookService} from '../../services/book.service';
@@ -11,6 +11,7 @@ import {GroupService} from '../../services/group.service';
 import {GroupInterface} from '../../interfaces/group.interface';
 import {MAT_DIALOG_DATA, MatAutocompleteSelectedEvent, MatDialogRef, MatSnackBar} from '@angular/material';
 import {onlyUnique} from '../../helpers/helpers';
+import {DbServiceInterface} from '../../interfaces/db-service.interface';
 
 interface DialogData {
   name: string;
@@ -23,10 +24,14 @@ interface DialogData {
   templateUrl: './add-item-dialog.component.html',
   styleUrls: ['./add-item-dialog.component.scss']
 })
-export class AddItemDialogComponent implements OnInit {
+export class AddItemDialogComponent implements OnInit, OnDestroy {
+  service: DbServiceInterface;
+  subscribed = false;
+  subscription;
   name = '';
   artist = '';
   artists = [];
+  status = 'Posiadane';
   type: DataType = 'album';
   artistsList: string[];
 
@@ -45,7 +50,6 @@ export class AddItemDialogComponent implements OnInit {
     private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
-    console.log(this.typeDictionaryEnum);
   }
 
   ngOnInit() {
@@ -53,50 +57,51 @@ export class AddItemDialogComponent implements OnInit {
   }
 
   sendData() {
-    let service;
     let data;
-    this.artists.push(this.artist);
+    if (this.artist.length) {
+      this.artists.push(this.artist);
+    }
     const artists = this.artists.map(val => val.trim()).filter(val => val.length).filter(onlyUnique);
     switch (this.type) {
       case 'book':
-        service = this.bookService;
+        this.service = this.bookService;
         data = {name: this.name, artists, cover: null} as BookInterface;
         break;
       case 'artist':
-        service = this.artistService;
+        this.service = this.artistService;
         data = {name: this.name} as ArtistInterface;
         break;
       case 'group':
-        service = this.groupService;
+        this.service = this.groupService;
         data = {name: this.name} as GroupInterface;
         break;
       case 'album':
-        service = this.albumService;
-        data = {name: this.name, artists, cover: null} as AlbumInterface;
+        this.service = this.albumService;
+        data = {name: this.name, artists, cover: null, status: this.status} as AlbumInterface;
         break;
     }
     if (['book', 'album'].includes(this.type)) {
       const elementsToAdd = [];
       this.artistService.getItemsList().valueChanges().subscribe(val => {
         artists.forEach(artist => {
-          console.log(artist);
           const found = val.find(obj => obj.name && obj.name === artist);
           if (!found) {
             elementsToAdd.push(artist);
           }
         });
       });
-      elementsToAdd.forEach(val => this.artistService.createItem({name: val}));
+      setTimeout(() => elementsToAdd.forEach(val => this.artistService.createItem({name: val})), 10);
     }
-    if (service) {
-      service.addEvent.subscribe(() => {
-        service.addEvent.unsubscribe();
+
+    if (this.service) {
+      this.subscribed = true;
+      this.subscription = this.service.addEvent.subscribe(() => {
         this.snackBar.open('Dodano element', 'Ok', {
           duration: 2000
         });
         this.dialogRef.close();
       });
-      service.createItem(data);
+      this.service.createItem(data);
     }
   }
 
@@ -117,8 +122,17 @@ export class AddItemDialogComponent implements OnInit {
   }
 
   addArtist($event: any) {
+    $event.preventDefault();
     if ($event.target.value) {
       this.artists.push($event.target.value);
+      $event.target.value = '';
+      this.artist = '';
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.service && this.subscribed) {
+      this.subscription.unsubscribe();
     }
   }
 }

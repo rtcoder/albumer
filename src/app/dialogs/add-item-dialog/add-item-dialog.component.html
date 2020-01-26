@@ -12,6 +12,14 @@
     <input matInput [(ngModel)]="name">
   </mat-form-field>
 
+  <mat-form-field *ngIf="type === 'album'">
+    <mat-label>Status</mat-label>
+    <mat-select [(ngModel)]="status">
+      <mat-option [value]="'Posiadane'">Posiadane</mat-option>
+      <mat-option [value]="'Zamówione'">Zamówione</mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <ng-container *ngIf="['album', 'book'].includes(type)">
     <mat-chip-list #chipList1>
       <mat-chip *ngFor="let artist of artists">
@@ -22,7 +30,7 @@
     <mat-form-field class="example-full-width" style="width: 100%">
       <mat-label>Autor</mat-label>
       <input #autocompleteInput (input)="getArtists($event)" [(ngModel)]="artist" [matAutocomplete]="auto" matInput
-             (keydown.enter)="addArtist($event)">
+             (keydown.tab)="addArtist($event)">
       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="selectArtistOption($event)">
         <mat-option *ngFor="let artist of artistsList" [value]="artist">{{artist}}</mat-option>
       </mat-autocomplete>
