@@ -9,7 +9,7 @@ import {AlbumService} from '../../services/album.service';
 export class AlbumsComponent implements OnInit {
 
   displayedColumns: string[] = ['cover', 'artists', 'name'];
-  dataSource: any;
+  dataSource: any[] = [];
 
   constructor(private albumService: AlbumService) {
     this.loadData();
