@@ -16,6 +16,9 @@ import {FirebaseModule} from './modules/firebase.module';
 import {AlbumsComponent} from './pages/albums/albums.component';
 import {BooksComponent} from './pages/books/books.component';
 import {ArtistsComponent} from './pages/artists/artists.component';
+import {NoDataInfoComponent} from './components/no-data-info/no-data-info.component';
+import {TableActionsComponent} from './components/table-actions/table-actions.component';
+import {ArtistComponent} from './pages/artist/artist.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +30,10 @@ import {ArtistsComponent} from './pages/artists/artists.component';
     AddItemDialogComponent,
     AlbumsComponent,
     BooksComponent,
-    ArtistsComponent
+    ArtistsComponent,
+    NoDataInfoComponent,
+    TableActionsComponent,
+    ArtistComponent
   ],
   imports: [
     BrowserModule,
@@ -39,7 +45,9 @@ import {ArtistsComponent} from './pages/artists/artists.component';
     MaterialModule,
     FirebaseModule
   ],
-  entryComponents: [AddItemDialogComponent],
+  entryComponents: [
+    AddItemDialogComponent,
+  ],
   providers: [],
   bootstrap: [AppComponent]
 })

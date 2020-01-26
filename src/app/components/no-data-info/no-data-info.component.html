@@ -1,0 +1,8 @@
+<div *ngIf="!dataSource.length" class="no-data">
+  <ng-container *ngIf="!filter.length">
+    Brak danych
+  </ng-container>
+  <ng-container *ngIf="filter.length">
+    Brak danych spełniających podane kryteria
+  </ng-container>
+</div>

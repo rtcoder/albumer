@@ -1,4 +1,5 @@
-export interface GroupInterface {
-  key: string;
+import {DataInterface} from './data.inerface';
+
+export interface GroupInterface extends DataInterface {
   name: string;
 }

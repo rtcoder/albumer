@@ -12,5 +12,4 @@ export class AlbumService extends DbService {
     super(db);
     super.getItemsList();
   }
-
 }

@@ -1,5 +1,6 @@
 @import "~@angular/material/prebuilt-themes/deeppurple-amber.css";
 @import "assets/scss/variables";
+@import "assets/scss/includes";
 
 a {
   text-decoration: none;
@@ -15,10 +16,7 @@ a {
 }
 
 mat-icon {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  @extend %no-select
 }
 
 ul, ol {
@@ -74,5 +72,13 @@ body {
         }
       }
     }
+  }
+}
+
+mat-form-field {
+  width: 100%;
+
+  .mat-form-field-wrapper {
+    width: 100%;
   }
 }

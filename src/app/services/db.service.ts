@@ -1,19 +1,20 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import {AngularFireDatabase, AngularFireList, AngularFireObject} from '@angular/fire/database';
+import {DbServiceInterface} from '../interfaces/db-service.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DbService {
+export class DbService implements DbServiceInterface {
   basePath = '';
-  items: AngularFireList<any[]> = null; //  list of objects
-  item: AngularFireObject<any> = null; //   single object
+  items: AngularFireList<any[]> = null;
+  item: AngularFireObject<any> = null;
   addEvent: EventEmitter<any> = new EventEmitter<any>();
 
-  constructor(private db: AngularFireDatabase) {
+  constructor(protected db: AngularFireDatabase) {
   }
 
-  getItemsList(query = ''): AngularFireList<any[]> {
+  getItemsList(query = ''): AngularFireList<any> {
     this.items = this.db.list(this.basePath, ref =>
       ref.orderByChild('nameLower')
         .startAt(query.toLowerCase(), 'nameLower')
@@ -41,17 +42,13 @@ export class DbService {
   }
 
   deleteItem(key: string): void {
-    this.items.remove(key)
+    this.items.remove(key).then(data => console.log(data))
       .catch(error => this.handleError(error));
   }
 
   deleteAll(): void {
     this.items.remove()
       .catch(error => this.handleError(error));
-  }
-
-  countAll() {
-    return this.items.valueChanges().subscribe(data => data.length);
   }
 
   private handleError(error) {

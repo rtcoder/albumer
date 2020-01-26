@@ -5,6 +5,7 @@ import {PageNotFoundComponent} from './pages/page-not-found/page-not-found.compo
 import {AlbumsComponent} from './pages/albums/albums.component';
 import {BooksComponent} from './pages/books/books.component';
 import {ArtistsComponent} from './pages/artists/artists.component';
+import {ArtistComponent} from './pages/artist/artist.component';
 
 const routes: Routes = [
   {
@@ -23,7 +24,12 @@ const routes: Routes = [
     path: 'artists',
     component: ArtistsComponent
   },
-  {path: '**', component: PageNotFoundComponent}
+  {
+    path: 'artists/:key',
+    component: ArtistComponent
+  },
+  {path: '**', component: PageNotFoundComponent},
+  {path: 'not-found', component: PageNotFoundComponent}
 
 ];
 

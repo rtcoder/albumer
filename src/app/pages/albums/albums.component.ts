@@ -1,29 +1,32 @@
 import {Component, OnInit} from '@angular/core';
 import {AlbumService} from '../../services/album.service';
+import {ListHelper} from '../../helpers/list.helper';
 
 @Component({
   selector: 'app-albums',
   templateUrl: './albums.component.html',
   styleUrls: ['./albums.component.scss']
 })
-export class AlbumsComponent implements OnInit {
-
-  displayedColumns: string[] = ['cover', 'artists', 'name'];
-  dataSource: any[] = [];
+export class AlbumsComponent extends ListHelper implements OnInit {
+  displayedColumns: string[] = ['cover', 'name', 'artists', 'status', 'actions'];
+  service = this.albumService;
 
   constructor(private albumService: AlbumService) {
+    super();
     this.loadData();
   }
 
   ngOnInit() {
   }
 
-  applyFilter(event: any) {
-    this.loadData(event.target.value.trim());
+  loadData() {
+    this.service.getItemsList(this.filter).snapshotChanges()
+      .subscribe(data => {
+        this.dataSource = data.map(value => {
+          const payload = value.payload.exportVal();
+          payload.artists = payload.artists ? Object.values(payload.artists) : [];
+          return {key: value.key, ...payload};
+        });
+      });
   }
-
-  loadData(search = '') {
-    this.albumService.getItemsList(search).valueChanges().subscribe((data) => this.dataSource = data);
-  }
-
 }

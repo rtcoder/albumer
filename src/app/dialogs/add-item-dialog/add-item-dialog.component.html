@@ -13,11 +13,18 @@
   </mat-form-field>
 
   <ng-container *ngIf="['album', 'book'].includes(type)">
+    <mat-chip-list #chipList1>
+      <mat-chip *ngFor="let artist of artists">
+        {{artist}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
     <mat-form-field class="example-full-width" style="width: 100%">
       <mat-label>Autor</mat-label>
-      <input #autocompleteInput [(ngModel)]="artist" (input)="getArtists($event)" [matAutocomplete]="auto" matInput>
+      <input #autocompleteInput (input)="getArtists($event)" [(ngModel)]="artist" [matAutocomplete]="auto" matInput
+             (keydown.enter)="addArtist($event)">
       <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="selectArtistOption($event)">
-        <mat-option *ngFor="let artist of artists" [value]="artist">{{artist}}</mat-option>
+        <mat-option *ngFor="let artist of artistsList" [value]="artist">{{artist}}</mat-option>
       </mat-autocomplete>
     </mat-form-field>
   </ng-container>

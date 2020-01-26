@@ -1,6 +1,7 @@
-export interface AlbumInterface {
-  key: string;
-  name: string;
+import {DataInterface} from './data.inerface';
+
+export interface AlbumInterface extends DataInterface {
   artists: string[];
   cover: string | null;
+  status: 'Posiadane' | 'Zamówione';
 }

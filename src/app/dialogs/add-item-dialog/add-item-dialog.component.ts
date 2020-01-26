@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {AlbumService} from '../../services/album.service';
 import {ArtistService} from '../../services/artist.service';
 import {BookService} from '../../services/book.service';
@@ -9,7 +9,14 @@ import {ArtistInterface} from '../../interfaces/artist.interface';
 import {AlbumInterface} from '../../interfaces/album.interface';
 import {GroupService} from '../../services/group.service';
 import {GroupInterface} from '../../interfaces/group.interface';
-import {MatAutocompleteSelectedEvent, MatDialogRef, MatSnackBar} from '@angular/material';
+import {MAT_DIALOG_DATA, MatAutocompleteSelectedEvent, MatDialogRef, MatSnackBar} from '@angular/material';
+import {onlyUnique} from '../../helpers/helpers';
+
+interface DialogData {
+  name: string;
+  type: DataType;
+
+}
 
 @Component({
   selector: 'app-add-item-dialog',
@@ -19,8 +26,9 @@ import {MatAutocompleteSelectedEvent, MatDialogRef, MatSnackBar} from '@angular/
 export class AddItemDialogComponent implements OnInit {
   name = '';
   artist = '';
+  artists = [];
   type: DataType = 'album';
-  artists: string[];
+  artistsList: string[];
 
   typeDictionaryEnum = TypeDictionarySingularEnum;
 
@@ -34,7 +42,8 @@ export class AddItemDialogComponent implements OnInit {
     private bookService: BookService,
     private groupService: GroupService,
     public dialogRef: MatDialogRef<AddItemDialogComponent>,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {
     console.log(this.typeDictionaryEnum);
   }
@@ -46,7 +55,8 @@ export class AddItemDialogComponent implements OnInit {
   sendData() {
     let service;
     let data;
-    const artists = this.artist.split(',').map(val => val.trim());
+    this.artists.push(this.artist);
+    const artists = this.artists.map(val => val.trim()).filter(val => val.length).filter(onlyUnique);
     switch (this.type) {
       case 'book':
         service = this.bookService;
@@ -65,7 +75,19 @@ export class AddItemDialogComponent implements OnInit {
         data = {name: this.name, artists, cover: null} as AlbumInterface;
         break;
     }
-
+    if (['book', 'album'].includes(this.type)) {
+      const elementsToAdd = [];
+      this.artistService.getItemsList().valueChanges().subscribe(val => {
+        artists.forEach(artist => {
+          console.log(artist);
+          const found = val.find(obj => obj.name && obj.name === artist);
+          if (!found) {
+            elementsToAdd.push(artist);
+          }
+        });
+      });
+      elementsToAdd.forEach(val => this.artistService.createItem({name: val}));
+    }
     if (service) {
       service.addEvent.subscribe(() => {
         service.addEvent.unsubscribe();
@@ -86,11 +108,17 @@ export class AddItemDialogComponent implements OnInit {
     const search = event && event.data ? event.data : '';
     this.artistService.getItemsList(search)
       .snapshotChanges().subscribe(data => {
-      this.artists = data.map(value => value.payload.exportVal().name);
+      this.artistsList = data.map(value => value.payload.exportVal().name);
     });
   }
 
   selectArtistOption($event: MatAutocompleteSelectedEvent) {
-    this.artist = $event.option.value;
+    this.artists.push($event.option.value);
+  }
+
+  addArtist($event: any) {
+    if ($event.target.value) {
+      this.artists.push($event.target.value);
+    }
   }
 }

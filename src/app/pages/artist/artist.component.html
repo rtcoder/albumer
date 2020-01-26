@@ -1,0 +1,28 @@
+<div class="container">
+  <h2>{{artist?.name}}</h2>
+
+  <div class="albums" *ngIf="albums.length">
+    <div class="title">Albumy</div>
+    <mat-card class="card" *ngFor="let item of albums">
+      <mat-card-header>
+        <mat-card-title>{{item.name}}</mat-card-title>
+        <mat-card-subtitle>{{artist?.name}}</mat-card-subtitle>
+      </mat-card-header>
+      <img mat-card-image [attr.src]="item.cover" *ngIf="item.cover">
+      <mat-icon *ngIf="!item.cover">album</mat-icon>
+    </mat-card>
+  </div>
+
+  <div class="books" *ngIf="books.length">
+      <div class="title">Książki</div>
+    <mat-card class="card" *ngFor="let item of books">
+      <mat-card-header>
+        <mat-card-title>{{item.name}}</mat-card-title>
+        <mat-card-subtitle>{{artist?.name}}</mat-card-subtitle>
+      </mat-card-header>
+      <img mat-card-image [attr.src]="item.cover" *ngIf="item.cover">
+      <mat-icon *ngIf="!item.cover">menu_book</mat-icon>
+    </mat-card>
+
+  </div>
+</div>

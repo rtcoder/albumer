@@ -13,7 +13,9 @@ export class LeftMenuComponent {
   }
 
   openAddDialog() {
-    this.dialog.open(AddItemDialogComponent);
+    this.dialog.open(AddItemDialogComponent, {
+      width: '300px'
+    });
   }
 
 }

@@ -1,0 +1,50 @@
+h2, .title {
+  margin-left: 10px;
+}
+
+.albums, .books {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  flex-direction: row !important;
+  align-content: flex-start;
+
+  .title {
+    width: 100%;
+  }
+
+  .card {
+    cursor: pointer;
+    margin: 10px;
+    width: 250px;
+    height: 200px;
+
+    mat-card-header {
+      display: flex;
+      align-items: center;
+
+      ::ng-deep .mat-card-header-text {
+        margin: 0 !important;
+      }
+    }
+
+    mat-icon {
+      width: 100px;
+      height: 100px;
+      font-size: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto;
+    }
+
+    &:hover {
+      background: #09d;
+      color: #fff;
+
+      .mat-card-subtitle {
+        color: rgba(255, 255, 255, 0.55);
+      }
+    }
+  }
+}
