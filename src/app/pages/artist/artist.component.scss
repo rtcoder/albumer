@@ -26,6 +26,22 @@ h2, .title {
       ::ng-deep .mat-card-header-text {
         margin: 0 !important;
       }
+
+      mat-icon {
+        width: 20px;
+        height: 20px;
+        font-size: 20px;
+        display: inline-block;
+
+        &.green {
+          color: green;
+        }
+
+        &.yellow {
+          color: yellow;
+        }
+      }
+
     }
 
     mat-icon {

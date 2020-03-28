@@ -2,26 +2,25 @@
   <div class="mat-elevation-z8">
     <mat-form-field>
       <mat-label>Filtruj</mat-label>
-      <input matInput (keyup)="applyFilter($event)">
+      <input (keyup)="applyFilter($event)" matInput>
     </mat-form-field>
 
-    <table mat-table [dataSource]="dataSource" *ngIf="dataSource">
+    <table *ngIf="dataSource" [dataSource]="dataSource" mat-table>
 
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Nazwa</th>
-        <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+        <th *matHeaderCellDef mat-header-cell> Nazwa</th>
+        <td *matCellDef="let row" mat-cell> {{row.name}} </td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef> Akcje</th>
-        <td mat-cell *matCellDef="let row">
-          <app-table-actions type="artist" [key]="row.key"></app-table-actions>
+        <th *matHeaderCellDef mat-header-cell> Akcje</th>
+        <td *matCellDef="let row" mat-cell>
+          <app-table-actions [key]="row.key" type="artist"></app-table-actions>
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;">
-      </tr>
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row (click)="rowClick(row)"></tr>
     </table>
     <app-no-data-info [dataSource]="dataSource" [filter]="filter"></app-no-data-info>
   </div>

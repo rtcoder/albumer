@@ -1,3 +1,3 @@
 export interface LoaderStateInterface {
-    show: boolean;
+  show: boolean;
 }

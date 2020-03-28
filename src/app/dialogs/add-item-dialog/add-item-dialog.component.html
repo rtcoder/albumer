@@ -3,13 +3,13 @@
   <mat-form-field>
     <mat-label>Typ</mat-label>
     <mat-select [(ngModel)]="type">
-      <mat-option [value]="key" *ngFor="let key of typeDictionaryEnumKeys">{{typeDictionaryEnum[key]}}</mat-option>
+      <mat-option *ngFor="let key of typeDictionaryEnumKeys" [value]="key">{{typeDictionaryEnum[key]}}</mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field>
     <mat-label>Nazwa</mat-label>
-    <input matInput [(ngModel)]="name">
+    <input [(ngModel)]="name" matInput>
   </mat-form-field>
 
   <mat-form-field *ngIf="type === 'album'">
@@ -22,16 +22,17 @@
 
   <ng-container *ngIf="['album', 'book'].includes(type)">
     <mat-chip-list #chipList1>
-      <mat-chip *ngFor="let artist of artists">
+      <mat-chip *ngFor="let artist of filteredArtists">
         {{artist}}
         <mat-icon matChipRemove>cancel</mat-icon>
       </mat-chip>
     </mat-chip-list>
     <mat-form-field class="example-full-width" style="width: 100%">
       <mat-label>Autor</mat-label>
-      <input #autocompleteInput (input)="getArtists($event)" [(ngModel)]="artist" [matAutocomplete]="auto" matInput
-             (keydown.tab)="addArtist($event)">
-      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="selectArtistOption($event)">
+      <input #autocompleteInput (keydown.tab)="addArtist($event)" (keyup)="getArtists($event)" [(ngModel)]="artist"
+             [matAutocomplete]="auto"
+             matInput>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectArtistOption($event)" [displayWith]="displayFn">
         <mat-option *ngFor="let artist of artistsList" [value]="artist">{{artist}}</mat-option>
       </mat-autocomplete>
     </mat-form-field>
@@ -39,5 +40,5 @@
 </div>
 <div mat-dialog-actions>
   <button mat-button mat-dialog-close>Anuluj</button>
-  <button mat-button (click)="sendData()">Dodaj</button>
+  <button (click)="sendData()" mat-button>{{data?.key ? 'Zapisz' : 'Dodaj'}}</button>
 </div>

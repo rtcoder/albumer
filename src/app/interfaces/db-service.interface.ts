@@ -6,6 +6,7 @@ export interface DbServiceInterface {
   items: AngularFireList<any[]>;
   item: AngularFireObject<any>;
   addEvent: EventEmitter<any>;
+  updateEvent: EventEmitter<any>;
 
   getItemsList(query: string): AngularFireList<any[]>;
 

@@ -10,6 +10,7 @@ export class DbService implements DbServiceInterface {
   items: AngularFireList<any[]> = null;
   item: AngularFireObject<any> = null;
   addEvent: EventEmitter<any> = new EventEmitter<any>();
+  updateEvent: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(protected db: AngularFireDatabase) {
   }
@@ -37,7 +38,7 @@ export class DbService implements DbServiceInterface {
 
   updateItem(key: string, value: any): void {
     value.nameLower = value.name.toLowerCase();
-    this.items.update(key, value)
+    this.items.update(key, value).then(value1 => this.updateEvent.emit(value1))
       .catch(error => this.handleError(error));
   }
 
@@ -52,6 +53,6 @@ export class DbService implements DbServiceInterface {
   }
 
   private handleError(error) {
-    console.log(error);
+    console.error(error);
   }
 }

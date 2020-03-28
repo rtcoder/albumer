@@ -16,7 +16,7 @@ import {DbServiceInterface} from '../../interfaces/db-service.interface';
 interface DialogData {
   name: string;
   type: DataType;
-
+  key: string;
 }
 
 @Component({
@@ -25,7 +25,7 @@ interface DialogData {
   styleUrls: ['./add-item-dialog.component.scss']
 })
 export class AddItemDialogComponent implements OnInit, OnDestroy {
-  service: DbServiceInterface;
+
   subscribed = false;
   subscription;
   name = '';
@@ -37,8 +37,23 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
 
   typeDictionaryEnum = TypeDictionarySingularEnum;
 
-  get typeDictionaryEnumKeys() {
-    return Object.keys(this.typeDictionaryEnum);
+  get service(): DbServiceInterface {
+    let service;
+    switch (this.type) {
+      case 'book':
+        service = this.bookService;
+        break;
+      case 'artist':
+        service = this.artistService;
+        break;
+      case 'group':
+        service = this.groupService;
+        break;
+      case 'album':
+        service = this.albumService;
+        break;
+    }
+    return service;
   }
 
   constructor(
@@ -52,8 +67,26 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
   ) {
   }
 
+  get typeDictionaryEnumKeys() {
+    return Object.keys(this.typeDictionaryEnum);
+  }
+
+  get filteredArtists(): string[] {
+    return this.artists.map(val => val.trim()).filter(val => val.length).filter(onlyUnique);
+  }
+
   ngOnInit() {
     this.getArtists();
+    if (this.data.key) {
+      this.type = this.data.type;
+      this.service.getItem(this.data.key).valueChanges().subscribe(value => {
+        console.log(value);
+        this.artists = value.artists;
+        this.name = value.name;
+        this.status = value.status;
+        this.name = value.name;
+      });
+    }
   }
 
   sendData() {
@@ -61,22 +94,18 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
     if (this.artist.length) {
       this.artists.push(this.artist);
     }
-    const artists = this.artists.map(val => val.trim()).filter(val => val.length).filter(onlyUnique);
+    const artists = this.filteredArtists;
     switch (this.type) {
       case 'book':
-        this.service = this.bookService;
         data = {name: this.name, artists, cover: null} as BookInterface;
         break;
       case 'artist':
-        this.service = this.artistService;
         data = {name: this.name} as ArtistInterface;
         break;
       case 'group':
-        this.service = this.groupService;
         data = {name: this.name} as GroupInterface;
         break;
       case 'album':
-        this.service = this.albumService;
         data = {name: this.name, artists, cover: null, status: this.status} as AlbumInterface;
         break;
     }
@@ -95,13 +124,24 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
 
     if (this.service) {
       this.subscribed = true;
-      this.subscription = this.service.addEvent.subscribe(() => {
-        this.snackBar.open('Dodano element', 'Ok', {
-          duration: 2000
+      if (this.data && this.data.key) {
+        console.log('here', data, this.data.key);
+        this.subscription = this.service.updateEvent.subscribe(() => {
+          this.snackBar.open('Zmieniono element', 'Ok', {
+            duration: 2000
+          });
+          this.dialogRef.close();
         });
-        this.dialogRef.close();
-      });
-      this.service.createItem(data);
+        this.service.updateItem(this.data.key, data);
+      } else {
+        this.subscription = this.service.addEvent.subscribe(() => {
+          this.snackBar.open('Dodano element', 'Ok', {
+            duration: 2000
+          });
+          this.dialogRef.close();
+        });
+        this.service.createItem(data);
+      }
     }
   }
 
@@ -110,7 +150,7 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
   }
 
   getArtists(event?: any) {
-    const search = event && event.data ? event.data : '';
+    const search = event && event.target.value ? event.target.value.trim() : '';
     this.artistService.getItemsList(search)
       .snapshotChanges().subscribe(data => {
       this.artistsList = data.map(value => value.payload.exportVal().name);

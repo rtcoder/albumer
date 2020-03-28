@@ -2,43 +2,47 @@
   <div class="mat-elevation-z8">
     <mat-form-field>
       <mat-label>Filtruj</mat-label>
-      <input matInput (keyup)="applyFilter($event)">
+      <input (keyup)="applyFilter($event)" matInput>
     </mat-form-field>
 
-    <table mat-table [dataSource]="dataSource" *ngIf="dataSource">
+    <table *ngIf="dataSource" [dataSource]="dataSource" mat-table>
 
       <ng-container matColumnDef="cover">
-        <th mat-header-cell *matHeaderCellDef> Okładka</th>
-        <td mat-cell *matCellDef="let row">
-          <img src="{{row.cover}}" alt="" *ngIf="row.cover">
+        <th *matHeaderCellDef mat-header-cell> Okładka</th>
+        <td *matCellDef="let row" mat-cell>
+          <img *ngIf="row.cover" alt="" src="{{row.cover}}">
           <mat-icon *ngIf="!row.cover">album</mat-icon>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef> Tytuł</th>
-        <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+        <th *matHeaderCellDef mat-header-cell> Tytuł</th>
+        <td *matCellDef="let row" mat-cell> {{row.name}} </td>
       </ng-container>
 
       <ng-container matColumnDef="artists">
-        <th mat-header-cell *matHeaderCellDef> Artysta</th>
-        <td mat-cell *matCellDef="let row"> {{(row.artists || []).join(', ')}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef> Status</th>
-        <td mat-cell *matCellDef="let row"> {{row.status}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef> Akcje</th>
-        <td mat-cell *matCellDef="let row">
-          <app-table-actions type="album" [key]="row.key"></app-table-actions>
+        <th *matHeaderCellDef mat-header-cell> Artysta</th>
+        <td *matCellDef="let row" mat-cell>
+        <ng-container *ngFor="let artist of row.artists">
+          <a class="artist-link" [routerLink]="'/artist/' + artist">{{artist}}</a>
+        </ng-container>
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;">
+      <ng-container matColumnDef="status">
+        <th *matHeaderCellDef mat-header-cell> Status</th>
+        <td *matCellDef="let row" mat-cell> {{row.status}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th *matHeaderCellDef mat-header-cell> Akcje</th>
+        <td *matCellDef="let row" mat-cell>
+          <app-table-actions [key]="row.key" type="album"></app-table-actions>
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row>
       </tr>
     </table>
     <app-no-data-info [dataSource]="dataSource" [filter]="filter"></app-no-data-info>

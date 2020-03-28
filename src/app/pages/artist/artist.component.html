@@ -1,26 +1,32 @@
 <div class="container">
   <h2>{{artist?.name}}</h2>
 
-  <div class="albums" *ngIf="albums.length">
+  <div *ngIf="albums.length" class="albums">
     <div class="title">Albumy</div>
-    <mat-card class="card" *ngFor="let item of albums">
+    <mat-card *ngFor="let item of albums" class="card">
       <mat-card-header>
-        <mat-card-title>{{item.name}}</mat-card-title>
+        <mat-card-title>
+          {{item.name}}
+          <ng-container [ngSwitch]="item.status">
+            <mat-icon class="green" [matTooltip]="item.status" *ngSwitchCase="'Posiadane'">check</mat-icon>
+            <mat-icon class="yellow" [matTooltip]="item.status" *ngSwitchCase="'Zamówione'">local_grocery_store</mat-icon>
+          </ng-container>
+        </mat-card-title>
         <mat-card-subtitle>{{item.status}}</mat-card-subtitle>
       </mat-card-header>
-      <img mat-card-image [attr.src]="item.cover" *ngIf="item.cover">
+      <img *ngIf="item.cover" [attr.src]="item.cover" mat-card-image>
       <mat-icon *ngIf="!item.cover">album</mat-icon>
     </mat-card>
   </div>
 
-  <div class="books" *ngIf="books.length">
-      <div class="title">Książki</div>
-    <mat-card class="card" *ngFor="let item of books">
+  <div *ngIf="books.length" class="books">
+    <div class="title">Książki</div>
+    <mat-card *ngFor="let item of books" class="card">
       <mat-card-header>
         <mat-card-title>{{item.name}}</mat-card-title>
         <mat-card-subtitle>{{artist?.name}}</mat-card-subtitle>
       </mat-card-header>
-      <img mat-card-image [attr.src]="item.cover" *ngIf="item.cover">
+      <img *ngIf="item.cover" [attr.src]="item.cover" mat-card-image>
       <mat-icon *ngIf="!item.cover">menu_book</mat-icon>
     </mat-card>
 

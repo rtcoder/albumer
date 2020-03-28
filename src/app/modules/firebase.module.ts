@@ -9,20 +9,20 @@ import {AngularFireAuthModule} from '@angular/fire/auth';
 import {AngularFireDatabaseModule} from '@angular/fire/database';
 
 const modules = [
-    AngularFireModule.initializeApp(environment.firebase),
-    AngularFireAuthModule,
-    AngularFireDatabaseModule,
-    AngularFireFunctionsModule,
-    AngularFirestoreModule,
-    AngularFireStorageModule,
-    AngularFireMessagingModule,
+  AngularFireModule.initializeApp(environment.firebase),
+  AngularFireAuthModule,
+  AngularFireDatabaseModule,
+  AngularFireFunctionsModule,
+  AngularFirestoreModule,
+  AngularFireStorageModule,
+  AngularFireMessagingModule,
 ];
 
 @NgModule({
-    imports: [
-        modules
-    ],
-    declarations: []
+  imports: [
+    modules
+  ],
+  declarations: []
 })
 export class FirebaseModule {
 }
