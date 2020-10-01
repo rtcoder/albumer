@@ -4,14 +4,11 @@ import {ArtistService} from '../../services/artist.service';
 import {BookService} from '../../services/book.service';
 import {DataType} from '../../types/data.type';
 import {TypeDictionarySingularEnum} from '../../enums/type-dictionary.enum';
-import {BookInterface} from '../../interfaces/book.interface';
 import {ArtistInterface} from '../../interfaces/artist.interface';
-import {AlbumInterface} from '../../interfaces/album.interface';
-import {GroupService} from '../../services/group.service';
-import {GroupInterface} from '../../interfaces/group.interface';
 import {MAT_DIALOG_DATA, MatAutocompleteSelectedEvent, MatDialogRef, MatSnackBar} from '@angular/material';
 import {onlyUnique} from '../../helpers/helpers';
 import {DbServiceInterface} from '../../interfaces/db-service.interface';
+import {getStatusName, StatusEnum} from '../../enums/status.enum';
 
 interface DialogData {
   name: string;
@@ -31,11 +28,22 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
   name = '';
   artist = '';
   artists = [];
-  status = 'Posiadane';
+  status = StatusEnum.OWNED;
   type: DataType = 'album';
   artistsList: string[];
-
+  statusEnum = StatusEnum;
+  getStatusName = getStatusName;
   typeDictionaryEnum = TypeDictionarySingularEnum;
+
+  constructor(
+    private albumService: AlbumService,
+    private artistService: ArtistService,
+    private bookService: BookService,
+    public dialogRef: MatDialogRef<AddItemDialogComponent>,
+    private snackBar: MatSnackBar,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData
+  ) {
+  }
 
   get service(): DbServiceInterface {
     let service;
@@ -46,25 +54,11 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
       case 'artist':
         service = this.artistService;
         break;
-      case 'group':
-        service = this.groupService;
-        break;
       case 'album':
         service = this.albumService;
         break;
     }
     return service;
-  }
-
-  constructor(
-    private albumService: AlbumService,
-    private artistService: ArtistService,
-    private bookService: BookService,
-    private groupService: GroupService,
-    public dialogRef: MatDialogRef<AddItemDialogComponent>,
-    private snackBar: MatSnackBar,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData
-  ) {
   }
 
   get typeDictionaryEnumKeys() {
@@ -79,7 +73,7 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
     this.getArtists();
     if (this.data.key) {
       this.type = this.data.type;
-      this.service.getItem(this.data.key).valueChanges().subscribe(value => {
+      this.service.getItem(this.data.key).subscribe(value => {
         console.log(value);
         this.artists = value.artists;
         this.name = value.name;
@@ -97,26 +91,23 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
     const artists = this.filteredArtists;
     switch (this.type) {
       case 'book':
-        data = {name: this.name, artists, cover: null} as BookInterface;
+        // data = {name: this.name, artists, cover: null} as BookInterface;
         break;
       case 'artist':
         data = {name: this.name} as ArtistInterface;
         break;
-      case 'group':
-        data = {name: this.name} as GroupInterface;
-        break;
       case 'album':
-        data = {name: this.name, artists, cover: null, status: this.status} as AlbumInterface;
+        // data = {name: this.name, artists, cover: null, status: this.status} as AlbumInterface;
         break;
     }
     if (['book', 'album'].includes(this.type)) {
       const elementsToAdd = [];
-      this.artistService.getItemsList().valueChanges().subscribe(val => {
+      this.artistService.getItemsList().subscribe(val => {
         artists.forEach(artist => {
-          const found = val.find(obj => obj.name && obj.name === artist);
-          if (!found) {
-            elementsToAdd.push(artist);
-          }
+          // const found = val.find(obj => obj.name && obj.name === artist);
+          // if (!found) {
+          //   elementsToAdd.push(artist);
+          // }
         });
       });
       setTimeout(() => elementsToAdd.forEach(val => this.artistService.createItem({name: val})), 10);
@@ -151,9 +142,8 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
 
   getArtists(event?: any) {
     const search = event && event.target.value ? event.target.value.trim() : '';
-    this.artistService.getItemsList(search)
-      .snapshotChanges().subscribe(data => {
-      this.artistsList = data.map(value => value.payload.exportVal().name);
+    this.artistService.getItemsByFilter(search).subscribe(data => {
+      this.artistsList = data;
     });
   }
 

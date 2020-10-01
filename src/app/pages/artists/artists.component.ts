@@ -22,6 +22,6 @@ export class ArtistsComponent extends ListHelper implements OnInit {
   }
 
   rowClick(row: any) {
-    this.router.navigate([`artists/${row.key}`]);
+    this.router.navigate([`artists/${row.id}`]);
   }
 }

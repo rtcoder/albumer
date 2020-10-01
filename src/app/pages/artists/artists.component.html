@@ -20,7 +20,7 @@
       </ng-container>
 
       <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
-      <tr *matRowDef="let row; columns: displayedColumns;" mat-row (click)="rowClick(row)"></tr>
+      <tr (click)="rowClick(row)" *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
     </table>
     <app-no-data-info [dataSource]="dataSource" [filter]="filter"></app-no-data-info>
   </div>

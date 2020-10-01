@@ -1,34 +1,50 @@
 <div class="container">
-  <h2>{{artist?.name}}</h2>
+  <ng-container *ngFor="let artist of artists">
+    <h2><a [routerLink]="'/artists/'+artist.id">{{artist?.name}}</a></h2>
 
-  <div *ngIf="albums.length" class="albums">
-    <div class="title">Albumy</div>
-    <mat-card *ngFor="let item of albums" class="card">
-      <mat-card-header>
-        <mat-card-title>
-          {{item.name}}
-          <ng-container [ngSwitch]="item.status">
-            <mat-icon class="green" [matTooltip]="item.status" *ngSwitchCase="'Posiadane'">check</mat-icon>
-            <mat-icon class="yellow" [matTooltip]="item.status" *ngSwitchCase="'Zamówione'">local_grocery_store</mat-icon>
-          </ng-container>
-        </mat-card-title>
-        <mat-card-subtitle>{{item.status}}</mat-card-subtitle>
-      </mat-card-header>
-      <img *ngIf="item.cover" [attr.src]="item.cover" mat-card-image>
-      <mat-icon *ngIf="!item.cover">album</mat-icon>
-    </mat-card>
-  </div>
+    <div *ngIf="artist?.artists?.length" class="artists">
+      <div class="title">Artyści</div>
+      <ul>
+        <li *ngFor="let item of artist.artists" class="card">
+          <mat-icon>person</mat-icon>
+          <a [routerLink]="'/artists/'+item.id">{{item?.name}}</a>
+        </li>
+      </ul>
+    </div>
 
-  <div *ngIf="books.length" class="books">
-    <div class="title">Książki</div>
-    <mat-card *ngFor="let item of books" class="card">
-      <mat-card-header>
-        <mat-card-title>{{item.name}}</mat-card-title>
-        <mat-card-subtitle>{{artist?.name}}</mat-card-subtitle>
-      </mat-card-header>
-      <img *ngIf="item.cover" [attr.src]="item.cover" mat-card-image>
-      <mat-icon *ngIf="!item.cover">menu_book</mat-icon>
-    </mat-card>
+    <div *ngIf="artist?.albums?.length" class="albums">
+      <div class="title">Albumy</div>
+      <mat-card *ngFor="let item of artist.albums" class="card">
+        <mat-card-header>
+          <mat-card-title>
+            {{item.name}}
+            <ng-container [ngSwitch]="item.status">
+              <mat-icon *ngSwitchCase="statusEnum.OWNED" [matTooltip]="getStatusName(item.status)"
+                        class="green">check
+              </mat-icon>
+              <mat-icon *ngSwitchCase="statusEnum.ORDERED" [matTooltip]="getStatusName(item.status)"
+                        class="yellow">local_grocery_store
+              </mat-icon>
+            </ng-container>
+          </mat-card-title>
+          <mat-card-subtitle>{{getStatusName(item.status)}}</mat-card-subtitle>
+        </mat-card-header>
+        <img *ngIf="item.cover" [attr.src]="item.cover" mat-card-image>
+        <mat-icon *ngIf="!item.cover">album</mat-icon>
+      </mat-card>
+    </div>
 
-  </div>
+    <div *ngIf="artist?.books?.length" class="books">
+      <div class="title">Książki</div>
+      <mat-card *ngFor="let item of artist.books" class="card">
+        <mat-card-header>
+          <mat-card-title>{{item.name}}</mat-card-title>
+          <mat-card-subtitle>{{artist?.name}}</mat-card-subtitle>
+        </mat-card-header>
+        <img *ngIf="item.cover" [attr.src]="item.cover" mat-card-image>
+        <mat-icon *ngIf="!item.cover">menu_book</mat-icon>
+      </mat-card>
+
+    </div>
+  </ng-container>
 </div>

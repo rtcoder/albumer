@@ -15,8 +15,8 @@
   <mat-form-field *ngIf="type === 'album'">
     <mat-label>Status</mat-label>
     <mat-select [(ngModel)]="status">
-      <mat-option [value]="'Posiadane'">Posiadane</mat-option>
-      <mat-option [value]="'Zamówione'">Zamówione</mat-option>
+      <mat-option [value]="statusEnum.OWNED">{{getStatusName(statusEnum.OWNED)}}</mat-option>
+      <mat-option [value]="statusEnum.ORDERED">{{getStatusName(statusEnum.ORDERED)}}</mat-option>
     </mat-select>
   </mat-form-field>
 

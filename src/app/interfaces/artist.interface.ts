@@ -1,5 +1,12 @@
-import {DataInterface} from './data.inerface';
+import {AlbumInterface} from './album.interface';
+import {BookInterface} from './book.interface';
 
-export interface ArtistInterface extends DataInterface {
-  groups: string[];
+export interface ArtistInterface {
+  id: string;
+  name: string;
+  albums: AlbumInterface[];
+  books: BookInterface[];
+  artists: ArtistInterface[];
+  groups: ArtistInterface[];
+  artistsIds: string[];
 }

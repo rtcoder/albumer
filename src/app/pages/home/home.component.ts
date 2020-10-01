@@ -2,9 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {AlbumService} from '../../services/album.service';
 import {ArtistService} from '../../services/artist.service';
 import {BookService} from '../../services/book.service';
-import {GroupService} from '../../services/group.service';
 import {IconsByTypeEnum} from '../../enums/icons-by-type.enum';
 import {TypeDictionaryPluralEnum} from '../../enums/type-dictionary.enum';
+import {StatusEnum} from '../../enums/status.enum';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +18,6 @@ export class HomeComponent implements OnInit {
     albums_ordered: 0,
     artists: 0,
     books: 0,
-    groups: 0,
   };
 
   typeDictionaryEnum = TypeDictionaryPluralEnum;
@@ -27,8 +26,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private albumService: AlbumService,
     private artistService: ArtistService,
-    private bookService: BookService,
-    private groupService: GroupService) {
+    private bookService: BookService) {
   }
 
   get iconsByTypeKeys() {
@@ -36,14 +34,13 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.albumService.getItemsList().valueChanges().subscribe(data => {
-      this.countData.albums_owned = data.filter(val => val.status === 'Posiadane').length;
-      this.countData.albums_ordered = data.filter(val => val.status === 'Zamówione').length;
+    this.albumService.getItemsByFilter().subscribe(data => {
+      this.countData.albums_owned = data.filter(val => val.status === StatusEnum.OWNED).length;
+      this.countData.albums_ordered = data.filter(val => val.status === StatusEnum.ORDERED).length;
       this.countData.albums = data.length;
     });
-    this.artistService.getItemsList().valueChanges().subscribe(data => this.countData.artists = data.length);
-    this.bookService.getItemsList().valueChanges().subscribe(data => this.countData.books = data.length);
-    this.groupService.getItemsList().valueChanges().subscribe(data => this.countData.groups = data.length);
+    this.artistService.getItemsByFilter().subscribe(data => this.countData.artists = data.length);
+    this.bookService.getItemsByFilter().subscribe(data => this.countData.books = data.length);
   }
 
 }

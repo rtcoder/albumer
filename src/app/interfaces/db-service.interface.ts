@@ -1,16 +1,18 @@
-import {AngularFireList, AngularFireObject} from '@angular/fire/database';
 import {EventEmitter} from '@angular/core';
+import {Observable} from 'rxjs';
+import {DataInterface} from './data.interface';
 
 export interface DbServiceInterface {
-  basePath: string;
-  items: AngularFireList<any[]>;
-  item: AngularFireObject<any>;
+  _items: DataInterface;
+
   addEvent: EventEmitter<any>;
   updateEvent: EventEmitter<any>;
 
-  getItemsList(query: string): AngularFireList<any[]>;
+  getItemsList(query: string): Observable<any>;
 
-  getItem(key: string): AngularFireObject<any>;
+  getItemsByFilter(filter: string, type?: string): Observable<any[]>;
+
+  getItem(key: string): Observable<any>;
 
   createItem(item: any): void;
 

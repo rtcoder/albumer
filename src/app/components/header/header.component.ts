@@ -9,7 +9,8 @@ import {AlbumService} from '../../services/album.service';
 import {ArtistService} from '../../services/artist.service';
 import {BookService} from '../../services/book.service';
 import {IconsByTypeEnum} from '../../enums/icons-by-type.enum';
-import {GroupService} from '../../services/group.service';
+import {AlbumInterface} from '../../interfaces/album.interface';
+import {BookInterface} from '../../interfaces/book.interface';
 
 @Component({
   selector: 'app-header',
@@ -22,7 +23,6 @@ export class HeaderComponent implements OnInit {
     artists: [],
     albums: [],
     books: [],
-    groups: []
   };
   iconsByType = IconsByTypeEnum;
 
@@ -33,7 +33,6 @@ export class HeaderComponent implements OnInit {
     private albumService: AlbumService,
     private artistService: ArtistService,
     private bookService: BookService,
-    private groupService: GroupService,
     private router: Router
   ) {
   }
@@ -48,34 +47,24 @@ export class HeaderComponent implements OnInit {
     });
   }
 
+  getArtists(option: AlbumInterface | BookInterface): string {
+    return option.artists ? option.artists.map(artist => artist.name).join(', ') : '';
+  }
+
   loadData(searchFor = ''): void {
     const search = SearchTerm.parse(searchFor);
-    this.albumService.getItemsList(search).snapshotChanges().subscribe(data => {
-      this.resultsList.albums = data.map(value => {
-        const payload = value.payload.exportVal();
-        const artists = payload.artists ? Object.values(payload.artists) : [];
-        const name = artists.length ? artists.join(', ') + ' - ' + payload.name : payload.name;
-        return {type: 'album', key: value.key, name, cover: payload.cover};
-      });
-    });
-    this.artistService.getItemsList(search).snapshotChanges().subscribe(data => {
-      this.resultsList.artists = data.map(value => {
-        return {type: 'artist', key: value.key, name: value.payload.exportVal().name};
-      });
-    });
-    this.groupService.getItemsList(search).snapshotChanges().subscribe(data => {
-      this.resultsList.groups = data.map(value => {
-        return {type: 'group', key: value.key, name: value.payload.exportVal().name};
-      });
-    });
-    this.bookService.getItemsList(search).snapshotChanges().subscribe(data => {
-      this.resultsList.books = data.map(value => {
-        const payload = value.payload.exportVal();
-        const artists = payload.artists ? Object.values(payload.artists) : [];
-        const name = artists.length ? artists.join(', ') + ' - ' + payload.name : payload.name;
-        return {type: 'book', key: value.key, name, cover: payload.cover};
-      });
-    });
+    this.albumService.getItemsByFilter(search).subscribe(data => this.resultsList.albums = data.map(item => {
+      item.url = 'albums/' + item.id;
+      return item;
+    }));
+    this.artistService.getItemsByFilter(search).subscribe(data => this.resultsList.artists = data.map(item => {
+      item.url = 'artists/' + item.id;
+      return item;
+    }));
+    this.bookService.getItemsByFilter(search).subscribe(data => this.resultsList.books = data.map(item => {
+      item.url = 'books/' + item.id;
+      return item;
+    }));
   }
 
   displayFn(post: any) {
@@ -83,9 +72,10 @@ export class HeaderComponent implements OnInit {
   }
 
   openOption($event: MatAutocompleteSelectedEvent) {
+    console.log($event);
     this.searchControl.setValue('');
     this.autocompleteInput.nativeElement.blur();
     const option = $event.option.value;
-    this.router.navigate([`${option.type}s/${option.key}`]);
+    this.router.navigate([option.url]);
   }
 }

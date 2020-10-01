@@ -1,11 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AlbumService} from '../../services/album.service';
-import {AlbumInterface} from '../../interfaces/album.interface';
 import {ArtistService} from '../../services/artist.service';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {ArtistInterface} from '../../interfaces/artist.interface';
-import {BookInterface} from '../../interfaces/book.interface';
-import {BookService} from '../../services/book.service';
+import {getStatusName, StatusEnum} from '../../enums/status.enum';
 
 @Component({
   selector: 'app-artist',
@@ -13,14 +10,12 @@ import {BookService} from '../../services/book.service';
   styleUrls: ['./artist.component.scss']
 })
 export class ArtistComponent implements OnInit, OnDestroy {
-  albums: AlbumInterface[] = [];
-  books: BookInterface[] = [];
-  artist: ArtistInterface;
+  artists: ArtistInterface[];
   mySubscription: any;
+  statusEnum = StatusEnum;
+  getStatusName = getStatusName;
 
   constructor(
-    private albumService: AlbumService,
-    private bookService: BookService,
     private artistService: ArtistService,
     private route: ActivatedRoute,
     private router: Router
@@ -38,48 +33,21 @@ export class ArtistComponent implements OnInit, OnDestroy {
   }
 
   loadData() {
-    const key = this.route.snapshot.paramMap.get('key');
-    this.artistService.getItem(key).valueChanges().subscribe(data => {
+    const id = this.route.snapshot.paramMap.get('id');
+    this.artistService.getItem(id).subscribe(data => {
+      console.log(id, data);
       if (!data) {
         this.router.navigateByUrl('not-found', {skipLocationChange: true});
       } else {
-        this.artist = {
-          key,
-          groups: [],
-          name: data.name
-        };
-        this.albumService.getItemsList().valueChanges().subscribe(albums =>
-          this.albums = albums.filter(value => value.artists && value.artists.includes(this.artist.name)).map(val => {
-            return {
-              name: val.name,
-              artists: val.artists,
-              cover: val.cover,
-              key: val.key,
-              status: val.status
-            };
-          })
-        );
-        this.bookService.getItemsList().valueChanges().subscribe(books =>
-          this.books = books.filter(value => value.artists && value.artists.includes(this.artist.name)).map(val => {
-            return {
-              name: val.name,
-              artists: val.artists,
-              cover: val.cover,
-              key: val.key
-            };
-          })
-        );
+        const groups = data.groups || [];
+        this.artists = [data, ...groups];
       }
     });
   }
 
   ngOnDestroy() {
-
     if (this.mySubscription) {
-
       this.mySubscription.unsubscribe();
-
     }
-
   }
 }

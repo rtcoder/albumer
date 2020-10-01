@@ -1,7 +1,5 @@
-import {DbServiceInterface} from '../interfaces/db-service.interface';
-
 export class ListHelper {
-  service: DbServiceInterface;
+  service: any;
   filter = '';
   dataSource: any[] = [];
   displayedColumns: string[] = ['actions'];
@@ -12,11 +10,6 @@ export class ListHelper {
   }
 
   loadData() {
-    this.service.getItemsList(this.filter).snapshotChanges()
-      .subscribe((data) => {
-        this.dataSource = data.map(value => {
-          return {key: value.key, ...value.payload.exportVal()};
-        });
-      });
+    this.service.getItemsByFilter(this.filter).subscribe(data => this.dataSource = data);
   }
 }

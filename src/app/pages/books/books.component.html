@@ -17,7 +17,11 @@
 
       <ng-container matColumnDef="artists">
         <th *matHeaderCellDef mat-header-cell> Autor</th>
-        <td *matCellDef="let row" mat-cell> {{(row.artists || []).join(', ')}} </td>
+        <td *matCellDef="let row" mat-cell>
+          <ng-container *ngFor="let artist of row.artists">
+            <a [routerLink]="'/artists/' + artist.id" class="artist-link">{{artist.name}}</a>
+          </ng-container>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="name">

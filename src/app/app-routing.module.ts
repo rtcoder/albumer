@@ -25,7 +25,7 @@ const routes: Routes = [
     component: ArtistsComponent
   },
   {
-    path: 'artists/:key',
+    path: 'artists/:id',
     component: ArtistComponent
   },
   {path: '**', component: PageNotFoundComponent},

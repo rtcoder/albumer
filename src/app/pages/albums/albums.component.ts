@@ -18,16 +18,4 @@ export class AlbumsComponent extends ListHelper implements OnInit {
 
   ngOnInit() {
   }
-
-  loadData() {
-    this.service.getItemsList(this.filter).snapshotChanges()
-      .subscribe(data => {
-        this.dataSource = data.map(value => {
-          const payload = value.payload.exportVal();
-        console.log(payload)
-          payload.artists = payload.artists ? Object.values(payload.artists) : [];
-          return {key: value.key, ...payload};
-        });
-      });
-  }
 }

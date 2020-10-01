@@ -23,9 +23,9 @@
       <ng-container matColumnDef="artists">
         <th *matHeaderCellDef mat-header-cell> Artysta</th>
         <td *matCellDef="let row" mat-cell>
-        <ng-container *ngFor="let artist of row.artists">
-          <a class="artist-link" [routerLink]="'/artist/' + artist">{{artist}}</a>
-        </ng-container>
+          <ng-container *ngFor="let artist of row.artists">
+            <a [routerLink]="'/artist/' + artist.id" class="artist-link">{{artist.name}}</a>
+          </ng-container>
         </td>
       </ng-container>
 

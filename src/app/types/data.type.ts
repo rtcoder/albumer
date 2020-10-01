@@ -1,1 +1,1 @@
-export declare type DataType = 'album' | 'artist' | 'group' | 'book';
+export declare type DataType = 'albums' | 'artists' | 'books';

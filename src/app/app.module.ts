@@ -12,7 +12,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from './modules/material.module';
 import {PageNotFoundComponent} from './pages/page-not-found/page-not-found.component';
 import {AddItemDialogComponent} from './dialogs/add-item-dialog/add-item-dialog.component';
-import {FirebaseModule} from './modules/firebase.module';
 import {AlbumsComponent} from './pages/albums/albums.component';
 import {BooksComponent} from './pages/books/books.component';
 import {ArtistsComponent} from './pages/artists/artists.component';
@@ -43,7 +42,6 @@ import {ArtistComponent} from './pages/artist/artist.component';
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    FirebaseModule
   ],
   entryComponents: [
     AddItemDialogComponent,

@@ -1,7 +1,12 @@
-import {DataInterface} from './data.inerface';
+import {StatusEnum} from '../enums/status.enum';
+import {ArtistInterface} from './artist.interface';
 
-export interface AlbumInterface extends DataInterface {
-  artists: string[];
+export interface AlbumInterface {
+  id: string;
+  name: string;
+  artists: ArtistInterface[];
+  artistsIds: string[];
   cover: string | null;
-  status: 'Posiadane' | 'Zamówione';
+  status: StatusEnum;
+  url: string;
 }

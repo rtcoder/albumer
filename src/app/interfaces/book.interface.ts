@@ -1,6 +1,10 @@
-import {DataInterface} from './data.inerface';
+import {ArtistInterface} from './artist.interface';
 
-export interface BookInterface extends DataInterface {
-  artists: string[];
+export interface BookInterface {
+  id: string;
+  artists: ArtistInterface[];
+  artistsIds: string[];
   cover: string | null;
+  name: string;
+  url: string;
 }
