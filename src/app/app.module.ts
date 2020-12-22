@@ -51,9 +51,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatCardModule,
     MatButtonToggleModule,
   ],
-  entryComponents: [
-    AddItemDialogComponent,
-  ],
   providers: [],
   bootstrap: [AppComponent]
 })
