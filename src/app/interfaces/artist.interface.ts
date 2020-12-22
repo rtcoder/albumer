@@ -1,5 +1,6 @@
 import {AlbumInterface} from './album.interface';
 import {BookInterface} from './book.interface';
+import {DataType} from '../types/data.type';
 
 export interface ArtistInterface {
   id: string;
@@ -9,4 +10,5 @@ export interface ArtistInterface {
   artists: ArtistInterface[];
   groups: ArtistInterface[];
   artistsIds: string[];
+  type: DataType;
 }

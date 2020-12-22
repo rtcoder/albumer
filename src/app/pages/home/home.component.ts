@@ -1,46 +1,102 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {AlbumService} from '../../services/album.service';
-import {ArtistService} from '../../services/artist.service';
-import {BookService} from '../../services/book.service';
 import {IconsByTypeEnum} from '../../enums/icons-by-type.enum';
-import {TypeDictionaryPluralEnum} from '../../enums/type-dictionary.enum';
-import {StatusEnum} from '../../enums/status.enum';
+import {SearchService} from '../../services/search.service';
+import {AlbumInterface} from '../../interfaces/album.interface';
+import {BookInterface} from '../../interfaces/book.interface';
+import {ArtistInterface} from '../../interfaces/artist.interface';
+import {BookService} from '../../services/book.service';
+import {ArtistService} from '../../services/artist.service';
+import {sortAz} from '../../helpers/helpers';
+import {DataType} from '../../types/data.type';
+import {DOCUMENT} from '@angular/common';
+
+type Item = (AlbumInterface | BookInterface | ArtistInterface) & { [key: string]: any };
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
-  countData = {
-    albums: 0,
-    albums_owned: 0,
-    albums_ordered: 0,
-    artists: 0,
-    books: 0,
-  };
+export class HomeComponent {
+  albums: AlbumInterface[] = [];
+  books: BookInterface[] = [];
+  artists: ArtistInterface[] = [];
 
-  typeDictionaryEnum = TypeDictionaryPluralEnum;
+  typeFilter: 'all' | DataType = 'all';
+  filter = '';
+
   iconsByType = IconsByTypeEnum;
 
-  constructor(
-    private albumService: AlbumService,
-    private artistService: ArtistService,
-    private bookService: BookService) {
+  private _selected: Item;
+  set selected(item: Item) {
+    console.log(item);
+    this._selected = item;
+    if (this._selected) {
+      this.document.body.classList.add('no-scroll');
+    } else {
+      this.document.body.classList.remove('no-scroll');
+    }
   }
 
-  get iconsByTypeKeys() {
-    return Object.keys(this.iconsByType);
+  get selected(): Item {
+    return this._selected;
   }
 
-  ngOnInit(): void {
-    this.albumService.getItemsByFilter().subscribe(data => {
-      this.countData.albums_owned = data.filter(val => val.status === StatusEnum.OWNED).length;
-      this.countData.albums_ordered = data.filter(val => val.status === StatusEnum.ORDERED).length;
-      this.countData.albums = data.length;
-    });
-    this.artistService.getItemsByFilter().subscribe(data => this.countData.artists = data.length);
-    this.bookService.getItemsByFilter().subscribe(data => this.countData.books = data.length);
+  get items(): Item[] {
+    return [
+      ...(this.isFiltered('album') ? this.albums : []),
+      ...(this.isFiltered('book') ? this.books : []),
+      ...(this.isFiltered('artist') ? this.artists : []),
+    ].sort(sortAz);
   }
 
+  constructor(private searchService: SearchService,
+              private albumsService: AlbumService,
+              private booksService: BookService,
+              private artistsService: ArtistService,
+              @Inject(DOCUMENT) private document: Document
+  ) {
+    searchService.search$.subscribe(value => this.loadData(value));
+    this.loadData();
+    setTimeout(() => {
+
+      this.selectItem(this.items[0]);
+    }, 50);
+  }
+
+  isFiltered(value: 'all' | DataType) {
+    return ['all', value].includes(this.typeFilter);
+  }
+
+  loadData(filter = '') {
+    this.filter = filter;
+    this.albumsService.getItemsByFilter(filter).subscribe(items => this.albums = items);
+    this.booksService.getItemsByFilter(filter).subscribe(items => this.books = items);
+    this.artistsService.getItemsByFilter(filter).subscribe(items => this.artists = items);
+  }
+
+  selectItem(item: Item) {
+    const newVal = !item.selected;
+    this.items.forEach(single => single.selected = false);
+    item.selected = newVal;
+    this.selected = newVal ? item : undefined;
+  }
+
+  getNames(items: any[]) {
+    if (items) {
+      return items.map(item => item.name).join(', ');
+    } else {
+      return '';
+    }
+  }
+
+  closePanel() {
+    this.selected = undefined;
+    this.items.forEach(single => single.selected = false);
+  }
+
+  search(item: Item) {
+    this.searchService.search(item.name);
+  }
 }

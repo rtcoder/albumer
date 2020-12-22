@@ -1,5 +1,6 @@
 import {StatusEnum} from '../enums/status.enum';
 import {ArtistInterface} from './artist.interface';
+import {DataType} from '../types/data.type';
 
 export interface AlbumInterface {
   id: string;
@@ -9,4 +10,5 @@ export interface AlbumInterface {
   cover: string | null;
   status: StatusEnum;
   url: string;
+  type: DataType;
 }

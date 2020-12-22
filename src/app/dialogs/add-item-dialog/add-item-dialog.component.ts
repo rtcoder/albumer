@@ -143,7 +143,7 @@ export class AddItemDialogComponent implements OnInit, OnDestroy {
   getArtists(event?: any) {
     const search = event && event.target.value ? event.target.value.trim() : '';
     this.artistService.getItemsByFilter(search).subscribe(data => {
-      this.artistsList = data;
+      // this.artistsList = data;
     });
   }
 

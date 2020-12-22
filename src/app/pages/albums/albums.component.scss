@@ -1,7 +1,0 @@
-@import "../../../assets/scss/table";
-
-.artist-link:not(:last-child) {
-  &::after {
-    content: ', ';
-  }
-}

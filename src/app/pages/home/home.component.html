@@ -1,15 +1,53 @@
-<div class="container">
-  <ng-container *ngFor="let type of iconsByTypeKeys">
-    <a [routerLink]="['/' + type + 's']">
-      <mat-card class="card">
-        <mat-card-header>
-          <div mat-card-avatar>
-            <mat-icon>{{iconsByType[type]}}</mat-icon>
-          </div>
-          <mat-card-title>{{typeDictionaryEnum[type]}}</mat-card-title>
-          <mat-card-subtitle>{{countData[type + 's']}}</mat-card-subtitle>
-        </mat-card-header>
-      </mat-card>
-    </a>
-  </ng-container>
+<mat-button-toggle-group [(ngModel)]="typeFilter">
+  <mat-button-toggle value="all">Wszystko</mat-button-toggle>
+  <mat-button-toggle value="album">Albumy</mat-button-toggle>
+  <mat-button-toggle value="artist">Wykonawcy</mat-button-toggle>
+  <mat-button-toggle value="book">Książki</mat-button-toggle>
+</mat-button-toggle-group>
+
+<div class="grid">
+
+  <div class="item"
+       *ngFor="let item of items"
+       (click)="selectItem(item)"
+       [ngClass]="{'selected': item.selected}">
+    <mat-icon>{{iconsByType[item.type]}}</mat-icon>
+    {{item.name}}
+  </div>
+
+</div>
+
+<app-no-data-info [dataSource]="items" [filter]="filter"></app-no-data-info>
+
+<div class="right-panel" [ngClass]="{'open': selected}">
+  <div class="top">
+    <mat-icon (click)="closePanel()">close</mat-icon>
+    <div class="name">{{selected?.name}}</div>
+  </div>
+  <div class="middle">
+    <div class="icon">
+      <mat-icon>{{iconsByType['albums']}}</mat-icon>
+    </div>
+    <div class="name">
+      <ng-container *ngIf="selected?.artists">
+        <span class="artist-single"
+              *ngFor="let artist of selected?.artists; let last=last"
+              (click)="search(artist)">
+          {{artist.name}}{{last ? ' - ' : ', '}}
+        </span>
+      </ng-container>
+      {{selected?.name}}
+    </div>
+
+    <ul class="albums" *ngIf="selected?.albums">
+      <li *ngFor="let album of selected?.albums">
+        {{album.name}}
+      </li>
+    </ul>
+    <ul class="books" *ngIf="selected?.books">
+      <li *ngFor="let book of selected?.books">
+        {{book.name}}
+      </li>
+    </ul>
+  </div>
 </div>

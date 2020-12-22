@@ -20,6 +20,7 @@ export class BookService extends DbService {
         book.artists = book.artistsIds.map(artistId => {
           return this._items.artists.find(artist => artist.id === artistId);
         });
+        book.type = 'books';
         return book;
       });
     }));

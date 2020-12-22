@@ -1,6 +1,6 @@
-import {EventEmitter, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable, of, Subscription} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {DataInterface} from '../interfaces/data.interface';
 import {map} from 'rxjs/operators';
 
@@ -16,10 +16,6 @@ export class DbService {
       return this.getItemsList();
     }
   }
-
-  addEvent: EventEmitter<any> = new EventEmitter<any>();
-  updateEvent: EventEmitter<any> = new EventEmitter<any>();
-  private subscription: Subscription;
 
   constructor(protected httpClient: HttpClient) {
   }
@@ -52,28 +48,7 @@ export class DbService {
   }
 
   createItem(item: any): void {
-    // item.nameLower = item.name.toLowerCase();
-    // this.items.push(item).then(value => this.addEvent.emit(value))
-    //   .catch(error => this.handleError(error));
   }
 
-  updateItem(key: string, value: any): void {
-    // value.nameLower = value.name.toLowerCase();
-    // this.items.update(key, value).then(value1 => this.updateEvent.emit(value1))
-    //   .catch(error => this.handleError(error));
-  }
 
-  deleteItem(key: string): void {
-    // this.items.remove(key).then(data => console.log(data))
-    //   .catch(error => this.handleError(error));
-  }
-
-  deleteAll(): void {
-    // this.items.remove()
-    //   .catch(error => this.handleError(error));
-  }
-
-  private handleError(error) {
-    console.error(error);
-  }
 }
