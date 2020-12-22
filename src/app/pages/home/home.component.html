@@ -1,8 +1,8 @@
 <mat-button-toggle-group [(ngModel)]="typeFilter">
   <mat-button-toggle value="all">Wszystko</mat-button-toggle>
-  <mat-button-toggle value="album">Albumy</mat-button-toggle>
-  <mat-button-toggle value="artist">Wykonawcy</mat-button-toggle>
-  <mat-button-toggle value="book">Książki</mat-button-toggle>
+  <mat-button-toggle value="albums">Albumy</mat-button-toggle>
+  <mat-button-toggle value="artists">Wykonawcy</mat-button-toggle>
+  <mat-button-toggle value="books">Książki</mat-button-toggle>
 </mat-button-toggle-group>
 
 <div class="grid">
@@ -26,7 +26,7 @@
   </div>
   <div class="middle">
     <div class="icon">
-      <mat-icon>{{iconsByType['albums']}}</mat-icon>
+      <mat-icon>{{iconsByType[selected?.type]}}</mat-icon>
     </div>
     <div class="name">
       <ng-container *ngIf="selected?.artists">
@@ -41,12 +41,12 @@
 
     <ul class="albums" *ngIf="selected?.albums">
       <li *ngFor="let album of selected?.albums">
-        {{album.name}}
+        <mat-icon>{{iconsByType['albums']}}</mat-icon> {{album.name}}
       </li>
     </ul>
     <ul class="books" *ngIf="selected?.books">
       <li *ngFor="let book of selected?.books">
-        {{book.name}}
+        <mat-icon>{{iconsByType['books']}}</mat-icon> {{book.name}}
       </li>
     </ul>
   </div>

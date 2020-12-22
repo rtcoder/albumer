@@ -38,17 +38,12 @@ export class DbService {
   }
 
   getItemsByFilter(filter = '', type: string): Observable<any[]> {
-    filter = filter.toLowerCase().trim();
+    filter = filter.toLowerCase().trim().replace(/[^a-zA-Z ]/g, '');
     return this.items.pipe(map((data: DataInterface) => {
       return data[type].filter(el => {
-        const name = el.name.toLowerCase();
+        const name = el.name.toLowerCase().replace(/[^a-zA-Z ]/g, '');
         return name.startsWith(filter) || name.endsWith(filter) || name.includes(filter);
       });
     }));
   }
-
-  createItem(item: any): void {
-  }
-
-
 }

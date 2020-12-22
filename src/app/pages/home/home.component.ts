@@ -45,9 +45,9 @@ export class HomeComponent {
 
   get items(): Item[] {
     return [
-      ...(this.isFiltered('album') ? this.albums : []),
-      ...(this.isFiltered('book') ? this.books : []),
-      ...(this.isFiltered('artist') ? this.artists : []),
+      ...(this.isFiltered('albums') ? this.albums : []),
+      ...(this.isFiltered('books') ? this.books : []),
+      ...(this.isFiltered('artists') ? this.artists : []),
     ].sort(sortAz);
   }
 
@@ -59,10 +59,6 @@ export class HomeComponent {
   ) {
     searchService.search$.subscribe(value => this.loadData(value));
     this.loadData();
-    setTimeout(() => {
-
-      this.selectItem(this.items[0]);
-    }, 50);
   }
 
   isFiltered(value: 'all' | DataType) {
@@ -81,14 +77,6 @@ export class HomeComponent {
     this.items.forEach(single => single.selected = false);
     item.selected = newVal;
     this.selected = newVal ? item : undefined;
-  }
-
-  getNames(items: any[]) {
-    if (items) {
-      return items.map(item => item.name).join(', ');
-    } else {
-      return '';
-    }
   }
 
   closePanel() {
