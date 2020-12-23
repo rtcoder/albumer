@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {DataInterface} from '../interfaces/data.interface';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -21,10 +21,10 @@ export class DbService {
   }
 
   getItemsList(): Observable<DataInterface> {
-    return this.httpClient.get<DataInterface>('/assets/json/data.json').pipe(map(data => {
-      this.setItems(data);
-      return data;
-    }));
+    return this.httpClient.get<DataInterface>('./assets/json/data.json')
+      .pipe(
+        tap(data => this.setItems(data))
+      );
   }
 
   private setItems(data: DataInterface) {
@@ -32,18 +32,19 @@ export class DbService {
   }
 
   getItem(id: string, type: string): Observable<any> {
-    return this.items.pipe(map((data: DataInterface) => {
-      return data[type].find(el => el.id === id);
-    }));
+    return this.items.pipe(map((data: DataInterface) =>
+      data[type].find(el => el.id === id)
+    ));
   }
 
   getItemsByFilter(filter = '', type: string): Observable<any[]> {
     filter = filter.toLowerCase().trim().replace(/[^a-zA-Z ]/g, '');
-    return this.items.pipe(map((data: DataInterface) => {
-      return data[type].filter(el => {
-        const name = el.name.toLowerCase().replace(/[^a-zA-Z ]/g, '');
-        return name.startsWith(filter) || name.endsWith(filter) || name.includes(filter);
-      });
-    }));
+    return this.items.pipe(
+      map((data: DataInterface) =>
+        data[type].filter(el => {
+          const name = el.name.toLowerCase().replace(/[^a-zA-Z ]/g, '');
+          return name.startsWith(filter) || name.endsWith(filter) || name.includes(filter);
+        })
+      ));
   }
 }

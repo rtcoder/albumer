@@ -15,14 +15,15 @@ export class BookService extends DbService {
   }
 
   getItemsByFilter(filter = '') {
-    return super.getItemsByFilter(filter, 'books').pipe(map((books: BookInterface[]) => {
-      return books.map((book: BookInterface) => {
-        book.artists = book.artistsIds.map(artistId => {
-          return this._items.artists.find(artist => artist.id === artistId);
-        });
-        book.type = 'books';
-        return book;
-      });
-    }));
+    return super.getItemsByFilter(filter, 'books')
+      .pipe(map((books: BookInterface[]) =>
+        books.map((book: BookInterface) => {
+          book.artists = book.artistsIds.map(artistId =>
+            this._items.artists.find(artist => artist.id === artistId)
+          );
+          book.type = 'books';
+          return book;
+        })
+      ));
   }
 }
