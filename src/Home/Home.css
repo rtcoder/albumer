@@ -1,0 +1,86 @@
+.Home {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+}
+
+.Home .button-toggle-group {
+  margin-bottom: 50px;
+  margin-top: 10px;
+}
+
+.Home .button-toggle-group button {
+  padding: 5px;
+  margin: 3px;
+  color: #ffffff;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 16px;
+  background: linear-gradient(to right, #09c, #00bd80);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.Home .button-toggle-group button.selected {
+  color: #09c;
+  border-bottom: 2px solid #09c;
+}
+
+.Home .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 20px 10px;
+  padding: 10px 15px;
+  width: 100%;
+  align-items: center;
+}
+
+.Home .grid .item {
+  width: 200px;
+  height: 200px;
+  justify-self: center;
+  padding: 5px;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  background: linear-gradient(to right, #09c, #00bd80);
+}
+
+.Home .grid .item .item-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: #fff;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  background: black;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.Home .grid .item.selected,
+.Home .grid .item:hover {
+  padding: 10px;
+}
+.Home .grid .item:hover .item-content,
+.Home .grid .item.selected .item-content {
+  border-radius: 10px;
+}
+
+.Home .grid .item .material-icons {
+  width: 120px;
+  height: 120px;
+  font-size: 120px;
+  color: #ccc;
+  background: linear-gradient(50deg, #0c90f5, #23608f, #0c90f5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
