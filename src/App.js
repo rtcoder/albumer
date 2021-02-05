@@ -1,13 +1,11 @@
 import './App.css';
-import Header from "./Header/Header";
-import Home from "./Home/Home";
+import ProtectLayer from "./ProtectLayer/ProtectLayer";
 
 function App() {
   return (
     <div className="App">
-      <Header/>
 
-      <Home/>
+      <ProtectLayer />
     </div>
   );
 }
