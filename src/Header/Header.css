@@ -4,46 +4,27 @@ header {
   z-index: 999;
   top: 0;
   left: 0;
-  height: 100px;
   justify-content: center;
   align-items: center;
   display: flex;
   border-bottom: 1px solid transparent;
-  background: transparent;
   transition: all 0.3s;
-}
-
-header.small {
   height: 60px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
-  background: rgba(46, 46, 46, .93);
+  backdrop-filter: blur(2px) grayscale(1);
 }
 
-header.small form {
-  border: solid 3px transparent;
-
-}
-
-header.small form :before {
-  margin: -3px;
-}
-
-header.small form input {
-  height: 40px;
-}
-
-header form {
+header .form {
   max-width: 500px;
   width: 100%;
   background: #000;
   background-clip: padding-box;
-  border: solid 5px transparent;
   position: relative;
   border-radius: 100px;
+  border: solid 3px transparent;
   transition: all 0.3s;
 }
 
-header form:before {
+header .form:before {
   content: '';
   position: absolute;
   top: 0;
@@ -56,7 +37,7 @@ header form:before {
   background: linear-gradient(to right, #09c, #00bd80);
 }
 
-header form .close-icon {
+header .form .close-icon {
   color: #fff;
   position: absolute;
   top: 50%;
@@ -68,9 +49,9 @@ header form .close-icon {
   cursor: pointer;
 }
 
-header form input {
+header .form input {
   width: 100%;
-  height: 70px;
+  height: 40px;
   border: none;
   padding: 15px;
   border-radius: 100px;
@@ -84,10 +65,10 @@ header form input {
   -webkit-text-fill-color: transparent;
 }
 
-header form input::placeholder {
+header .form input::placeholder {
   color: #ffffff;
 }
 
-header form input:focus {
+header .form input:focus {
   border-color: #09c;;
 }

@@ -32,7 +32,7 @@
 
 .Home .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   grid-gap: 20px 10px;
   padding: 10px 15px;
   width: 100%;
@@ -40,10 +40,10 @@
 }
 
 .Home .grid .item {
-  width: 200px;
-  height: 200px;
+  width: 100px;
+  height: 100px;
   justify-self: center;
-  padding: 5px;
+  padding: 3px;
   cursor: pointer;
   border-radius: 10px;
   transition: all 0.2s ease;
@@ -56,28 +56,29 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  color: #fff;
   justify-content: space-between;
   align-items: center;
   padding: 5px;
   background: black;
-  border-radius: 20px;
+  border-radius: 10px;
   transition: all 0.2s ease;
 }
 
-.Home .grid .item.selected,
-.Home .grid .item:hover {
-  padding: 10px;
-}
-.Home .grid .item:hover .item-content,
-.Home .grid .item.selected .item-content {
-  border-radius: 10px;
+.Home .grid .item .item-content .name {
+  width: 100%;
+  text-align: center;
+  overflow: hidden;
+  color: #fff;
+  font-size: 12px;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  display: -webkit-box;
 }
 
 .Home .grid .item .material-icons {
-  width: 120px;
-  height: 120px;
-  font-size: 120px;
+  width: 50px;
+  height: 50px;
+  font-size: 50px;
   color: #ccc;
   background: linear-gradient(50deg, #0c90f5, #23608f, #0c90f5);
   -webkit-background-clip: text;

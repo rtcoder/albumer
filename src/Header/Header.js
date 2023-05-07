@@ -1,55 +1,31 @@
 import './Header.css'
-import * as React from "react";
+import {useState} from "react";
 
-export default class Header extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      formValue: '',
-      headerClass: '',
-    };
-    this.handleChange = this.handleChange.bind(this);
-    this.clearFormValue = this.clearFormValue.bind(this);
-    this.handleScroll = this.handleScroll.bind(this);
+export default function Header(props) {
+  const [formValue, setFormValue] = useState('');
+  const handleChange = ev => {
+    ev.preventDefault();
+    setFormValue(ev.target.value);
+    props.onChange(ev.target.value);
   }
-
-  componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll);
+  const clearFormValue = () => {
+    setFormValue('');
+    props.onChange('');
   }
+  const button = formValue
+    ? <i className="close-icon material-icons" onClick={clearFormValue}>close</i>
+    : '';
 
-  componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
-  }
-
-  handleScroll() {
-    const headerClass = window.pageYOffset >= 200 ? 'small' : '';
-    this.setState({headerClass});
-  }
-
-  handleChange(event) {
-    this.setState({formValue: event.target.value});
-  }
-
-  clearFormValue() {
-    this.setState({formValue: ''});
-  }
-
-  render() {
-    const button = this.state.formValue
-      ? <i className="close-icon material-icons" onClick={this.clearFormValue}>close</i>
-      : '';
-
-    return (
-      <header className={this.state.headerClass}>
-        <form>
-          <input value={this.state.formValue}
-                 onChange={this.handleChange}
-                 placeholder="Szukaj..."
-                 autoComplete="off"
-                 type="text"/>
-          {button}
-        </form>
-      </header>
-    )
-  }
+  return (
+    <header>
+      <div className="form">
+        <input value={formValue}
+               onChange={handleChange}
+               placeholder="Szukaj..."
+               autoComplete="off"
+               type="text"/>
+        {button}
+      </div>
+    </header>
+  )
 }
