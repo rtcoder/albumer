@@ -2,63 +2,63 @@
   "artists": [
     {
       "name": "2sty",
-      "id": "3nc>,!P%39"
+      "id": "1"
     },
     {
       "name": "Abradab",
-      "id": "A^3CrO#vMm"
+      "id": "2"
     },
     {
       "name": "AdMa",
-      "id": "BugXA,-<)6"
+      "id": "3"
     },
     {
       "name": "Bas Tajpan",
-      "id": "Ve1@K>z7ML"
+      "id": "4"
     },
     {
       "name": "Bedoes",
-      "id": ",vjTk$=*VV"
+      "id": "5"
     },
     {
       "name": "Bezczel",
-      "id": "$>e_tNyinK"
+      "id": "6"
     },
     {
       "name": "Białas",
-      "id": "+p*WpxvHQi"
+      "id": "7"
     },
     {
       "name": "Bob ONE",
-      "id": "iDho6i$=D!"
+      "id": "8"
     },
     {
       "name": "Bonded by Blood",
-      "id": "lcE#<-<1eM"
+      "id": "9"
     },
     {
       "name": "Buka",
-      "id": "vpOeefYre^"
+      "id": "10"
     },
     {
       "name": "Dino",
-      "id": "g3vVtBJG.C"
+      "id": "11"
     },
     {
       "name": "DJ 600V",
-      "id": "I3OEWRvNzu"
+      "id": "12"
     },
     {
       "name": "DJ Decks",
-      "id": "*>GOk9Bfol"
+      "id": "13"
     },
     {
       "name": "Donguralesko",
-      "id": "-<#e0dCzCA"
+      "id": "14"
     },
     {
       "name": "Dope D.O.D.",
-      "id": "qaIyIk=ckG"
+      "id": "15"
     },
     {
       "name": "Dwa sławy",
@@ -415,7 +415,7 @@
     },
     {
       "artistsIds": [
-        ",vjTk$=*VV",
+        "5",
         "2v9cfvO_zo"
       ],
       "name": "2119 EP",
@@ -464,7 +464,7 @@
     },
     {
       "artistsIds": [
-        "$>e_tNyinK"
+        "6"
       ],
       "name": "A.D.H.D",
       "status": 1,
@@ -472,7 +472,7 @@
     },
     {
       "artistsIds": [
-        "A^3CrO#vMm"
+        "2"
       ],
       "name": "Abradabing",
       "status": 1,
@@ -480,7 +480,7 @@
     },
     {
       "artistsIds": [
-        ",vjTk$=*VV",
+        "5",
         "$6$RzS7yms"
       ],
       "name": "Aby śmierć miała znaczenie",
@@ -571,7 +571,7 @@
     },
     {
       "artistsIds": [
-        "Ve1@K>z7ML"
+        "4"
       ],
       "name": "Boso, ale w ostrogach",
       "status": 1,
@@ -661,7 +661,7 @@
     {
       "artistsIds": [
         "17na#r5n4I",
-        "g3vVtBJG.C"
+        "11"
       ],
       "name": "Cyrk na qłq",
       "status": 1,
@@ -711,7 +711,7 @@
     },
     {
       "artistsIds": [
-        "+p*WpxvHQi",
+        "7",
         "-uAT8l4kry"
       ],
       "name": "Demówka EP",
@@ -736,7 +736,7 @@
     },
     {
       "artistsIds": [
-        "BugXA,-<)6"
+        "3"
       ],
       "name": "Dobrze dobrze",
       "status": 1,
@@ -777,7 +777,7 @@
     {
       "artistsIds": [
         "-uAT8l4kry",
-        "3nc>,!P%39"
+        "1"
       ],
       "name": "Elektryka",
       "status": 1,
@@ -835,7 +835,7 @@
     },
     {
       "artistsIds": [
-        "lcE#<-<1eM"
+        "9"
       ],
       "name": "Exiled to Earth",
       "status": 1,
@@ -843,7 +843,7 @@
     },
     {
       "artistsIds": [
-        "A^3CrO#vMm"
+        "2"
       ],
       "name": "Extravertik",
       "status": 1,
@@ -859,7 +859,7 @@
     },
     {
       "artistsIds": [
-        "Ve1@K>z7ML",
+        "4",
         "wfiZqGeA%x"
       ],
       "name": "Fandango gang",
@@ -885,7 +885,7 @@
     },
     {
       "artistsIds": [
-        "BugXA,-<)6"
+        "3"
       ],
       "name": "Gdy skrzydła w popiele boginie schodzą na ziemię",
       "status": 1,
@@ -917,7 +917,7 @@
     },
     {
       "artistsIds": [
-        "+p*WpxvHQi"
+        "7"
       ],
       "name": "H8M4",
       "status": 1,
@@ -958,7 +958,7 @@
     {
       "artistsIds": [
         "17na#r5n4I",
-        "g3vVtBJG.C"
+        "11"
       ],
       "name": "Horrym jestem",
       "status": 1,
@@ -966,7 +966,7 @@
     },
     {
       "artistsIds": [
-        "+p*WpxvHQi",
+        "7",
         "2v9cfvO_zo"
       ],
       "name": "Hyper 2000",
@@ -975,7 +975,7 @@
     },
     {
       "artistsIds": [
-        "+p*WpxvHQi",
+        "7",
         "2v9cfvO_zo"
       ],
       "name": "In hajs we trust",
@@ -984,7 +984,7 @@
     },
     {
       "artistsIds": [
-        "+p*WpxvHQi",
+        "7",
         "2v9cfvO_zo"
       ],
       "name": "In hajs we trust 2 ",
@@ -993,7 +993,7 @@
     },
     {
       "artistsIds": [
-        "iDho6i$=D!"
+        "8"
       ],
       "name": "Jeden",
       "status": 1,
@@ -1099,7 +1099,7 @@
     },
     {
       "artistsIds": [
-        "Ve1@K>z7ML"
+        "4"
       ],
       "name": "Korzenie i kultura",
       "status": 1,
@@ -1140,7 +1140,7 @@
     },
     {
       "artistsIds": [
-        ",vjTk$=*VV",
+        "5",
         "$6$RzS7yms"
       ],
       "name": "Kwiat polskiej młodzieży",
@@ -1157,7 +1157,7 @@
     },
     {
       "artistsIds": [
-        "-<#e0dCzCA"
+        "14"
       ],
       "name": "Latające ryby",
       "status": 1,
@@ -1197,7 +1197,7 @@
     },
     {
       "artistsIds": [
-        "*>GOk9Bfol"
+        "13"
       ],
       "name": "Mixtape IV",
       "status": 1,
@@ -1409,7 +1409,7 @@
     },
     {
       "artistsIds": [
-        ",vjTk$=*VV",
+        "5",
         "2v9cfvO_zo"
       ],
       "name": "Opowieści z doliny smoków",
@@ -1418,7 +1418,7 @@
     },
     {
       "artistsIds": [
-        "vpOeefYre^",
+        "10",
         "un1OR0HFf."
       ],
       "name": "Optymistycznie",
@@ -1443,7 +1443,7 @@
     },
     {
       "artistsIds": [
-        "BugXA,-<)6"
+        "3"
       ],
       "name": "Pełnia",
       "status": 1,
@@ -1459,7 +1459,7 @@
     },
     {
       "artistsIds": [
-        "vpOeefYre^"
+        "10"
       ],
       "name": "Po drugiej stronie lustra (Kris Remix)",
       "status": 1,
@@ -1507,7 +1507,7 @@
     },
     {
       "artistsIds": [
-        "vpOeefYre^"
+        "10"
       ],
       "name": "Pokój 003",
       "status": 1,
@@ -1523,7 +1523,7 @@
     },
     {
       "artistsIds": [
-        "+p*WpxvHQi",
+        "7",
         "2v9cfvO_zo"
       ],
       "name": "Polon",
@@ -1597,7 +1597,7 @@
     },
     {
       "artistsIds": [
-        "+p*WpxvHQi"
+        "7"
       ],
       "name": "Rehab",
       "status": 1,
@@ -1702,7 +1702,7 @@
     {
       "artistsIds": [
         "PA4lVn9Yo$",
-        "qaIyIk=ckG"
+        "15"
       ],
       "name": "Sick6six",
       "status": 1,
@@ -1710,7 +1710,7 @@
     },
     {
       "artistsIds": [
-        "Ve1@K>z7ML"
+        "4"
       ],
       "name": "Slavic rasta",
       "status": 1,
@@ -1735,7 +1735,7 @@
     {
       "artistsIds": [
         "#mDRI0_^PD",
-        "+p*WpxvHQi"
+        "7"
       ],
       "name": "Stage diving",
       "status": 1,
@@ -1767,7 +1767,7 @@
     },
     {
       "artistsIds": [
-        "BugXA,-<)6"
+        "3"
       ],
       "name": "Szmaragdowa szczerość",
       "status": 1,
@@ -1783,7 +1783,7 @@
     },
     {
       "artistsIds": [
-        "$>e_tNyinK"
+        "6"
       ],
       "name": "Słowo honoru",
       "status": 1,
@@ -1871,7 +1871,7 @@
     },
     {
       "artistsIds": [
-        "iDho6i$=D!"
+        "8"
       ],
       "name": "Twój ruch",
       "status": 1,
@@ -1944,7 +1944,7 @@
     },
     {
       "artistsIds": [
-        "I3OEWRvNzu"
+        "12"
       ],
       "name": "Wkurwione bity vol. 1",
       "status": 1,
@@ -1952,7 +1952,7 @@
     },
     {
       "artistsIds": [
-        "I3OEWRvNzu"
+        "12"
       ],
       "name": "Wkurwione bity vol.2",
       "status": 1,
@@ -1976,7 +1976,7 @@
     },
     {
       "artistsIds": [
-        "vpOeefYre^"
+        "10"
       ],
       "name": "Wspaniały widok na nic interesującego",
       "status": 1,
@@ -1992,8 +1992,8 @@
     },
     {
       "artistsIds": [
-        "iDho6i$=D!",
-        "Ve1@K>z7ML"
+        "8",
+        "4"
       ],
       "name": "Wszystko na sprzedaż",
       "status": 1,
@@ -2027,7 +2027,7 @@
     {
       "artistsIds": [
         "#mDRI0_^PD",
-        "+p*WpxvHQi"
+        "7"
       ],
       "name": "Z ostatniej ławki",
       "status": 1,

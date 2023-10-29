@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="msapplication-TileColor" content="#202124">
+  <meta name="msapplication-TileImage" content="./favicon/mstile-144x144.png">
+  <meta name="theme-color" content="#202124">
+  <meta name="apple-mobile-web-app-title" content="Albumer">
+  <meta name="application-name" content="Albumer">
+
+  <link rel="icon" href="./favicon/favicon.ico"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="./favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./favicon/android-chrome-192x192.png">
+  <link rel="mask-icon" href="./favicon/safari-pinned-tab.svg" color="#202124">
+
+  <link rel="manifest" href="./manifest.json">
+
+  <link rel="stylesheet" href="./css/style.css">
+
+  <title>Albumer</title>
+</head>
+<body>
+<header>
+  <div class="form">
+    <label>
+      <input type="text"
+             maxlength="40"
+             placeholder="Szukaj..."
+             spellcheck="false"
+             autoComplete="off">
+    </label>
+  </div>
+</header>
+<div class="grid"></div>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(registration => {
+        console.log('Serwis pracownika zarejestrowany z sukcesem.');
+      })
+      .catch(error => {
+        console.error('Błąd podczas rejestracji serwisu pracownika:', error);
+      });
+  }
+</script>
+<script src="./js/main.js" type="module"></script>
+</body>
+</html>
