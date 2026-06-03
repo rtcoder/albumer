@@ -1,0 +1,41 @@
+{{- /*gotype: albumer/internal/web.pageData*/ -}}
+{{define "layout_start"}}
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}} - Albumer</title>
+  <link rel="icon" href="/favicon/favicon.ico">
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <strong>Albumer</strong>
+      <span>Prywatna biblioteka</span>
+    </div>
+    <div class="nav-group">
+      <a class="nav-item" href="/"><span class="icon">A</span>Katalog</a>
+      <a class="nav-item" href="/music/new"><span class="icon">M</span>Dodaj muzyke</a>
+      <a class="nav-item" href="/books/new"><span class="icon">B</span>Dodaj ksiazke</a>
+      <a class="nav-item" href="/people/new"><span class="icon">P</span>Dodaj osobe</a>
+      <a class="nav-item" href="/groups/new"><span class="icon">G</span>Dodaj zespol</a>
+    </div>
+    <div class="sidebar-spacer"></div>
+    <form method="post" action="/logout">
+      <input type="hidden" name="csrf" value="{{.CSRF}}">
+      <button class="logout" type="submit"><span class="icon">X</span>Wyloguj</button>
+    </form>
+  </aside>
+  <main class="content">
+{{end}}
+
+{{define "layout_end"}}
+  </main>
+</div>
+<script src="/assets/app.js"></script>
+</body>
+</html>
+{{end}}

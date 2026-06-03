@@ -1,0 +1,22 @@
+[Unit]
+Description=Albumer private catalog
+After=network.target neo4j.service
+
+[Service]
+Type=simple
+User=albumer
+Group=albumer
+WorkingDirectory=/opt/albumer
+ExecStart=/opt/albumer/albumer
+Restart=on-failure
+RestartSec=5
+Environment=ADDR=:4000
+Environment=NEO4J_URI=neo4j://localhost:7687
+Environment=NEO4J_USER=neo4j
+Environment=NEO4J_PASSWORD=change-me
+Environment=APP_SECRET=change-me
+Environment=UPLOAD_DIR=/var/lib/albumer/uploads
+Environment=ADMIN_PASSWORD_HASH=change-me
+
+[Install]
+WantedBy=multi-user.target

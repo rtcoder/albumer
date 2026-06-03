@@ -1,0 +1,93 @@
+{{- /*gotype: albumer/internal/web.pageData*/ -}}
+{{define "music_form"}}
+{{template "layout_start" .}}
+  <header class="page-head"><div><h1>Dodaj muzyke</h1><p>CD, winyl albo kaseta jako osobna fizyczna pozycja.</p></div></header>
+  {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+  <form class="form-panel" method="post" action="/music/new" enctype="multipart/form-data">
+    <input type="hidden" name="csrf" value="{{.CSRF}}">
+    <div class="form-grid">
+      <label class="full">Tytul <input name="title" required></label>
+      <label>Nosnik
+        <select name="medium" required>
+          <option value="">Wybierz</option>
+          <option value="CD">CD</option>
+          <option value="VINYL">Winyl</option>
+          <option value="CASSETTE">Kaseta</option>
+        </select>
+      </label>
+      <label>Rok <input name="year" inputmode="numeric"></label>
+      <label>Status <input name="status" placeholder="owned"></label>
+      <label>Okladka <input type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
+      <div class="full">
+        <span class="field-title">Artysci</span>
+        <div class="checks">{{range .People}}<label class="check"><input type="checkbox" name="person_ids" value="{{.ID}}">{{.Name}}</label>{{else}}<span class="small-note">Najpierw dodaj osobe.</span>{{end}}</div>
+      </div>
+      <div class="full">
+        <span class="field-title">Zespoly</span>
+        <div class="checks">{{range .Groups}}<label class="check"><input type="checkbox" name="group_ids" value="{{.ID}}">{{.Name}}</label>{{else}}<span class="small-note">Brak zespolow.</span>{{end}}</div>
+      </div>
+      <label class="full">Notatki <textarea name="notes"></textarea></label>
+    </div>
+    <button class="button primary" type="submit">Zapisz muzyke</button>
+  </form>
+{{template "layout_end" .}}
+{{end}}
+
+{{define "book_form"}}
+{{template "layout_start" .}}
+  <header class="page-head"><div><h1>Dodaj ksiazke</h1><p>Ksiazka z autorem, statusem i opcjonalna okladka.</p></div></header>
+  {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+  <form class="form-panel" method="post" action="/books/new" enctype="multipart/form-data">
+    <input type="hidden" name="csrf" value="{{.CSRF}}">
+    <div class="form-grid">
+      <label class="full">Tytul <input name="title" required></label>
+      <label>ISBN <input name="isbn"></label>
+      <label>Rok <input name="year" inputmode="numeric"></label>
+      <label>Status <input name="status" placeholder="owned"></label>
+      <label>Okladka <input type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
+      <div class="full">
+        <span class="field-title">Autorzy</span>
+        <div class="checks">{{range .People}}<label class="check"><input type="checkbox" name="person_ids" value="{{.ID}}">{{.Name}}</label>{{else}}<span class="small-note">Najpierw dodaj osobe.</span>{{end}}</div>
+      </div>
+      <label class="full">Notatki <textarea name="notes"></textarea></label>
+    </div>
+    <button class="button primary" type="submit">Zapisz ksiazke</button>
+  </form>
+{{template "layout_end" .}}
+{{end}}
+
+{{define "person_form"}}
+{{template "layout_start" .}}
+  <header class="page-head"><div><h1>Dodaj osobe</h1><p>Artysta muzyczny albo autor ksiazki.</p></div></header>
+  {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+  <form class="form-panel" method="post" action="/people/new">
+    <input type="hidden" name="csrf" value="{{.CSRF}}">
+    <div class="form-grid">
+      <label>Nazwa / imie i nazwisko <input name="name" required></label>
+      <label>Nazwa sortowania <input name="sort_name"></label>
+      <label class="full">Notatki <textarea name="notes"></textarea></label>
+    </div>
+    <button class="button primary" type="submit">Zapisz osobe</button>
+  </form>
+{{template "layout_end" .}}
+{{end}}
+
+{{define "group_form"}}
+{{template "layout_start" .}}
+  <header class="page-head"><div><h1>Dodaj zespol</h1><p>Zespol sklada sie z osob dodanych w katalogu.</p></div></header>
+  {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+  <form class="form-panel" method="post" action="/groups/new">
+    <input type="hidden" name="csrf" value="{{.CSRF}}">
+    <div class="form-grid">
+      <label>Nazwa <input name="name" required></label>
+      <label>Nazwa sortowania <input name="sort_name"></label>
+      <div class="full">
+        <span class="field-title">Czlonkowie</span>
+        <div class="checks">{{range .People}}<label class="check"><input type="checkbox" name="member_ids" value="{{.ID}}">{{.Name}}</label>{{else}}<span class="small-note">Najpierw dodaj osobe.</span>{{end}}</div>
+      </div>
+      <label class="full">Notatki <textarea name="notes"></textarea></label>
+    </div>
+    <button class="button primary" type="submit">Zapisz zespol</button>
+  </form>
+{{template "layout_end" .}}
+{{end}}

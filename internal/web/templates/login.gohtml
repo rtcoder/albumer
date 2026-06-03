@@ -1,0 +1,24 @@
+{{- /*gotype: albumer/internal/web.pageData*/ -}}
+{{define "login"}}
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Logowanie - Albumer</title>
+  <link rel="icon" href="/favicon/favicon.ico">
+  <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+  <main class="login-screen">
+    <form class="login-card" method="post" action="/login">
+      <h1>Albumer</h1>
+      <p class="small-note">Prywatny panel kolekcji.</p>
+      {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
+      <label>Haslo <input type="password" name="password" autofocus autocomplete="current-password"></label>
+      <button class="button primary" type="submit">Zaloguj</button>
+    </form>
+  </main>
+</body>
+</html>
+{{end}}

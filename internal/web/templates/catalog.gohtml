@@ -1,0 +1,65 @@
+{{- /*gotype: albumer/internal/web.pageData*/ -}}
+{{define "catalog"}}
+{{template "layout_start" .}}
+  <header class="page-head">
+    <div>
+      <h1>Katalog</h1>
+      <p>CD, winyle, kasety i ksiazki w jednym prywatnym widoku.</p>
+    </div>
+    <div class="actions">
+      <a class="button primary" href="/music/new">Dodaj muzyke</a>
+      <a class="button" href="/books/new">Dodaj ksiazke</a>
+    </div>
+  </header>
+  <form class="filters" method="get" action="/items" data-catalog-filters>
+    <label>Szukaj <input type="search" name="q" value="{{.Filter.Query}}" placeholder="Tytul, artysta, autor"></label>
+    <label>Typ
+      <select name="kind">
+        <option value="" {{if eq .Filter.Kind ""}}selected{{end}}>Wszystko</option>
+        <option value="music" {{if eq .Filter.Kind "music"}}selected{{end}}>Muzyka</option>
+        <option value="book" {{if eq .Filter.Kind "book"}}selected{{end}}>Ksiazki</option>
+      </select>
+    </label>
+    <label>Nosnik
+      <select name="medium">
+        <option value="" {{if eq .Filter.Medium ""}}selected{{end}}>Wszystkie</option>
+        <option value="CD" {{if eq .Filter.Medium "CD"}}selected{{end}}>CD</option>
+        <option value="VINYL" {{if eq .Filter.Medium "VINYL"}}selected{{end}}>Winyl</option>
+        <option value="CASSETTE" {{if eq .Filter.Medium "CASSETTE"}}selected{{end}}>Kaseta</option>
+      </select>
+    </label>
+    <label>Status <input name="status" value="{{.Filter.Status}}" placeholder="np. owned"></label>
+    <label>Widok
+      <select name="view">
+        <option value="grid-large" {{if eq .Filter.View "grid-large"}}selected{{end}}>Grid duzy</option>
+        <option value="grid-small" {{if eq .Filter.View "grid-small"}}selected{{end}}>Grid maly</option>
+        <option value="list" {{if eq .Filter.View "list"}}selected{{end}}>Lista</option>
+      </select>
+    </label>
+    <button class="button" type="submit">Filtruj</button>
+  </form>
+  <div id="catalog-results">{{template "catalog_items" .}}</div>
+{{template "layout_end" .}}
+{{end}}
+
+{{define "catalog_items"}}
+  {{if .Items}}
+  <section class="catalog {{.Filter.View}}">
+  {{range .Items}}
+    <article class="item-card">
+      <div class="item-cover">{{if .CoverPath}}<img src="{{.CoverPath}}" alt="">{{else}}{{if eq .Kind "book"}}Book{{else}}{{.Medium}}{{end}}{{end}}</div>
+      <div class="item-body">
+        <h2 class="item-title">{{.Title}}</h2>
+        {{if .Subtitle}}<div class="item-meta">{{.Subtitle}}</div>{{end}}
+        <div class="badges">
+          {{if eq .Kind "book"}}<span class="badge">Ksiazka</span>{{else}}<span class="badge medium">{{.Medium}}</span>{{end}}
+          {{if .Status}}<span class="badge">{{.Status}}</span>{{end}}
+        </div>
+      </div>
+    </article>
+  {{end}}
+  </section>
+  {{else}}
+    <div class="empty">Brak pozycji dla wybranych filtrow.</div>
+  {{end}}
+{{end}}
