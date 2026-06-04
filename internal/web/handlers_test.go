@@ -178,7 +178,7 @@ func TestPeopleIndexShowsSearch(t *testing.T) {
 	server.Routes().ServeHTTP(response, request)
 
 	body := response.Body.String()
-	if !strings.Contains(body, `aria-label="Szukaj osob"`) || !strings.Contains(body, `data-filter-label="O.S.T.R OSTR"`) {
+	if !strings.Contains(body, `aria-label="Szukaj osób"`) || !strings.Contains(body, `data-filter-label="O.S.T.R OSTR"`) {
 		t.Fatalf("people index should show searchable rows, body: %s", body)
 	}
 }
@@ -192,7 +192,7 @@ func TestGroupsIndexShowsSearch(t *testing.T) {
 	server.Routes().ServeHTTP(response, request)
 
 	body := response.Body.String()
-	if !strings.Contains(body, `aria-label="Szukaj zespolow"`) || !strings.Contains(body, `data-filter-label="Płomień 81 Plomien 81"`) {
+	if !strings.Contains(body, `aria-label="Szukaj zespołów"`) || !strings.Contains(body, `data-filter-label="Płomień 81 Plomien 81"`) {
 		t.Fatalf("groups index should show searchable rows, body: %s", body)
 	}
 }

@@ -44,6 +44,7 @@ func (s *Server) Routes() http.Handler {
 
 	r.Get("/login", s.loginForm)
 	r.Post("/login", s.login)
+	r.Get("/language/{lang}", s.setLanguage)
 	r.Get("/uploads/*", http.StripPrefix("/uploads/", http.FileServer(http.Dir(s.cfg.UploadDir))).ServeHTTP)
 	r.Get("/favicon/*", http.StripPrefix("/favicon/", http.FileServer(http.Dir("favicon"))).ServeHTTP)
 	r.Get("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.FS(assetsFS()))).ServeHTTP)
@@ -78,7 +79,15 @@ func (s *Server) Routes() http.Handler {
 	return r
 }
 
-func (s *Server) render(w http.ResponseWriter, status int, name string, data any) {
+func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name string, data pageData) {
+	data.Lang = languageFromRequest(r)
+	data.NextURL = r.URL.RequestURI()
+	if data.TitleKey != "" {
+		data.Title = data.Tr(data.TitleKey)
+	}
+	if data.Error != "" {
+		data.Error = translateError(data.Lang, data.Error)
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(status)
 	if err := s.templates.ExecuteTemplate(w, name, data); err != nil {

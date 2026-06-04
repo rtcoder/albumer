@@ -14,6 +14,9 @@ import (
 
 type pageData struct {
 	Title           string
+	TitleKey        string
+	Lang            string
+	NextURL         string
 	CSRF            string
 	Error           string
 	Filter          domain.CatalogFilter
@@ -53,26 +56,26 @@ func (s *Server) catalog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := pageData{Title: "Katalog", CSRF: s.csrf(r), Filter: filter, Items: items}
+	data := pageData{TitleKey: "title.catalog", CSRF: s.csrf(r), Filter: filter, Items: items}
 	if r.Header.Get("HX-Request") == "true" || r.Header.Get("X-Fragment") == "catalog" {
-		s.render(w, http.StatusOK, "catalog_items", data)
+		s.render(w, r, http.StatusOK, "catalog_items", data)
 		return
 	}
-	s.render(w, http.StatusOK, "catalog", data)
+	s.render(w, r, http.StatusOK, "catalog", data)
 }
 
 func (s *Server) musicForm(w http.ResponseWriter, r *http.Request) {
-	data, err := s.formData(r, "Dodaj muzyke", "")
+	data, err := s.formData(r, "title.add_music", "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	s.render(w, http.StatusOK, "music_form", data)
+	s.render(w, r, http.StatusOK, "music_form", data)
 }
 
 func (s *Server) createMusic(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(8 << 20); err != nil {
-		s.renderFormError(w, r, "music_form", "Nieprawidlowy formularz.")
+		s.renderFormError(w, r, "music_form", "error.invalid_form")
 		return
 	}
 
@@ -103,10 +106,10 @@ func (s *Server) editMusicForm(w http.ResponseWriter, r *http.Request) {
 	id := routeID(r, "id")
 	item, err := s.store.GetMusicItem(r.Context(), id)
 	if err != nil {
-		s.renderNotFound(w, err)
+		s.renderNotFound(w, r, err)
 		return
 	}
-	data, err := s.formData(r, "Edytuj muzyke", item.ID)
+	data, err := s.formData(r, "title.edit_music", item.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -114,17 +117,17 @@ func (s *Server) editMusicForm(w http.ResponseWriter, r *http.Request) {
 	data.Music = item
 	data.Action = editPath("music", item.ID)
 	data.Edit = true
-	s.render(w, http.StatusOK, "music_form", data)
+	s.render(w, r, http.StatusOK, "music_form", data)
 }
 
 func (s *Server) updateMusic(w http.ResponseWriter, r *http.Request) {
 	existing, err := s.store.GetMusicItem(r.Context(), routeID(r, "id"))
 	if err != nil {
-		s.renderNotFound(w, err)
+		s.renderNotFound(w, r, err)
 		return
 	}
 	if err := r.ParseMultipartForm(8 << 20); err != nil {
-		s.renderMusicError(w, r, existing, "Nieprawidlowy formularz.")
+		s.renderMusicError(w, r, existing, "error.invalid_form")
 		return
 	}
 
@@ -156,17 +159,17 @@ func (s *Server) updateMusic(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) bookForm(w http.ResponseWriter, r *http.Request) {
-	data, err := s.formData(r, "Dodaj ksiazke", "")
+	data, err := s.formData(r, "title.add_book", "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	s.render(w, http.StatusOK, "book_form", data)
+	s.render(w, r, http.StatusOK, "book_form", data)
 }
 
 func (s *Server) createBook(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseMultipartForm(8 << 20); err != nil {
-		s.renderFormError(w, r, "book_form", "Nieprawidlowy formularz.")
+		s.renderFormError(w, r, "book_form", "error.invalid_form")
 		return
 	}
 
@@ -201,10 +204,10 @@ func (s *Server) editBookForm(w http.ResponseWriter, r *http.Request) {
 	id := routeID(r, "id")
 	book, err := s.store.GetBook(r.Context(), id)
 	if err != nil {
-		s.renderNotFound(w, err)
+		s.renderNotFound(w, r, err)
 		return
 	}
-	data, err := s.formData(r, "Edytuj ksiazke", "")
+	data, err := s.formData(r, "title.edit_book", "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -212,17 +215,17 @@ func (s *Server) editBookForm(w http.ResponseWriter, r *http.Request) {
 	data.Book = book
 	data.Action = editPath("books", book.ID)
 	data.Edit = true
-	s.render(w, http.StatusOK, "book_form", data)
+	s.render(w, r, http.StatusOK, "book_form", data)
 }
 
 func (s *Server) updateBook(w http.ResponseWriter, r *http.Request) {
 	existing, err := s.store.GetBook(r.Context(), routeID(r, "id"))
 	if err != nil {
-		s.renderNotFound(w, err)
+		s.renderNotFound(w, r, err)
 		return
 	}
 	if err := r.ParseMultipartForm(8 << 20); err != nil {
-		s.renderBookError(w, r, existing, "Nieprawidlowy formularz.")
+		s.renderBookError(w, r, existing, "error.invalid_form")
 		return
 	}
 
@@ -253,7 +256,7 @@ func (s *Server) updateBook(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) personForm(w http.ResponseWriter, r *http.Request) {
-	s.render(w, http.StatusOK, "person_form", pageData{Title: "Dodaj osobe", CSRF: s.csrf(r)})
+	s.render(w, r, http.StatusOK, "person_form", pageData{TitleKey: "title.add_person", CSRF: s.csrf(r)})
 }
 
 func (s *Server) peopleIndex(w http.ResponseWriter, r *http.Request) {
@@ -262,12 +265,12 @@ func (s *Server) peopleIndex(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	s.render(w, http.StatusOK, "people_index", pageData{Title: "Osoby", CSRF: s.csrf(r), People: people})
+	s.render(w, r, http.StatusOK, "people_index", pageData{TitleKey: "title.people", CSRF: s.csrf(r), People: people})
 }
 
 func (s *Server) createPerson(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		s.render(w, http.StatusBadRequest, "person_form", pageData{Title: "Dodaj osobe", CSRF: s.csrf(r), Error: "Nieprawidlowy formularz."})
+		s.render(w, r, http.StatusBadRequest, "person_form", pageData{TitleKey: "title.add_person", CSRF: s.csrf(r), Error: "error.invalid_form"})
 		return
 	}
 	person := domain.Person{
@@ -276,7 +279,7 @@ func (s *Server) createPerson(w http.ResponseWriter, r *http.Request) {
 		Notes:    strings.TrimSpace(r.FormValue("notes")),
 	}
 	if _, err := s.store.CreatePerson(r.Context(), person); err != nil {
-		s.render(w, http.StatusBadRequest, "person_form", pageData{Title: "Dodaj osobe", CSRF: s.csrf(r), Error: err.Error()})
+		s.render(w, r, http.StatusBadRequest, "person_form", pageData{TitleKey: "title.add_person", CSRF: s.csrf(r), Error: err.Error()})
 		return
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -286,11 +289,11 @@ func (s *Server) editPersonForm(w http.ResponseWriter, r *http.Request) {
 	id := routeID(r, "id")
 	person, err := s.store.GetPerson(r.Context(), id)
 	if err != nil {
-		s.renderNotFound(w, err)
+		s.renderNotFound(w, r, err)
 		return
 	}
-	s.render(w, http.StatusOK, "person_form", pageData{
-		Title: "Edytuj osobe", CSRF: s.csrf(r), Person: person,
+	s.render(w, r, http.StatusOK, "person_form", pageData{
+		TitleKey: "title.edit_person", CSRF: s.csrf(r), Person: person,
 		Action: editPath("people", person.ID), Edit: true,
 	})
 }
@@ -298,7 +301,7 @@ func (s *Server) editPersonForm(w http.ResponseWriter, r *http.Request) {
 func (s *Server) updatePerson(w http.ResponseWriter, r *http.Request) {
 	id := routeID(r, "id")
 	if err := r.ParseForm(); err != nil {
-		s.render(w, http.StatusBadRequest, "person_form", pageData{Title: "Edytuj osobe", CSRF: s.csrf(r), Error: "Nieprawidlowy formularz."})
+		s.render(w, r, http.StatusBadRequest, "person_form", pageData{TitleKey: "title.edit_person", CSRF: s.csrf(r), Error: "error.invalid_form"})
 		return
 	}
 	person := domain.Person{
@@ -308,8 +311,8 @@ func (s *Server) updatePerson(w http.ResponseWriter, r *http.Request) {
 		Notes:    strings.TrimSpace(r.FormValue("notes")),
 	}
 	if _, err := s.store.UpdatePerson(r.Context(), person); err != nil {
-		s.render(w, http.StatusBadRequest, "person_form", pageData{
-			Title: "Edytuj osobe", CSRF: s.csrf(r), Error: err.Error(), Person: person,
+		s.render(w, r, http.StatusBadRequest, "person_form", pageData{
+			TitleKey: "title.edit_person", CSRF: s.csrf(r), Error: err.Error(), Person: person,
 			Action: editPath("people", id), Edit: true,
 		})
 		return
@@ -318,12 +321,12 @@ func (s *Server) updatePerson(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) groupForm(w http.ResponseWriter, r *http.Request) {
-	data, err := s.formData(r, "Dodaj zespol", "")
+	data, err := s.formData(r, "title.add_group", "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	s.render(w, http.StatusOK, "group_form", data)
+	s.render(w, r, http.StatusOK, "group_form", data)
 }
 
 func (s *Server) groupsIndex(w http.ResponseWriter, r *http.Request) {
@@ -332,12 +335,12 @@ func (s *Server) groupsIndex(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	s.render(w, http.StatusOK, "groups_index", pageData{Title: "Zespoly", CSRF: s.csrf(r), Groups: groups})
+	s.render(w, r, http.StatusOK, "groups_index", pageData{TitleKey: "title.groups", CSRF: s.csrf(r), Groups: groups})
 }
 
 func (s *Server) createGroup(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		s.renderFormError(w, r, "group_form", "Nieprawidlowy formularz.")
+		s.renderFormError(w, r, "group_form", "error.invalid_form")
 		return
 	}
 	group := domain.Group{
@@ -356,10 +359,10 @@ func (s *Server) editGroupForm(w http.ResponseWriter, r *http.Request) {
 	id := routeID(r, "id")
 	group, err := s.store.GetGroup(r.Context(), id)
 	if err != nil {
-		s.renderNotFound(w, err)
+		s.renderNotFound(w, r, err)
 		return
 	}
-	data, err := s.formData(r, "Edytuj zespol", "")
+	data, err := s.formData(r, "title.edit_group", "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -367,13 +370,13 @@ func (s *Server) editGroupForm(w http.ResponseWriter, r *http.Request) {
 	data.Group = group
 	data.Action = editPath("groups", group.ID)
 	data.Edit = true
-	s.render(w, http.StatusOK, "group_form", data)
+	s.render(w, r, http.StatusOK, "group_form", data)
 }
 
 func (s *Server) updateGroup(w http.ResponseWriter, r *http.Request) {
 	id := routeID(r, "id")
 	if err := r.ParseForm(); err != nil {
-		s.renderFormError(w, r, "group_form", "Nieprawidlowy formularz.")
+		s.renderFormError(w, r, "group_form", "error.invalid_form")
 		return
 	}
 	group := domain.Group{
@@ -383,7 +386,7 @@ func (s *Server) updateGroup(w http.ResponseWriter, r *http.Request) {
 		Notes:    strings.TrimSpace(r.FormValue("notes")),
 	}
 	if _, err := s.store.UpdateGroup(r.Context(), group, r.Form["member_ids"]); err != nil {
-		data, dataErr := s.formData(r, "Edytuj zespol", "")
+		data, dataErr := s.formData(r, "title.edit_group", "")
 		if dataErr != nil {
 			http.Error(w, dataErr.Error(), http.StatusInternalServerError)
 			return
@@ -393,13 +396,13 @@ func (s *Server) updateGroup(w http.ResponseWriter, r *http.Request) {
 		data.Action = editPath("groups", id)
 		data.Edit = true
 		data.Error = err.Error()
-		s.render(w, http.StatusBadRequest, "group_form", data)
+		s.render(w, r, http.StatusBadRequest, "group_form", data)
 		return
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (s *Server) formData(r *http.Request, title, excludeMusicID string) (pageData, error) {
+func (s *Server) formData(r *http.Request, titleKey, excludeMusicID string) (pageData, error) {
 	people, err := s.store.ListPeople(r.Context())
 	if err != nil {
 		return pageData{}, err
@@ -412,21 +415,26 @@ func (s *Server) formData(r *http.Request, title, excludeMusicID string) (pageDa
 	if err != nil {
 		return pageData{}, err
 	}
-	return pageData{Title: title, CSRF: s.csrf(r), People: people, Groups: groups, MusicReferences: musicReferences}, nil
+	return pageData{TitleKey: titleKey, CSRF: s.csrf(r), People: people, Groups: groups, MusicReferences: musicReferences}, nil
 }
 
 func (s *Server) renderFormError(w http.ResponseWriter, r *http.Request, templateName, message string) {
-	data, err := s.formData(r, "", "")
+	titleKey := map[string]string{
+		"music_form": "title.add_music",
+		"book_form":  "title.add_book",
+		"group_form": "title.add_group",
+	}[templateName]
+	data, err := s.formData(r, titleKey, "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	data.Error = message
-	s.render(w, http.StatusBadRequest, templateName, data)
+	s.render(w, r, http.StatusBadRequest, templateName, data)
 }
 
 func (s *Server) renderMusicError(w http.ResponseWriter, r *http.Request, item domain.MusicItem, message string) {
-	data, err := s.formData(r, "Edytuj muzyke", item.ID)
+	data, err := s.formData(r, "title.edit_music", item.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -435,11 +443,11 @@ func (s *Server) renderMusicError(w http.ResponseWriter, r *http.Request, item d
 	data.Action = editPath("music", item.ID)
 	data.Edit = item.ID != ""
 	data.Error = message
-	s.render(w, http.StatusBadRequest, "music_form", data)
+	s.render(w, r, http.StatusBadRequest, "music_form", data)
 }
 
 func (s *Server) renderBookError(w http.ResponseWriter, r *http.Request, book domain.Book, message string) {
-	data, err := s.formData(r, "Edytuj ksiazke", "")
+	data, err := s.formData(r, "title.edit_book", "")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -448,12 +456,12 @@ func (s *Server) renderBookError(w http.ResponseWriter, r *http.Request, book do
 	data.Action = editPath("books", book.ID)
 	data.Edit = book.ID != ""
 	data.Error = message
-	s.render(w, http.StatusBadRequest, "book_form", data)
+	s.render(w, r, http.StatusBadRequest, "book_form", data)
 }
 
-func (s *Server) renderNotFound(w http.ResponseWriter, err error) {
+func (s *Server) renderNotFound(w http.ResponseWriter, r *http.Request, err error) {
 	if errors.Is(err, storage.ErrNotFound) {
-		http.Error(w, "Nie znaleziono rekordu.", http.StatusNotFound)
+		http.Error(w, translate(languageFromRequest(r), "error.not_found"), http.StatusNotFound)
 		return
 	}
 	http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -522,7 +530,7 @@ func relatedFromForm(r *http.Request) []domain.MusicReference {
 func (s *Server) musicSuggestions(w http.ResponseWriter, r *http.Request) {
 	query := strings.TrimSpace(r.URL.Query().Get("q"))
 	if query == "" {
-		s.render(w, http.StatusOK, "music_suggestions", pageData{})
+		s.render(w, r, http.StatusOK, "music_suggestions", pageData{})
 		return
 	}
 	items, err := s.store.ListMusicReferences(r.Context(), query, r.URL.Query().Get("exclude"))
@@ -530,7 +538,7 @@ func (s *Server) musicSuggestions(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	s.render(w, http.StatusOK, "music_suggestions", pageData{MusicReferences: items})
+	s.render(w, r, http.StatusOK, "music_suggestions", pageData{MusicReferences: items})
 }
 
 func routeID(r *http.Request, key string) string {

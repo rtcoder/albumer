@@ -11,16 +11,16 @@ import (
 const sessionCookie = "albumer_session"
 
 func (s *Server) loginForm(w http.ResponseWriter, r *http.Request) {
-	s.render(w, http.StatusOK, "login", map[string]any{"Error": ""})
+	s.render(w, r, http.StatusOK, "login", pageData{TitleKey: "title.login"})
 }
 
 func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
-		s.render(w, http.StatusBadRequest, "login", map[string]any{"Error": "Nieprawidlowy formularz."})
+		s.render(w, r, http.StatusBadRequest, "login", pageData{TitleKey: "title.login", Error: "error.invalid_form"})
 		return
 	}
 	if !s.passwordMatches(r.FormValue("password")) {
-		s.render(w, http.StatusUnauthorized, "login", map[string]any{"Error": "Nieprawidlowe haslo."})
+		s.render(w, r, http.StatusUnauthorized, "login", pageData{TitleKey: "title.login", Error: "error.invalid_password"})
 		return
 	}
 
@@ -88,7 +88,7 @@ func (s *Server) csrfMiddleware(next http.Handler) http.Handler {
 
 		sess, ok := s.currentSession(r)
 		if !ok || subtle.ConstantTimeCompare([]byte(sess.CSRF), []byte(r.FormValue("csrf"))) != 1 {
-			http.Error(w, "Invalid CSRF token", http.StatusForbidden)
+			http.Error(w, translate(languageFromRequest(r), "error.invalid_csrf"), http.StatusForbidden)
 			return
 		}
 		next.ServeHTTP(w, r)

@@ -31,7 +31,10 @@
   const load = function () {
     const query = title.value.trim();
     if (!query) {
-      target.innerHTML = '<span class="small-note">Wpisz tytul, aby znalezc inne nosniki tego albumu.</span>';
+      const note = document.createElement('span');
+      note.className = 'small-note';
+      note.textContent = target.dataset.emptyText || '';
+      target.replaceChildren(note);
       return;
     }
     const params = new URLSearchParams({ q: query, exclude: title.dataset.excludeId || '' });

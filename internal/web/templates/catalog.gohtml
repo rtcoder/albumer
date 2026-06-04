@@ -3,47 +3,47 @@
 {{template "layout_start" .}}
   <header class="page-head">
     <div>
-      <h1>Katalog</h1>
-      <p>CD, winyle, kasety i ksiazki w jednym prywatnym widoku.</p>
+      <h1>{{.Tr "catalog"}}</h1>
+      <p>{{.Tr "catalog_intro"}}</p>
     </div>
     <div class="actions">
-      <a class="button primary" href="/music/new">Dodaj muzyke</a>
-      <a class="button" href="/books/new">Dodaj ksiazke</a>
+      <a class="button primary" href="/music/new">{{.Tr "add_music"}}</a>
+      <a class="button" href="/books/new">{{.Tr "add_book"}}</a>
     </div>
   </header>
   <form class="filters" method="get" action="/items" data-catalog-filters>
-    <label>Szukaj <input type="search" name="q" value="{{.Filter.Query}}" placeholder="Tytul, artysta, autor"></label>
-    <label>Typ
+    <label>{{.Tr "search"}} <input type="search" name="q" value="{{.Filter.Query}}" placeholder="{{.Tr "search_catalog"}}"></label>
+    <label>{{.Tr "type"}}
       <select name="kind">
-        <option value="" {{if eq .Filter.Kind ""}}selected{{end}}>Wszystko</option>
-        <option value="music" {{if eq .Filter.Kind "music"}}selected{{end}}>Muzyka</option>
-        <option value="book" {{if eq .Filter.Kind "book"}}selected{{end}}>Ksiazki</option>
+        <option value="" {{if eq .Filter.Kind ""}}selected{{end}}>{{.Tr "all"}}</option>
+        <option value="music" {{if eq .Filter.Kind "music"}}selected{{end}}>{{.Tr "music"}}</option>
+        <option value="book" {{if eq .Filter.Kind "book"}}selected{{end}}>{{.Tr "books"}}</option>
       </select>
     </label>
-    <label>Nosnik
+    <label>{{.Tr "medium"}}
       <select name="medium">
-        <option value="" {{if eq .Filter.Medium ""}}selected{{end}}>Wszystkie</option>
+        <option value="" {{if eq .Filter.Medium ""}}selected{{end}}>{{.Tr "all_plural"}}</option>
         <option value="CD" {{if eq .Filter.Medium "CD"}}selected{{end}}>CD</option>
-        <option value="VINYL" {{if eq .Filter.Medium "VINYL"}}selected{{end}}>Winyl</option>
-        <option value="CASSETTE" {{if eq .Filter.Medium "CASSETTE"}}selected{{end}}>Kaseta</option>
+        <option value="VINYL" {{if eq .Filter.Medium "VINYL"}}selected{{end}}>{{.Tr "vinyl"}}</option>
+        <option value="CASSETTE" {{if eq .Filter.Medium "CASSETTE"}}selected{{end}}>{{.Tr "cassette"}}</option>
       </select>
     </label>
-    <label>Status
+    <label>{{.Tr "status"}}
       <select name="status">
-        <option value="" {{if eq .Filter.Status ""}}selected{{end}}>Wszystkie</option>
-        <option value="owned" {{if eq .Filter.Status "owned"}}selected{{end}}>Posiadane</option>
-        <option value="ordered" {{if eq .Filter.Status "ordered"}}selected{{end}}>Zamówione</option>
-        <option value="wanted" {{if eq .Filter.Status "wanted"}}selected{{end}}>Chcę kupić</option>
+        <option value="" {{if eq .Filter.Status ""}}selected{{end}}>{{.Tr "all_plural"}}</option>
+        <option value="owned" {{if eq .Filter.Status "owned"}}selected{{end}}>{{.Tr "status.owned"}}</option>
+        <option value="ordered" {{if eq .Filter.Status "ordered"}}selected{{end}}>{{.Tr "status.ordered"}}</option>
+        <option value="wanted" {{if eq .Filter.Status "wanted"}}selected{{end}}>{{.Tr "status.wanted"}}</option>
       </select>
     </label>
-    <label>Widok
+    <label>{{.Tr "view"}}
       <select name="view">
-        <option value="grid-large" {{if eq .Filter.View "grid-large"}}selected{{end}}>Grid duzy</option>
-        <option value="grid-small" {{if eq .Filter.View "grid-small"}}selected{{end}}>Grid maly</option>
-        <option value="list" {{if eq .Filter.View "list"}}selected{{end}}>Lista</option>
+        <option value="grid-large" {{if eq .Filter.View "grid-large"}}selected{{end}}>{{.Tr "view_grid_large"}}</option>
+        <option value="grid-small" {{if eq .Filter.View "grid-small"}}selected{{end}}>{{.Tr "view_grid_small"}}</option>
+        <option value="list" {{if eq .Filter.View "list"}}selected{{end}}>{{.Tr "view_list"}}</option>
       </select>
     </label>
-    <button class="button" type="submit">Filtruj</button>
+    <button class="button" type="submit">{{.Tr "filter"}}</button>
   </form>
   <div id="catalog-results">{{template "catalog_items" .}}</div>
 {{template "layout_end" .}}
@@ -54,20 +54,20 @@
   <section class="catalog {{.Filter.View}}">
   {{range .Items}}
     <article class="item-card">
-      <div class="item-cover">{{if .CoverPath}}<img src="{{.CoverPath}}" alt="">{{else}}{{if eq .Kind "book"}}Book{{else}}{{.Medium}}{{end}}{{end}}</div>
+      <div class="item-cover">{{if .CoverPath}}<img src="{{.CoverPath}}" alt="">{{else}}{{if eq .Kind "book"}}{{$.Tr "book"}}{{else}}{{.Medium}}{{end}}{{end}}</div>
       <div class="item-body">
         <h2 class="item-title">{{.Title}}</h2>
         {{if .Subtitle}}<div class="item-meta">{{.Subtitle}}</div>{{end}}
         <div class="badges">
-          {{if eq .Kind "book"}}<span class="badge">Ksiazka</span>{{else}}<span class="badge medium">{{.Medium}}</span>{{end}}
-          {{if .Status}}<span class="badge">{{.Status.Label}}</span>{{end}}
+          {{if eq .Kind "book"}}<span class="badge">{{$.Tr "book"}}</span>{{else}}<span class="badge medium">{{.Medium}}</span>{{end}}
+          {{if .Status}}<span class="badge">{{$.StatusLabel .Status}}</span>{{end}}
         </div>
-        <a class="button small" href="{{if eq .Kind "book"}}/books/{{pathEscape .ID}}/edit{{else}}/music/{{pathEscape .ID}}/edit{{end}}">Edytuj</a>
+        <a class="button small" href="{{if eq .Kind "book"}}/books/{{pathEscape .ID}}/edit{{else}}/music/{{pathEscape .ID}}/edit{{end}}">{{$.Tr "edit"}}</a>
       </div>
     </article>
   {{end}}
   </section>
   {{else}}
-    <div class="empty">Brak pozycji dla wybranych filtrow.</div>
+    <div class="empty">{{.Tr "empty_catalog"}}</div>
   {{end}}
 {{end}}

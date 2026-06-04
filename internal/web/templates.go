@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-//go:embed templates/*.gohtml assets/*
+//go:embed templates/*.gohtml assets/* locales/*.json
 var webFiles embed.FS
 
 func parseTemplates() *template.Template {

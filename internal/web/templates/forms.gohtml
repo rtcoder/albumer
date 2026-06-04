@@ -1,60 +1,60 @@
 {{- /*gotype: albumer/internal/web.pageData*/ -}}
 {{define "music_form"}}
 {{template "layout_start" .}}
-  <header class="page-head"><div><h1>{{if .Edit}}Edytuj muzyke{{else}}Dodaj muzyke{{end}}</h1><p>CD, winyl albo kaseta jako osobna fizyczna pozycja.</p></div></header>
+  <header class="page-head"><div><h1>{{if .Edit}}{{.Tr "title.edit_music"}}{{else}}{{.Tr "title.add_music"}}{{end}}</h1><p>{{.Tr "music_form_intro"}}</p></div></header>
   {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
   <form class="form-panel" method="post" action="{{if .Action}}{{.Action}}{{else}}/music/new{{end}}" enctype="multipart/form-data">
     <input type="hidden" name="csrf" value="{{.CSRF}}">
     <div class="form-grid">
-      <label class="full">Tytul <input name="title" value="{{.Music.Title}}" data-music-title data-exclude-id="{{.Music.ID}}" required></label>
+      <label class="full">{{.Tr "title"}} <input name="title" value="{{.Music.Title}}" data-music-title data-exclude-id="{{.Music.ID}}" required></label>
       <div class="full">
-        <span class="field-title">Proponowane powiazania</span>
-        <div class="suggestions" data-music-suggestions>
-          <span class="small-note">Wpisz tytul, aby znalezc inne nosniki tego albumu.</span>
+        <span class="field-title">{{.Tr "suggested_relations"}}</span>
+        <div class="suggestions" data-music-suggestions data-empty-text="{{.Tr "suggestions_empty_title"}}">
+          <span class="small-note">{{.Tr "suggestions_empty_title"}}</span>
         </div>
       </div>
-      <label>Nosnik
+      <label>{{.Tr "medium"}}
         <select name="medium" required>
-          <option value="">Wybierz</option>
+          <option value="">{{.Tr "choose"}}</option>
           <option value="CD" {{if eq .Music.Medium "CD"}}selected{{end}}>CD</option>
-          <option value="VINYL" {{if eq .Music.Medium "VINYL"}}selected{{end}}>Winyl</option>
-          <option value="CASSETTE" {{if eq .Music.Medium "CASSETTE"}}selected{{end}}>Kaseta</option>
+          <option value="VINYL" {{if eq .Music.Medium "VINYL"}}selected{{end}}>{{.Tr "vinyl"}}</option>
+          <option value="CASSETTE" {{if eq .Music.Medium "CASSETTE"}}selected{{end}}>{{.Tr "cassette"}}</option>
         </select>
       </label>
-      <label>Rok <input name="year" value="{{if .Music.Year}}{{.Music.Year}}{{end}}" inputmode="numeric"></label>
-      <label>Status
+      <label>{{.Tr "year"}} <input name="year" value="{{if .Music.Year}}{{.Music.Year}}{{end}}" inputmode="numeric"></label>
+      <label>{{.Tr "status"}}
         <select name="status" required>
-          <option value="owned" {{if or (eq .Music.Status "") (eq .Music.Status "owned")}}selected{{end}}>Posiadane</option>
-          <option value="ordered" {{if eq .Music.Status "ordered"}}selected{{end}}>Zamówione</option>
-          <option value="wanted" {{if eq .Music.Status "wanted"}}selected{{end}}>Chcę kupić</option>
+          <option value="owned" {{if or (eq .Music.Status "") (eq .Music.Status "owned")}}selected{{end}}>{{.Tr "status.owned"}}</option>
+          <option value="ordered" {{if eq .Music.Status "ordered"}}selected{{end}}>{{.Tr "status.ordered"}}</option>
+          <option value="wanted" {{if eq .Music.Status "wanted"}}selected{{end}}>{{.Tr "status.wanted"}}</option>
         </select>
       </label>
-      <label>Okladka <input type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
-      {{if .Music.CoverPath}}<div class="full small-note">Aktualna okladka: {{.Music.CoverPath}}</div>{{end}}
+      <label>{{.Tr "cover"}} <input type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
+      {{if .Music.CoverPath}}<div class="full small-note">{{.Tr "current_cover"}} {{.Music.CoverPath}}</div>{{end}}
       <div class="full check-group" data-check-filter>
         <div class="check-group-head">
-          <span class="field-title">Artysci</span>
-          <input class="check-filter" type="search" placeholder="Filtruj artystow" aria-label="Filtruj artystow" data-check-filter-input>
+          <span class="field-title">{{.Tr "artists"}}</span>
+          <input class="check-filter" type="search" placeholder="{{.Tr "filter_artists"}}" aria-label="{{.Tr "filter_artists"}}" data-check-filter-input>
         </div>
-        <div class="checks">{{range .People}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Music.HasContributor "person" .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">Najpierw dodaj osobe.</span>{{end}}</div>
+        <div class="checks">{{range .People}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Music.HasContributor "person" .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">{{.Tr "add_person_first"}}</span>{{end}}</div>
       </div>
       <div class="full check-group" data-check-filter>
         <div class="check-group-head">
-          <span class="field-title">Zespoly</span>
-          <input class="check-filter" type="search" placeholder="Filtruj zespoly" aria-label="Filtruj zespoly" data-check-filter-input>
+          <span class="field-title">{{.Tr "groups"}}</span>
+          <input class="check-filter" type="search" placeholder="{{.Tr "filter_groups"}}" aria-label="{{.Tr "filter_groups"}}" data-check-filter-input>
         </div>
-        <div class="checks">{{range .Groups}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="group_ids" value="{{.ID}}" {{if $.Music.HasContributor "group" .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">Brak zespolow.</span>{{end}}</div>
+        <div class="checks">{{range .Groups}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="group_ids" value="{{.ID}}" {{if $.Music.HasContributor "group" .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">{{.Tr "no_groups"}}</span>{{end}}</div>
       </div>
       <div class="full check-group" data-check-filter>
         <div class="check-group-head">
-          <span class="field-title">Powiazane wydania / inne nosniki</span>
-          <input class="check-filter" type="search" placeholder="Filtruj wydania" aria-label="Filtruj wydania" data-check-filter-input>
+          <span class="field-title">{{.Tr "related_releases"}}</span>
+          <input class="check-filter" type="search" placeholder="{{.Tr "filter_releases"}}" aria-label="{{.Tr "filter_releases"}}" data-check-filter-input>
         </div>
-        <div class="checks">{{range .MusicReferences}}<label class="check" data-check-filter-item data-filter-label="{{.Title}} {{.Medium}}"><input type="checkbox" name="related_ids" value="{{.ID}}" data-related-id="{{.ID}}" {{if $.Music.HasRelated .ID}}checked{{end}}>{{.Title}} ({{.Medium}})</label>{{else}}<span class="small-note">Brak innych pozycji muzycznych.</span>{{end}}</div>
+        <div class="checks">{{range .MusicReferences}}<label class="check" data-check-filter-item data-filter-label="{{.Title}} {{.Medium}}"><input type="checkbox" name="related_ids" value="{{.ID}}" data-related-id="{{.ID}}" {{if $.Music.HasRelated .ID}}checked{{end}}>{{.Title}} ({{.Medium}})</label>{{else}}<span class="small-note">{{.Tr "no_music_items"}}</span>{{end}}</div>
       </div>
-      <label class="full">Notatki <textarea name="notes">{{.Music.Notes}}</textarea></label>
+      <label class="full">{{.Tr "notes"}} <textarea name="notes">{{.Music.Notes}}</textarea></label>
     </div>
-    <button class="button primary" type="submit">{{if .Edit}}Zapisz zmiany{{else}}Zapisz muzyke{{end}}</button>
+    <button class="button primary" type="submit">{{if .Edit}}{{.Tr "save_changes"}}{{else}}{{.Tr "save_music"}}{{end}}</button>
   </form>
 {{template "layout_end" .}}
 {{end}}
@@ -66,75 +66,75 @@
       <span>{{.Medium}}</span>
     </button>
   {{else}}
-    <span class="small-note">Brak pasujacych pozycji.</span>
+    <span class="small-note">{{.Tr "no_matching_items"}}</span>
   {{end}}
 {{end}}
 
 {{define "book_form"}}
 {{template "layout_start" .}}
-  <header class="page-head"><div><h1>{{if .Edit}}Edytuj ksiazke{{else}}Dodaj ksiazke{{end}}</h1><p>Ksiazka z autorem, statusem i opcjonalna okladka.</p></div></header>
+  <header class="page-head"><div><h1>{{if .Edit}}{{.Tr "title.edit_book"}}{{else}}{{.Tr "title.add_book"}}{{end}}</h1><p>{{.Tr "book_form_intro"}}</p></div></header>
   {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
   <form class="form-panel" method="post" action="{{if .Action}}{{.Action}}{{else}}/books/new{{end}}" enctype="multipart/form-data">
     <input type="hidden" name="csrf" value="{{.CSRF}}">
     <div class="form-grid">
-      <label class="full">Tytul <input name="title" value="{{.Book.Title}}" required></label>
+      <label class="full">{{.Tr "title"}} <input name="title" value="{{.Book.Title}}" required></label>
       <label>ISBN <input name="isbn" value="{{.Book.ISBN}}"></label>
-      <label>Rok <input name="year" value="{{if .Book.Year}}{{.Book.Year}}{{end}}" inputmode="numeric"></label>
-      <label>Status
+      <label>{{.Tr "year"}} <input name="year" value="{{if .Book.Year}}{{.Book.Year}}{{end}}" inputmode="numeric"></label>
+      <label>{{.Tr "status"}}
         <select name="status" required>
-          <option value="owned" {{if or (eq .Book.Status "") (eq .Book.Status "owned")}}selected{{end}}>Posiadane</option>
-          <option value="ordered" {{if eq .Book.Status "ordered"}}selected{{end}}>Zamówione</option>
-          <option value="wanted" {{if eq .Book.Status "wanted"}}selected{{end}}>Chcę kupić</option>
+          <option value="owned" {{if or (eq .Book.Status "") (eq .Book.Status "owned")}}selected{{end}}>{{.Tr "status.owned"}}</option>
+          <option value="ordered" {{if eq .Book.Status "ordered"}}selected{{end}}>{{.Tr "status.ordered"}}</option>
+          <option value="wanted" {{if eq .Book.Status "wanted"}}selected{{end}}>{{.Tr "status.wanted"}}</option>
         </select>
       </label>
-      <label>Okladka <input type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
-      {{if .Book.CoverPath}}<div class="full small-note">Aktualna okladka: {{.Book.CoverPath}}</div>{{end}}
+      <label>{{.Tr "cover"}} <input type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
+      {{if .Book.CoverPath}}<div class="full small-note">{{.Tr "current_cover"}} {{.Book.CoverPath}}</div>{{end}}
       <div class="full check-group" data-check-filter>
         <div class="check-group-head">
-          <span class="field-title">Autorzy</span>
-          <input class="check-filter" type="search" placeholder="Filtruj autorow" aria-label="Filtruj autorow" data-check-filter-input>
+          <span class="field-title">{{.Tr "authors"}}</span>
+          <input class="check-filter" type="search" placeholder="{{.Tr "filter_authors"}}" aria-label="{{.Tr "filter_authors"}}" data-check-filter-input>
         </div>
-        <div class="checks">{{range .People}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Book.HasAuthor .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">Najpierw dodaj osobe.</span>{{end}}</div>
+        <div class="checks">{{range .People}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Book.HasAuthor .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">{{.Tr "add_person_first"}}</span>{{end}}</div>
       </div>
-      <label class="full">Notatki <textarea name="notes">{{.Book.Notes}}</textarea></label>
+      <label class="full">{{.Tr "notes"}} <textarea name="notes">{{.Book.Notes}}</textarea></label>
     </div>
-    <button class="button primary" type="submit">{{if .Edit}}Zapisz zmiany{{else}}Zapisz ksiazke{{end}}</button>
+    <button class="button primary" type="submit">{{if .Edit}}{{.Tr "save_changes"}}{{else}}{{.Tr "save_book"}}{{end}}</button>
   </form>
 {{template "layout_end" .}}
 {{end}}
 
 {{define "person_form"}}
 {{template "layout_start" .}}
-  <header class="page-head"><div><h1>{{if .Edit}}Edytuj osobe{{else}}Dodaj osobe{{end}}</h1><p>Artysta muzyczny albo autor ksiazki.</p></div></header>
+  <header class="page-head"><div><h1>{{if .Edit}}{{.Tr "title.edit_person"}}{{else}}{{.Tr "title.add_person"}}{{end}}</h1><p>{{.Tr "person_form_intro"}}</p></div></header>
   {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
   <form class="form-panel" method="post" action="{{if .Action}}{{.Action}}{{else}}/people/new{{end}}">
     <input type="hidden" name="csrf" value="{{.CSRF}}">
     <div class="form-grid">
-      <label>Nazwa / imie i nazwisko <input name="name" value="{{.Person.Name}}" required></label>
-      <label>Nazwa sortowania <input name="sort_name" value="{{.Person.SortName}}"></label>
-      <label class="full">Notatki <textarea name="notes">{{.Person.Notes}}</textarea></label>
+      <label>{{.Tr "name_full"}} <input name="name" value="{{.Person.Name}}" required></label>
+      <label>{{.Tr "sort_name"}} <input name="sort_name" value="{{.Person.SortName}}"></label>
+      <label class="full">{{.Tr "notes"}} <textarea name="notes">{{.Person.Notes}}</textarea></label>
     </div>
-    <button class="button primary" type="submit">{{if .Edit}}Zapisz zmiany{{else}}Zapisz osobe{{end}}</button>
+    <button class="button primary" type="submit">{{if .Edit}}{{.Tr "save_changes"}}{{else}}{{.Tr "save_person"}}{{end}}</button>
   </form>
 {{template "layout_end" .}}
 {{end}}
 
 {{define "group_form"}}
 {{template "layout_start" .}}
-  <header class="page-head"><div><h1>{{if .Edit}}Edytuj zespol{{else}}Dodaj zespol{{end}}</h1><p>Zespol sklada sie z osob dodanych w katalogu.</p></div></header>
+  <header class="page-head"><div><h1>{{if .Edit}}{{.Tr "title.edit_group"}}{{else}}{{.Tr "title.add_group"}}{{end}}</h1><p>{{.Tr "group_form_intro"}}</p></div></header>
   {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
   <form class="form-panel" method="post" action="{{if .Action}}{{.Action}}{{else}}/groups/new{{end}}">
     <input type="hidden" name="csrf" value="{{.CSRF}}">
     <div class="form-grid">
-      <label>Nazwa <input name="name" value="{{.Group.Name}}" required></label>
-      <label>Nazwa sortowania <input name="sort_name" value="{{.Group.SortName}}"></label>
+      <label>{{.Tr "name"}} <input name="name" value="{{.Group.Name}}" required></label>
+      <label>{{.Tr "sort_name"}} <input name="sort_name" value="{{.Group.SortName}}"></label>
       <div class="full">
-        <span class="field-title">Czlonkowie</span>
-        <div class="checks">{{range .People}}<label class="check"><input type="checkbox" name="member_ids" value="{{.ID}}" {{if $.Group.HasMember .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">Najpierw dodaj osobe.</span>{{end}}</div>
+        <span class="field-title">{{.Tr "members"}}</span>
+        <div class="checks">{{range .People}}<label class="check"><input type="checkbox" name="member_ids" value="{{.ID}}" {{if $.Group.HasMember .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">{{.Tr "add_person_first"}}</span>{{end}}</div>
       </div>
-      <label class="full">Notatki <textarea name="notes">{{.Group.Notes}}</textarea></label>
+      <label class="full">{{.Tr "notes"}} <textarea name="notes">{{.Group.Notes}}</textarea></label>
     </div>
-    <button class="button primary" type="submit">{{if .Edit}}Zapisz zmiany{{else}}Zapisz zespol{{end}}</button>
+    <button class="button primary" type="submit">{{if .Edit}}{{.Tr "save_changes"}}{{else}}{{.Tr "save_group"}}{{end}}</button>
   </form>
 {{template "layout_end" .}}
 {{end}}

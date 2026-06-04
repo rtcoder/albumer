@@ -1,22 +1,26 @@
 {{- /*gotype: albumer/internal/web.pageData*/ -}}
 {{define "login"}}
 <!doctype html>
-<html lang="pl">
+<html lang="{{.Lang}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Logowanie - Albumer</title>
+  <title>{{.Title}} - Albumer</title>
   <link rel="icon" href="/favicon/favicon.ico">
   <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>
   <main class="login-screen">
     <form class="login-card" method="post" action="/login">
+      <nav class="language-switch login-language" aria-label="{{.Tr "language"}}">
+        <a class="{{if eq .Lang "pl"}}active{{end}}" href="/language/pl?next={{.NextURL}}">PL</a>
+        <a class="{{if eq .Lang "en"}}active{{end}}" href="/language/en?next={{.NextURL}}">EN</a>
+      </nav>
       <h1>Albumer</h1>
-      <p class="small-note">Prywatny panel kolekcji.</p>
+      <p class="small-note">{{.Tr "private_collection_panel"}}</p>
       {{if .Error}}<div class="error">{{.Error}}</div>{{end}}
-      <label>Haslo <input type="password" name="password" autofocus autocomplete="current-password"></label>
-      <button class="button primary" type="submit">Zaloguj</button>
+      <label>{{.Tr "password"}} <input type="password" name="password" autofocus autocomplete="current-password"></label>
+      <button class="button primary" type="submit">{{.Tr "sign_in"}}</button>
     </form>
   </main>
 </body>

@@ -1,7 +1,7 @@
 {{- /*gotype: albumer/internal/web.pageData*/ -}}
 {{define "layout_start"}}
 <!doctype html>
-<html lang="pl">
+<html lang="{{.Lang}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,21 +14,25 @@
   <aside class="sidebar">
     <div class="brand">
       <strong>Albumer</strong>
-      <span>Prywatna biblioteka</span>
+      <span>{{.Tr "private_library"}}</span>
     </div>
     <div class="nav-group">
-      <a class="nav-item" href="/"><span class="icon">A</span>Katalog</a>
-      <a class="nav-item" href="/music/new"><span class="icon">M</span>Dodaj muzyke</a>
-      <a class="nav-item" href="/books/new"><span class="icon">B</span>Dodaj ksiazke</a>
-      <a class="nav-item" href="/people"><span class="icon">P</span>Osoby</a>
-      <a class="nav-item" href="/groups"><span class="icon">G</span>Zespoly</a>
-      <a class="nav-item" href="/people/new"><span class="icon">P</span>Dodaj osobe</a>
-      <a class="nav-item" href="/groups/new"><span class="icon">G</span>Dodaj zespol</a>
+      <a class="nav-item" href="/"><span class="icon">A</span>{{.Tr "catalog"}}</a>
+      <a class="nav-item" href="/music/new"><span class="icon">M</span>{{.Tr "add_music"}}</a>
+      <a class="nav-item" href="/books/new"><span class="icon">B</span>{{.Tr "add_book"}}</a>
+      <a class="nav-item" href="/people"><span class="icon">P</span>{{.Tr "people"}}</a>
+      <a class="nav-item" href="/groups"><span class="icon">G</span>{{.Tr "groups"}}</a>
+      <a class="nav-item" href="/people/new"><span class="icon">P</span>{{.Tr "add_person"}}</a>
+      <a class="nav-item" href="/groups/new"><span class="icon">G</span>{{.Tr "add_group"}}</a>
     </div>
     <div class="sidebar-spacer"></div>
+    <nav class="language-switch" aria-label="{{.Tr "language"}}">
+      <a class="{{if eq .Lang "pl"}}active{{end}}" href="/language/pl?next={{.NextURL}}">PL</a>
+      <a class="{{if eq .Lang "en"}}active{{end}}" href="/language/en?next={{.NextURL}}">EN</a>
+    </nav>
     <form method="post" action="/logout">
       <input type="hidden" name="csrf" value="{{.CSRF}}">
-      <button class="logout" type="submit"><span class="icon">X</span>Wyloguj</button>
+      <button class="logout" type="submit"><span class="icon">X</span>{{.Tr "logout"}}</button>
     </form>
   </aside>
   <main class="content">

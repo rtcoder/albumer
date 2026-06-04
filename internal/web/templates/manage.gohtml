@@ -3,13 +3,13 @@
 {{template "layout_start" .}}
   <header class="page-head">
     <div>
-      <h1>Osoby</h1>
-      <p>Artysci muzyczni i autorzy ksiazek.</p>
+      <h1>{{.Tr "people"}}</h1>
+      <p>{{.Tr "people_intro"}}</p>
     </div>
-    <a class="button primary" href="/people/new">Dodaj osobe</a>
+    <a class="button primary" href="/people/new">{{.Tr "add_person"}}</a>
   </header>
   <section class="manage-search" data-list-filter>
-    <input type="search" placeholder="Szukaj osob" aria-label="Szukaj osob" data-list-filter-input>
+    <input type="search" placeholder="{{.Tr "search_people"}}" aria-label="{{.Tr "search_people"}}" data-list-filter-input>
   </section>
   <section class="manage-list" data-list-filter-list>
     {{range .People}}
@@ -18,12 +18,12 @@
           <h2>{{.Name}}</h2>
           {{if .SortName}}<p>{{.SortName}}</p>{{end}}
         </div>
-        <a class="button small" href="/people/{{pathEscape .ID}}/edit">Edytuj</a>
+        <a class="button small" href="/people/{{pathEscape .ID}}/edit">{{$.Tr "edit"}}</a>
       </article>
     {{else}}
-      <div class="empty">Brak osob.</div>
+      <div class="empty">{{.Tr "no_people"}}</div>
     {{end}}
-    <div class="empty" data-list-filter-empty hidden>Brak pasujacych osob.</div>
+    <div class="empty" data-list-filter-empty hidden>{{.Tr "no_matching_people"}}</div>
   </section>
 {{template "layout_end" .}}
 {{end}}
@@ -32,13 +32,13 @@
 {{template "layout_start" .}}
   <header class="page-head">
     <div>
-      <h1>Zespoly</h1>
-      <p>Zespoly i sklady powiazane z osobami.</p>
+      <h1>{{.Tr "groups"}}</h1>
+      <p>{{.Tr "groups_intro"}}</p>
     </div>
-    <a class="button primary" href="/groups/new">Dodaj zespol</a>
+    <a class="button primary" href="/groups/new">{{.Tr "add_group"}}</a>
   </header>
   <section class="manage-search" data-list-filter>
-    <input type="search" placeholder="Szukaj zespolow" aria-label="Szukaj zespolow" data-list-filter-input>
+    <input type="search" placeholder="{{.Tr "search_groups"}}" aria-label="{{.Tr "search_groups"}}" data-list-filter-input>
   </section>
   <section class="manage-list" data-list-filter-list>
     {{range .Groups}}
@@ -47,12 +47,12 @@
           <h2>{{.Name}}</h2>
           {{if .SortName}}<p>{{.SortName}}</p>{{end}}
         </div>
-        <a class="button small" href="/groups/{{pathEscape .ID}}/edit">Edytuj</a>
+        <a class="button small" href="/groups/{{pathEscape .ID}}/edit">{{$.Tr "edit"}}</a>
       </article>
     {{else}}
-      <div class="empty">Brak zespolow.</div>
+      <div class="empty">{{.Tr "no_groups"}}</div>
     {{end}}
-    <div class="empty" data-list-filter-empty hidden>Brak pasujacych zespolow.</div>
+    <div class="empty" data-list-filter-empty hidden>{{.Tr "no_matching_groups"}}</div>
   </section>
 {{template "layout_end" .}}
 {{end}}

@@ -114,6 +114,36 @@ textarea {
 
 .sidebar-spacer { flex: 1; }
 
+.language-switch {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.language-switch a {
+  min-height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.language-switch a:hover,
+.language-switch a.active {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.login-language {
+  width: 92px;
+  margin-left: auto;
+}
+
 .content {
   min-width: 0;
   padding: 26px;
