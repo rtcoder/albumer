@@ -232,6 +232,27 @@ func TestCatalogShowsIconViewSwitch(t *testing.T) {
 	if !strings.Contains(body, `type="radio" name="view" value="list" checked`) {
 		t.Fatalf("catalog should mark the list view option as checked, body: %s", body)
 	}
+	cookies := response.Result().Cookies()
+	if len(cookies) != 1 || cookies[0].Name != catalogViewCookie || cookies[0].Value != "list" {
+		t.Fatalf("unexpected catalog view cookies: %#v", cookies)
+	}
+}
+
+func TestCatalogUsesRememberedView(t *testing.T) {
+	store := &fakeStore{}
+	server := NewServer(config.Config{}, store)
+	request := authenticatedRequest(server, http.MethodGet, "/", nil)
+	request.AddCookie(&http.Cookie{Name: catalogViewCookie, Value: "list"})
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	if store.lastFilter.View != "list" {
+		t.Fatalf("view = %q, want list", store.lastFilter.View)
+	}
+	if !strings.Contains(response.Body.String(), `type="radio" name="view" value="list" checked`) {
+		t.Fatalf("catalog should mark the remembered list view as checked, body: %s", response.Body.String())
+	}
 }
 
 func TestMusicSuggestionsShowOtherMedia(t *testing.T) {

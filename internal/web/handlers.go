@@ -34,15 +34,16 @@ type pageData struct {
 }
 
 func (s *Server) catalog(w http.ResponseWriter, r *http.Request) {
+	view, viewSelected := catalogViewFromRequest(r)
 	filter := domain.CatalogFilter{
 		Query:  strings.TrimSpace(r.URL.Query().Get("q")),
 		Kind:   r.URL.Query().Get("kind"),
 		Medium: domain.NormalizeMedium(r.URL.Query().Get("medium")),
 		Status: domain.NormalizeStatus(r.URL.Query().Get("status")),
-		View:   r.URL.Query().Get("view"),
+		View:   view,
 	}
-	if filter.View != "list" {
-		filter.View = "grid"
+	if viewSelected {
+		setCatalogViewCookie(w, filter.View)
 	}
 	if !filter.Medium.Valid() {
 		filter.Medium = ""
