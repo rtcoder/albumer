@@ -279,9 +279,10 @@ func (s *Server) createPerson(w http.ResponseWriter, r *http.Request) {
 		Name:     strings.TrimSpace(r.FormValue("name")),
 		SortName: strings.TrimSpace(r.FormValue("sort_name")),
 		Notes:    strings.TrimSpace(r.FormValue("notes")),
+		Roles:    personRolesFromForm(r),
 	}
 	if _, err := s.store.CreatePerson(r.Context(), person); err != nil {
-		s.render(w, r, http.StatusBadRequest, "person_form", pageData{TitleKey: "title.add_person", CSRF: s.csrf(r), Error: err.Error()})
+		s.render(w, r, http.StatusBadRequest, "person_form", pageData{TitleKey: "title.add_person", CSRF: s.csrf(r), Error: err.Error(), Person: person})
 		return
 	}
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -311,6 +312,7 @@ func (s *Server) updatePerson(w http.ResponseWriter, r *http.Request) {
 		Name:     strings.TrimSpace(r.FormValue("name")),
 		SortName: strings.TrimSpace(r.FormValue("sort_name")),
 		Notes:    strings.TrimSpace(r.FormValue("notes")),
+		Roles:    personRolesFromForm(r),
 	}
 	if _, err := s.store.UpdatePerson(r.Context(), person); err != nil {
 		s.render(w, r, http.StatusBadRequest, "person_form", pageData{
@@ -519,6 +521,16 @@ func peopleFromIDs(ids []string) []domain.Person {
 		people = append(people, domain.Person{ID: id})
 	}
 	return people
+}
+
+func personRolesFromForm(r *http.Request) []string {
+	roles := make([]string, 0, 2)
+	for _, role := range r.Form["roles"] {
+		if role == domain.PersonRoleArtist || role == domain.PersonRoleAuthor {
+			roles = append(roles, role)
+		}
+	}
+	return roles
 }
 
 func relatedFromForm(r *http.Request) []domain.MusicReference {

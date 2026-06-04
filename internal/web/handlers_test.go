@@ -100,7 +100,7 @@ func TestCatalogRequiresLogin(t *testing.T) {
 
 func TestPeopleIndexShowsAlbumAndBookCounts(t *testing.T) {
 	store := &fakeStore{people: []domain.Person{
-		{ID: "person-1", Name: "Artist Author", AlbumCount: 12, BookCount: 3},
+		{ID: "person-1", Name: "Artist Author", Roles: []string{domain.PersonRoleArtist, domain.PersonRoleAuthor}, AlbumCount: 12, BookCount: 3},
 	}}
 	server := NewServer(config.Config{}, store)
 	request := authenticatedRequest(server, http.MethodGet, "/people", nil)
@@ -111,6 +111,26 @@ func TestPeopleIndexShowsAlbumAndBookCounts(t *testing.T) {
 	body := response.Body.String()
 	if !strings.Contains(body, `Albumy <strong>12</strong>`) || !strings.Contains(body, `Książki <strong>3</strong>`) {
 		t.Fatalf("people index should show album and book counts, body: %s", body)
+	}
+}
+
+func TestPeopleIndexShowsCountsOnlyForAssignedTypes(t *testing.T) {
+	store := &fakeStore{people: []domain.Person{
+		{ID: "artist", Name: "Artist", Roles: []string{domain.PersonRoleArtist}, AlbumCount: 4, BookCount: 9},
+		{ID: "author", Name: "Author", Roles: []string{domain.PersonRoleAuthor}, AlbumCount: 8, BookCount: 3},
+	}}
+	server := NewServer(config.Config{}, store)
+	request := authenticatedRequest(server, http.MethodGet, "/people", nil)
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	body := response.Body.String()
+	if strings.Contains(body, `Książki <strong>9</strong>`) || strings.Contains(body, `Albumy <strong>8</strong>`) {
+		t.Fatalf("people index should hide counts for unassigned types, body: %s", body)
+	}
+	if !strings.Contains(body, `data-filter-types="artist `) || !strings.Contains(body, `data-filter-types="author `) {
+		t.Fatalf("people index should expose types for filtering, body: %s", body)
 	}
 }
 

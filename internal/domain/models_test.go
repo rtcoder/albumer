@@ -76,3 +76,12 @@ func TestValidateBookRequiresValidStatus(t *testing.T) {
 		t.Fatal("expected missing status error")
 	}
 }
+
+func TestValidatePersonRequiresAtLeastOneType(t *testing.T) {
+	if err := ValidatePerson(Person{Name: "Person"}); err == nil {
+		t.Fatal("expected missing person type error")
+	}
+	if err := ValidatePerson(Person{Name: "Person", Roles: []string{PersonRoleArtist, PersonRoleAuthor}}); err != nil {
+		t.Fatalf("ValidatePerson() error = %v", err)
+	}
+}

@@ -614,6 +614,9 @@ textarea {
 
 .manage-search {
   max-width: 420px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 8px;
   margin-bottom: 12px;
 }
 
@@ -648,6 +651,19 @@ textarea {
   margin: 4px 0 0;
   color: var(--muted);
   font-size: 13px;
+}
+
+.person-roles {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 7px;
+}
+
+.person-roles .badge {
+  min-height: 21px;
+  padding: 1px 6px;
+  font-size: 11px;
 }
 
 .manage-counts {
@@ -723,6 +739,11 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--field);
+}
+
+.checks.compact-checks {
+  grid-template-columns: repeat(2, minmax(120px, 180px));
+  max-height: none;
 }
 
 .suggestions {
@@ -895,5 +916,9 @@ textarea {
     grid-row: 2;
     justify-content: flex-start;
     flex-wrap: wrap;
+  }
+
+  .manage-search {
+    grid-template-columns: 1fr;
   }
 }

@@ -120,24 +120,32 @@
 
   filters.forEach(function (filter) {
     const input = filter.querySelector('[data-list-filter-input]');
+    const type = filter.querySelector('[data-list-filter-type]');
     const list = filter.nextElementSibling;
     if (!input || !list || !list.matches('[data-list-filter-list]')) return;
 
     const items = list.querySelectorAll('[data-list-filter-item]');
     const empty = list.querySelector('[data-list-filter-empty]');
 
-    input.addEventListener('input', function () {
+    const apply = function () {
       const query = normalize(input.value);
+      const selectedType = type ? type.value : '';
       let visible = 0;
 
       items.forEach(function (item) {
         const label = normalize(item.dataset.filterLabel || item.textContent);
-        const matches = query === '' || label.includes(query);
+        const types = (item.dataset.filterTypes || '').split(/\s+/);
+        const matchesQuery = query === '' || label.includes(query);
+        const matchesType = selectedType === '' || types.includes(selectedType);
+        const matches = matchesQuery && matchesType;
         item.hidden = !matches;
         if (matches) visible += 1;
       });
 
       if (empty) empty.hidden = visible !== 0;
-    });
+    };
+
+    input.addEventListener('input', apply);
+    if (type) type.addEventListener('change', apply);
   });
 })();

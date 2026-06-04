@@ -26,15 +26,30 @@ const (
 
 var ValidItemStatuses = []ItemStatus{StatusOwned, StatusOrdered, StatusWanted}
 
+const (
+	PersonRoleArtist = "artist"
+	PersonRoleAuthor = "author"
+)
+
 type Person struct {
 	ID         string
 	Name       string
 	SortName   string
 	Notes      string
+	Roles      []string
 	AlbumCount int
 	BookCount  int
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
+}
+
+func (p Person) HasRole(role string) bool {
+	for _, personRole := range p.Roles {
+		if personRole == role {
+			return true
+		}
+	}
+	return false
 }
 
 type Group struct {
@@ -213,6 +228,21 @@ func ValidateBook(book Book) error {
 func ValidateNamed(name string) error {
 	if strings.TrimSpace(name) == "" {
 		return errors.New("name is required")
+	}
+	return nil
+}
+
+func ValidatePerson(person Person) error {
+	if err := ValidateNamed(person.Name); err != nil {
+		return err
+	}
+	if len(person.Roles) == 0 {
+		return errors.New("at least one person type is required")
+	}
+	for _, role := range person.Roles {
+		if role != PersonRoleArtist && role != PersonRoleAuthor {
+			return errors.New("person type must be artist or author")
+		}
 	}
 	return nil
 }

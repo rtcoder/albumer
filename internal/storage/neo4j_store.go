@@ -190,8 +190,18 @@ func (s *Neo4jStore) ListPeople(ctx context.Context) ([]domain.Person, error) {
 			OPTIONAL MATCH (music:MusicItem)-[:BY]->(p)
 			WITH p, count(DISTINCT music) AS albumCount
 			OPTIONAL MATCH (book:Book)-[:AUTHORED_BY]->(p)
+			WITH p, albumCount, count(DISTINCT book) AS bookCount
 			RETURN p.id AS id, p.name AS name, p.sortName AS sortName, p.notes AS notes,
-			       albumCount, count(DISTINCT book) AS bookCount
+			       CASE WHEN p.roles IS NULL
+			            THEN CASE
+			                 WHEN albumCount > 0 AND bookCount > 0 THEN ['artist', 'author']
+			                 WHEN albumCount > 0 THEN ['artist']
+			                 WHEN bookCount > 0 THEN ['author']
+			                 ELSE []
+			                 END
+			            ELSE p.roles
+			       END AS roles,
+			       albumCount, bookCount
 			ORDER BY toLower(p.name)
 		`, nil)
 		if err != nil {
@@ -205,6 +215,7 @@ func (s *Neo4jStore) ListPeople(ctx context.Context) ([]domain.Person, error) {
 				Name:       recordString(record, "name"),
 				SortName:   recordString(record, "sortName"),
 				Notes:      recordString(record, "notes"),
+				Roles:      recordStrings(record, "roles"),
 				AlbumCount: recordInt(record, "albumCount"),
 				BookCount:  recordInt(record, "bookCount"),
 			})
@@ -288,7 +299,20 @@ func (s *Neo4jStore) GetPerson(ctx context.Context, id string) (domain.Person, e
 	value, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		result, err := tx.Run(ctx, `
 MATCH (p:Person {id: $id})
-RETURN p.id AS id, p.name AS name, p.sortName AS sortName, p.notes AS notes
+OPTIONAL MATCH (music:MusicItem)-[:BY]->(p)
+WITH p, count(DISTINCT music) AS albumCount
+OPTIONAL MATCH (book:Book)-[:AUTHORED_BY]->(p)
+WITH p, albumCount, count(DISTINCT book) AS bookCount
+RETURN p.id AS id, p.name AS name, p.sortName AS sortName, p.notes AS notes,
+       CASE WHEN p.roles IS NULL
+            THEN CASE
+                 WHEN albumCount > 0 AND bookCount > 0 THEN ['artist', 'author']
+                 WHEN albumCount > 0 THEN ['artist']
+                 WHEN bookCount > 0 THEN ['author']
+                 ELSE []
+                 END
+            ELSE p.roles
+       END AS roles
 `, map[string]any{"id": id})
 		if err != nil {
 			return domain.Person{}, err
@@ -297,7 +321,7 @@ RETURN p.id AS id, p.name AS name, p.sortName AS sortName, p.notes AS notes
 			return domain.Person{}, ErrNotFound
 		}
 		record := result.Record()
-		return domain.Person{ID: recordString(record, "id"), Name: recordString(record, "name"), SortName: recordString(record, "sortName"), Notes: recordString(record, "notes")}, result.Err()
+		return domain.Person{ID: recordString(record, "id"), Name: recordString(record, "name"), SortName: recordString(record, "sortName"), Notes: recordString(record, "notes"), Roles: recordStrings(record, "roles")}, result.Err()
 	})
 	if err != nil {
 		return domain.Person{}, err
@@ -416,7 +440,7 @@ RETURN b.id AS id, b.title AS title, b.isbn AS isbn, b.publishedYear AS year,
 }
 
 func (s *Neo4jStore) CreatePerson(ctx context.Context, person domain.Person) (domain.Person, error) {
-	if err := domain.ValidateNamed(person.Name); err != nil {
+	if err := domain.ValidatePerson(person); err != nil {
 		return person, err
 	}
 	person.SortName = domain.DefaultSortName(person.Name, person.SortName)
@@ -429,8 +453,8 @@ func (s *Neo4jStore) CreatePerson(ctx context.Context, person domain.Person) (do
 	defer session.Close(ctx)
 	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		result, err := tx.Run(ctx, `
-CREATE (:Person {id: $id, name: $name, sortName: $sortName, searchName: $searchName, notes: $notes, createdAt: $createdAt, updatedAt: $updatedAt})
-`, nodeParams(person.ID, person.Name, person.SortName, person.Notes, now))
+CREATE (:Person {id: $id, name: $name, sortName: $sortName, searchName: $searchName, notes: $notes, roles: $roles, createdAt: $createdAt, updatedAt: $updatedAt})
+`, personParams(person, now))
 		if err != nil {
 			return nil, err
 		}
@@ -552,7 +576,7 @@ MERGE (b)-[:AUTHORED_BY]->(p)
 }
 
 func (s *Neo4jStore) UpdatePerson(ctx context.Context, person domain.Person) (domain.Person, error) {
-	if err := domain.ValidateNamed(person.Name); err != nil {
+	if err := domain.ValidatePerson(person); err != nil {
 		return person, err
 	}
 	person.SortName = domain.DefaultSortName(person.Name, person.SortName)
@@ -567,8 +591,9 @@ SET p.name = $name,
     p.sortName = $sortName,
     p.searchName = $searchName,
     p.notes = $notes,
+    p.roles = $roles,
     p.updatedAt = $updatedAt
-`, nodeParams(person.ID, person.Name, person.SortName, person.Notes, now))
+`, personParams(person, now))
 		if err != nil {
 			return nil, err
 		}
@@ -714,6 +739,12 @@ func nodeParams(id, name, sortName, notes string, now time.Time) map[string]any 
 	}
 }
 
+func personParams(person domain.Person, now time.Time) map[string]any {
+	params := nodeParams(person.ID, person.Name, person.SortName, person.Notes, now)
+	params["roles"] = person.Roles
+	return params
+}
+
 func contributorParams(contributors []domain.Contributor) []map[string]any {
 	params := make([]map[string]any, 0, len(contributors))
 	for _, contributor := range contributors {
@@ -786,6 +817,23 @@ func recordInt(record *neo4j.Record, key string) int {
 		return int(value)
 	default:
 		return 0
+	}
+}
+
+func recordStrings(record *neo4j.Record, key string) []string {
+	switch values := recordValue[any](record, key).(type) {
+	case []string:
+		return values
+	case []any:
+		result := make([]string, 0, len(values))
+		for _, value := range values {
+			if text := asString(value); text != "" {
+				result = append(result, text)
+			}
+		}
+		return result
+	default:
+		return nil
 	}
 }
 

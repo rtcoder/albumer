@@ -36,7 +36,7 @@
           <span class="field-title">{{.Tr "artists"}}</span>
           <input class="check-filter" type="search" placeholder="{{.Tr "filter_artists"}}" aria-label="{{.Tr "filter_artists"}}" data-check-filter-input>
         </div>
-        <div class="checks">{{range .People}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Music.HasContributor "person" .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">{{.Tr "add_person_first"}}</span>{{end}}</div>
+        <div class="checks">{{range .People}}{{if .HasRole "artist"}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Music.HasContributor "person" .ID}}checked{{end}}>{{.Name}}</label>{{end}}{{else}}<span class="small-note">{{.Tr "add_person_first"}}</span>{{end}}</div>
       </div>
       <div class="full check-group" data-check-filter>
         <div class="check-group-head">
@@ -94,7 +94,7 @@
           <span class="field-title">{{.Tr "authors"}}</span>
           <input class="check-filter" type="search" placeholder="{{.Tr "filter_authors"}}" aria-label="{{.Tr "filter_authors"}}" data-check-filter-input>
         </div>
-        <div class="checks">{{range .People}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Book.HasAuthor .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">{{.Tr "add_person_first"}}</span>{{end}}</div>
+        <div class="checks">{{range .People}}{{if .HasRole "author"}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Book.HasAuthor .ID}}checked{{end}}>{{.Name}}</label>{{end}}{{else}}<span class="small-note">{{.Tr "add_person_first"}}</span>{{end}}</div>
       </div>
       <label class="full">{{.Tr "notes"}} <textarea name="notes">{{.Book.Notes}}</textarea></label>
     </div>
@@ -112,6 +112,13 @@
     <div class="form-grid">
       <label>{{.Tr "name_full"}} <input name="name" value="{{.Person.Name}}" required></label>
       <label>{{.Tr "sort_name"}} <input name="sort_name" value="{{.Person.SortName}}"></label>
+      <div class="full">
+        <span class="field-title">{{.Tr "person_types"}}</span>
+        <div class="checks compact-checks">
+          <label class="check"><input type="checkbox" name="roles" value="artist" {{if .Person.HasRole "artist"}}checked{{end}}>{{.Tr "person_type.artist"}}</label>
+          <label class="check"><input type="checkbox" name="roles" value="author" {{if .Person.HasRole "author"}}checked{{end}}>{{.Tr "person_type.author"}}</label>
+        </div>
+      </div>
       <label class="full">{{.Tr "notes"}} <textarea name="notes">{{.Person.Notes}}</textarea></label>
     </div>
     <button class="button primary" type="submit">{{if .Edit}}{{.Tr "save_changes"}}{{else}}{{.Tr "save_person"}}{{end}}</button>

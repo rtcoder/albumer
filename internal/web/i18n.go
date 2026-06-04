@@ -23,6 +23,8 @@ var errorMessageKeys = map[string]string{
 	"at least one artist or group is required": "error.contributor_required",
 	"at least one author is required":          "error.author_required",
 	"name is required":                         "error.name_required",
+	"at least one person type is required":     "error.person_type_required",
+	"person type must be artist or author":     "error.person_type_invalid",
 	"cover must be JPEG, PNG, or WebP":         "error.cover_invalid",
 }
 
