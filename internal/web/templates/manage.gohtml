@@ -13,10 +13,14 @@
   </section>
   <section class="manage-list" data-list-filter-list>
     {{range .People}}
-      <article class="manage-row" data-list-filter-item data-filter-label="{{.Name}} {{.SortName}}">
-        <div>
+      <article class="manage-row people-row" data-list-filter-item data-filter-label="{{.Name}} {{.SortName}}">
+        <div class="manage-row-main">
           <h2>{{.Name}}</h2>
           {{if .SortName}}<p>{{.SortName}}</p>{{end}}
+        </div>
+        <div class="manage-counts">
+          <span>{{$.Tr "albums"}} <strong>{{.AlbumCount}}</strong></span>
+          <span>{{$.Tr "books"}} <strong>{{.BookCount}}</strong></span>
         </div>
         <a class="button icon-button" href="/people/{{pathEscape .ID}}/edit" title="{{$.Tr "edit"}}" aria-label="{{$.Tr "edit"}}">{{template "icon-pencil"}}</a>
       </article>

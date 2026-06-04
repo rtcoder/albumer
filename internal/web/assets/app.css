@@ -630,15 +630,47 @@ textarea {
   background: var(--surface);
 }
 
+.manage-row.people-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 32px;
+  justify-content: normal;
+}
+
+.manage-row-main { min-width: 0; }
+
 .manage-row h2 {
   margin: 0;
   font-size: 17px;
+  overflow-wrap: anywhere;
 }
 
 .manage-row p {
   margin: 4px 0 0;
   color: var(--muted);
   font-size: 13px;
+}
+
+.manage-counts {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.manage-counts span {
+  min-width: 88px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--field);
+  text-align: center;
+}
+
+.manage-counts strong {
+  color: var(--text);
+  font-weight: 600;
 }
 
 .manage-row[hidden] { display: none; }
@@ -850,6 +882,17 @@ textarea {
   }
 
   .list .badges {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .manage-row.people-row {
+    grid-template-columns: minmax(0, 1fr) 32px;
+  }
+
+  .manage-counts {
+    grid-column: 1 / -1;
+    grid-row: 2;
     justify-content: flex-start;
     flex-wrap: wrap;
   }

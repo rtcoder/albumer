@@ -27,12 +27,14 @@ const (
 var ValidItemStatuses = []ItemStatus{StatusOwned, StatusOrdered, StatusWanted}
 
 type Person struct {
-	ID        string
-	Name      string
-	SortName  string
-	Notes     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID         string
+	Name       string
+	SortName   string
+	Notes      string
+	AlbumCount int
+	BookCount  int
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 type Group struct {

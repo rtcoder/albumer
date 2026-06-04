@@ -185,7 +185,15 @@ func (s *Neo4jStore) ListPeople(ctx context.Context) ([]domain.Person, error) {
 	defer session.Close(ctx)
 
 	value, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
-		result, err := tx.Run(ctx, "MATCH (p:Person) RETURN p.id AS id, p.name AS name, p.sortName AS sortName, p.notes AS notes ORDER BY toLower(p.name)", nil)
+		result, err := tx.Run(ctx, `
+			MATCH (p:Person)
+			OPTIONAL MATCH (music:MusicItem)-[:BY]->(p)
+			WITH p, count(DISTINCT music) AS albumCount
+			OPTIONAL MATCH (book:Book)-[:AUTHORED_BY]->(p)
+			RETURN p.id AS id, p.name AS name, p.sortName AS sortName, p.notes AS notes,
+			       albumCount, count(DISTINCT book) AS bookCount
+			ORDER BY toLower(p.name)
+		`, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -193,10 +201,12 @@ func (s *Neo4jStore) ListPeople(ctx context.Context) ([]domain.Person, error) {
 		for result.Next(ctx) {
 			record := result.Record()
 			people = append(people, domain.Person{
-				ID:       recordString(record, "id"),
-				Name:     recordString(record, "name"),
-				SortName: recordString(record, "sortName"),
-				Notes:    recordString(record, "notes"),
+				ID:         recordString(record, "id"),
+				Name:       recordString(record, "name"),
+				SortName:   recordString(record, "sortName"),
+				Notes:      recordString(record, "notes"),
+				AlbumCount: recordInt(record, "albumCount"),
+				BookCount:  recordInt(record, "bookCount"),
 			})
 		}
 		return people, result.Err()
