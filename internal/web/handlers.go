@@ -41,8 +41,8 @@ func (s *Server) catalog(w http.ResponseWriter, r *http.Request) {
 		Status: domain.NormalizeStatus(r.URL.Query().Get("status")),
 		View:   r.URL.Query().Get("view"),
 	}
-	if filter.View == "" {
-		filter.View = "grid-large"
+	if filter.View != "list" {
+		filter.View = "grid"
 	}
 	if !filter.Medium.Valid() {
 		filter.Medium = ""

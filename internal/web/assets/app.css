@@ -405,16 +405,10 @@ textarea {
   resize: vertical;
 }
 
-.catalog.grid-large {
+.catalog.grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
   gap: 16px;
-}
-
-.catalog.grid-small {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
-  gap: 12px;
 }
 
 .catalog.list {
@@ -495,9 +489,6 @@ textarea {
 }
 
 .list .item-cover { aspect-ratio: 1 / 1; }
-.grid-small .item-title { font-size: 14px; }
-.grid-small .item-body { padding: 9px; }
-
 .empty {
   min-height: 220px;
   display: grid;

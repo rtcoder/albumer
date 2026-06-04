@@ -202,6 +202,19 @@ func TestCatalogPassesMediumFilter(t *testing.T) {
 	}
 }
 
+func TestCatalogNormalizesLegacySmallGridView(t *testing.T) {
+	store := &fakeStore{}
+	server := NewServer(config.Config{}, store)
+	request := authenticatedRequest(server, http.MethodGet, "/items?view=grid-small", nil)
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	if store.lastFilter.View != "grid" {
+		t.Fatalf("view = %q, want grid", store.lastFilter.View)
+	}
+}
+
 func TestMusicSuggestionsShowOtherMedia(t *testing.T) {
 	store := &fakeStore{musicRefs: []domain.MusicReference{
 		{ID: "cd-1", Title: "Album", Medium: domain.MediumCD},

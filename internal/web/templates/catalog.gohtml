@@ -35,8 +35,7 @@
     </label>
     <label>{{.Tr "view"}}
       <select name="view">
-        <option value="grid-large" {{if eq .Filter.View "grid-large"}}selected{{end}}>{{.Tr "view_grid_large"}}</option>
-        <option value="grid-small" {{if eq .Filter.View "grid-small"}}selected{{end}}>{{.Tr "view_grid_small"}}</option>
+        <option value="grid" {{if eq .Filter.View "grid"}}selected{{end}}>{{.Tr "view_grid"}}</option>
         <option value="list" {{if eq .Filter.View "list"}}selected{{end}}>{{.Tr "view_list"}}</option>
       </select>
     </label>
