@@ -15,6 +15,8 @@ import (
 type fakeStore struct {
 	items      []domain.CatalogItem
 	musicRefs  []domain.MusicReference
+	people     []domain.Person
+	groups     []domain.Group
 	lastFilter domain.CatalogFilter
 }
 
@@ -33,8 +35,8 @@ func (f *fakeStore) ListCatalog(ctx context.Context, filter domain.CatalogFilter
 	return filtered, nil
 }
 
-func (f *fakeStore) ListPeople(ctx context.Context) ([]domain.Person, error) { return nil, nil }
-func (f *fakeStore) ListGroups(ctx context.Context) ([]domain.Group, error)  { return nil, nil }
+func (f *fakeStore) ListPeople(ctx context.Context) ([]domain.Person, error) { return f.people, nil }
+func (f *fakeStore) ListGroups(ctx context.Context) ([]domain.Group, error)  { return f.groups, nil }
 func (f *fakeStore) ListMusicReferences(ctx context.Context, query, excludeID string) ([]domain.MusicReference, error) {
 	var items []domain.MusicReference
 	for _, item := range f.musicRefs {
@@ -164,6 +166,34 @@ func TestMusicSuggestionsShowOtherMedia(t *testing.T) {
 	body := response.Body.String()
 	if strings.Contains(body, "cd-1") || !strings.Contains(body, "cassette-1") || !strings.Contains(body, "CASSETTE") {
 		t.Fatalf("unexpected suggestions body: %s", body)
+	}
+}
+
+func TestPeopleIndexShowsSearch(t *testing.T) {
+	store := &fakeStore{people: []domain.Person{{ID: "p1", Name: "O.S.T.R", SortName: "OSTR"}}}
+	server := NewServer(config.Config{}, store)
+	request := authenticatedRequest(server, http.MethodGet, "/people", nil)
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	body := response.Body.String()
+	if !strings.Contains(body, `aria-label="Szukaj osob"`) || !strings.Contains(body, `data-filter-label="O.S.T.R OSTR"`) {
+		t.Fatalf("people index should show searchable rows, body: %s", body)
+	}
+}
+
+func TestGroupsIndexShowsSearch(t *testing.T) {
+	store := &fakeStore{groups: []domain.Group{{ID: "g1", Name: "Płomień 81", SortName: "Plomien 81"}}}
+	server := NewServer(config.Config{}, store)
+	request := authenticatedRequest(server, http.MethodGet, "/groups", nil)
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	body := response.Body.String()
+	if !strings.Contains(body, `aria-label="Szukaj zespolow"`) || !strings.Contains(body, `data-filter-label="Płomień 81 Plomien 81"`) {
+		t.Fatalf("groups index should show searchable rows, body: %s", body)
 	}
 }
 

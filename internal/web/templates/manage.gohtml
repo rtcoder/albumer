@@ -8,9 +8,12 @@
     </div>
     <a class="button primary" href="/people/new">Dodaj osobe</a>
   </header>
-  <section class="manage-list">
+  <section class="manage-search" data-list-filter>
+    <input type="search" placeholder="Szukaj osob" aria-label="Szukaj osob" data-list-filter-input>
+  </section>
+  <section class="manage-list" data-list-filter-list>
     {{range .People}}
-      <article class="manage-row">
+      <article class="manage-row" data-list-filter-item data-filter-label="{{.Name}} {{.SortName}}">
         <div>
           <h2>{{.Name}}</h2>
           {{if .SortName}}<p>{{.SortName}}</p>{{end}}
@@ -20,6 +23,7 @@
     {{else}}
       <div class="empty">Brak osob.</div>
     {{end}}
+    <div class="empty" data-list-filter-empty hidden>Brak pasujacych osob.</div>
   </section>
 {{template "layout_end" .}}
 {{end}}
@@ -33,9 +37,12 @@
     </div>
     <a class="button primary" href="/groups/new">Dodaj zespol</a>
   </header>
-  <section class="manage-list">
+  <section class="manage-search" data-list-filter>
+    <input type="search" placeholder="Szukaj zespolow" aria-label="Szukaj zespolow" data-list-filter-input>
+  </section>
+  <section class="manage-list" data-list-filter-list>
     {{range .Groups}}
-      <article class="manage-row">
+      <article class="manage-row" data-list-filter-item data-filter-label="{{.Name}} {{.SortName}}">
         <div>
           <h2>{{.Name}}</h2>
           {{if .SortName}}<p>{{.SortName}}</p>{{end}}
@@ -45,6 +52,7 @@
     {{else}}
       <div class="empty">Brak zespolow.</div>
     {{end}}
+    <div class="empty" data-list-filter-empty hidden>Brak pasujacych zespolow.</div>
   </section>
 {{template "layout_end" .}}
 {{end}}

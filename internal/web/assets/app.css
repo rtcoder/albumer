@@ -321,10 +321,19 @@ textarea {
   background: var(--surface);
 }
 
+.empty[hidden] { display: none; }
+
 .manage-list {
   display: grid;
   gap: 8px;
 }
+
+.manage-search {
+  max-width: 420px;
+  margin-bottom: 12px;
+}
+
+.manage-search input { width: 100%; }
 
 .manage-row {
   display: flex;
@@ -347,6 +356,8 @@ textarea {
   color: var(--muted);
   font-size: 13px;
 }
+
+.manage-row[hidden] { display: none; }
 
 .form-panel {
   max-width: 820px;

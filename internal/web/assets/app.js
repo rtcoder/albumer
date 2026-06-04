@@ -66,6 +66,7 @@
     return value
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[łŁ]/g, 'l')
       .replace(/[^a-zA-Z0-9]+/g, '')
       .toLowerCase();
   };
@@ -81,6 +82,43 @@
         const label = normalize(item.dataset.filterLabel || item.textContent);
         item.hidden = query !== '' && !label.includes(query);
       });
+    });
+  });
+})();
+
+(function () {
+  const filters = document.querySelectorAll('[data-list-filter]');
+  if (!filters.length) return;
+
+  const normalize = function (value) {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[łŁ]/g, 'l')
+      .replace(/[^a-zA-Z0-9]+/g, '')
+      .toLowerCase();
+  };
+
+  filters.forEach(function (filter) {
+    const input = filter.querySelector('[data-list-filter-input]');
+    const list = filter.nextElementSibling;
+    if (!input || !list || !list.matches('[data-list-filter-list]')) return;
+
+    const items = list.querySelectorAll('[data-list-filter-item]');
+    const empty = list.querySelector('[data-list-filter-empty]');
+
+    input.addEventListener('input', function () {
+      const query = normalize(input.value);
+      let visible = 0;
+
+      items.forEach(function (item) {
+        const label = normalize(item.dataset.filterLabel || item.textContent);
+        const matches = query === '' || label.includes(query);
+        item.hidden = !matches;
+        if (matches) visible += 1;
+      });
+
+      if (empty) empty.hidden = visible !== 0;
     });
   });
 })();
