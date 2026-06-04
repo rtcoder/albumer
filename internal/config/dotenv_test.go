@@ -6,6 +6,57 @@ import (
 	"testing"
 )
 
+func TestLoadUsesDotenvValues(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+	content := "ADDR=:9999\nNEO4J_PASSWORD=from-dotenv\nUPLOAD_DIR=./covers\n"
+	if err := os.WriteFile(filepath.Join(dir, ".env"), []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	cfg := Load()
+
+	if cfg.Addr != ":9999" {
+		t.Fatalf("Addr = %q, want :9999", cfg.Addr)
+	}
+	if cfg.Neo4jPassword != "from-dotenv" {
+		t.Fatalf("Neo4jPassword = %q, want from-dotenv", cfg.Neo4jPassword)
+	}
+	if cfg.UploadDir != "./covers" {
+		t.Fatalf("UploadDir = %q, want ./covers", cfg.UploadDir)
+	}
+}
+
+func TestLoadPrefersEnvironmentOverDotenv(t *testing.T) {
+	dir := t.TempDir()
+	t.Chdir(dir)
+	if err := os.WriteFile(filepath.Join(dir, ".env"), []byte("ADDR=:9999\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("ADDR", ":1111")
+
+	cfg := Load()
+
+	if cfg.Addr != ":1111" {
+		t.Fatalf("Addr = %q, want :1111", cfg.Addr)
+	}
+}
+
+func TestFindDotenvWalksUp(t *testing.T) {
+	dir := t.TempDir()
+	nested := filepath.Join(dir, "cmd", "albumer")
+	if err := os.MkdirAll(nested, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, ".env"), []byte("ADDR=:9999\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if got := FindDotenv(nested); got != filepath.Join(dir, ".env") {
+		t.Fatalf("FindDotenv() = %q", got)
+	}
+}
+
 func TestLoadDotenvSetsMissingValues(t *testing.T) {
 	t.Setenv("ALBUMER_TEST_EXISTING", "")
 	path := filepath.Join(t.TempDir(), ".env")

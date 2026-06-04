@@ -50,6 +50,7 @@ Po starcie wejdz na `http://localhost:4000`.
 - `Book` reprezentuje ksiazke.
 
 Ten sam album na CD i winylu to dwie osobne pozycje `MusicItem`.
+Pozycje tego samego albumu na roznych nosnikach mozna polaczyc relacja `SAME_RELEASE`. Formularz muzyki pozwala wybrac relacje recznie i proponuje istniejace pozycje po wpisaniu tytulu.
 
 ## Deploy jako systemd
 
@@ -77,7 +78,7 @@ Stary `json/data.json` mozna zaladowac do Neo4j jako kolekcje plyt CD:
 go run ./cmd/import-json -file json/data.json
 ```
 
-Importer tworzy osoby, zespoly (`Band` w Neo4j), relacje czlonkow zespolow oraz `MusicItem` z `medium=CD`. Import jest idempotentny i uzywa starych `id` z JSON jako identyfikatorow w bazie.
+Importer tworzy osoby, zespoly (`Band` w Neo4j), relacje czlonkow zespolow oraz `MusicItem` z `medium=CD`. Rekordy w bazie dostaja nowe UUID; stare `id` z JSON sa uzywane tylko tymczasowo podczas importu do zbudowania relacji.
 
 Jesli baza byla wypelniona przed dodaniem przyjaznego wyszukiwania, odpal jednorazowo:
 
@@ -86,3 +87,11 @@ go run ./cmd/backfill-search
 ```
 
 To uzupelni pola `searchName` i `searchTitle`, dzieki czemu np. `ostr` znajdzie `O.S.T.R`.
+
+Stare losowe ID w juz istniejacej bazie mozna zamienic na UUID:
+
+```sh
+go run ./cmd/migrate-ids
+```
+
+Skrypt zapisuje poprzednie ID w `legacyId`, wiec relacje zostaja zachowane.

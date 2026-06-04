@@ -10,9 +10,6 @@ import (
 )
 
 func main() {
-	if err := config.LoadDotenv(".env"); err != nil {
-		log.Fatalf("load .env: %v", err)
-	}
 	cfg := config.Load()
 
 	ctx := context.Background()

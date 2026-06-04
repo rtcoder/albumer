@@ -44,8 +44,15 @@ type MusicItem struct {
 	CoverPath string
 	Notes     string
 	Artists   []Contributor
+	Related   []MusicReference
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type MusicReference struct {
+	ID     string
+	Title  string
+	Medium MusicMedium
 }
 
 type Book struct {
@@ -77,6 +84,42 @@ type CatalogItem struct {
 	CoverPath    string
 	Year         int
 	Contributors []Contributor
+}
+
+func (m MusicItem) HasContributor(kind, id string) bool {
+	for _, contributor := range m.Artists {
+		if contributor.Kind == kind && contributor.ID == id {
+			return true
+		}
+	}
+	return false
+}
+
+func (m MusicItem) HasRelated(id string) bool {
+	for _, related := range m.Related {
+		if related.ID == id {
+			return true
+		}
+	}
+	return false
+}
+
+func (b Book) HasAuthor(id string) bool {
+	for _, author := range b.Authors {
+		if author.ID == id {
+			return true
+		}
+	}
+	return false
+}
+
+func (g Group) HasMember(id string) bool {
+	for _, member := range g.Members {
+		if member.ID == id {
+			return true
+		}
+	}
+	return false
 }
 
 type CatalogFilter struct {

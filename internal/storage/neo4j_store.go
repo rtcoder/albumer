@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -10,6 +11,8 @@ import (
 	"albumer/internal/domain"
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
+
+var ErrNotFound = errors.New("not found")
 
 type Neo4jStore struct {
 	driver neo4j.DriverWithContext
@@ -47,6 +50,10 @@ func (s *Neo4jStore) EnsureSchema(ctx context.Context) error {
 		"CREATE INDEX band_search_name IF NOT EXISTS FOR (n:Band) ON (n.searchName)",
 		"CREATE INDEX music_search_title IF NOT EXISTS FOR (n:MusicItem) ON (n.searchTitle)",
 		"CREATE INDEX book_search_title IF NOT EXISTS FOR (n:Book) ON (n.searchTitle)",
+		"CREATE INDEX person_legacy_id IF NOT EXISTS FOR (n:Person) ON (n.legacyId)",
+		"CREATE INDEX band_legacy_id IF NOT EXISTS FOR (n:Band) ON (n.legacyId)",
+		"CREATE INDEX music_legacy_id IF NOT EXISTS FOR (n:MusicItem) ON (n.legacyId)",
+		"CREATE INDEX book_legacy_id IF NOT EXISTS FOR (n:Book) ON (n.legacyId)",
 	}
 
 	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
@@ -227,6 +234,177 @@ func (s *Neo4jStore) ListGroups(ctx context.Context) ([]domain.Group, error) {
 	return value.([]domain.Group), nil
 }
 
+func (s *Neo4jStore) ListMusicReferences(ctx context.Context, query, excludeID string) ([]domain.MusicReference, error) {
+	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
+	defer session.Close(ctx)
+	limit := 10000
+	if strings.TrimSpace(query) != "" {
+		limit = 20
+	}
+
+	value, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+MATCH (m:MusicItem)
+WHERE ($q = '' OR m.searchTitle CONTAINS $q)
+  AND ($excludeID = '' OR m.id <> $excludeID)
+RETURN m.id AS id, m.title AS title, m.medium AS medium
+ORDER BY toLower(m.title), m.medium
+LIMIT $limit
+`, map[string]any{"q": domain.SearchKey(query), "excludeID": excludeID, "limit": limit})
+		if err != nil {
+			return nil, err
+		}
+		var items []domain.MusicReference
+		for result.Next(ctx) {
+			record := result.Record()
+			items = append(items, domain.MusicReference{
+				ID:     recordString(record, "id"),
+				Title:  recordString(record, "title"),
+				Medium: domain.MusicMedium(recordString(record, "medium")),
+			})
+		}
+		return items, result.Err()
+	})
+	if err != nil {
+		return nil, err
+	}
+	return value.([]domain.MusicReference), nil
+}
+
+func (s *Neo4jStore) GetPerson(ctx context.Context, id string) (domain.Person, error) {
+	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
+	defer session.Close(ctx)
+
+	value, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+MATCH (p:Person {id: $id})
+RETURN p.id AS id, p.name AS name, p.sortName AS sortName, p.notes AS notes
+`, map[string]any{"id": id})
+		if err != nil {
+			return domain.Person{}, err
+		}
+		if !result.Next(ctx) {
+			return domain.Person{}, ErrNotFound
+		}
+		record := result.Record()
+		return domain.Person{ID: recordString(record, "id"), Name: recordString(record, "name"), SortName: recordString(record, "sortName"), Notes: recordString(record, "notes")}, result.Err()
+	})
+	if err != nil {
+		return domain.Person{}, err
+	}
+	return value.(domain.Person), nil
+}
+
+func (s *Neo4jStore) GetGroup(ctx context.Context, id string) (domain.Group, error) {
+	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
+	defer session.Close(ctx)
+
+	value, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+MATCH (g:Band {id: $id})
+OPTIONAL MATCH (g)-[:HAS_MEMBER]->(p:Person)
+RETURN g.id AS id, g.name AS name, g.sortName AS sortName, g.notes AS notes,
+       collect(DISTINCT {id: p.id, name: p.name}) AS members
+`, map[string]any{"id": id})
+		if err != nil {
+			return domain.Group{}, err
+		}
+		if !result.Next(ctx) {
+			return domain.Group{}, ErrNotFound
+		}
+		record := result.Record()
+		group := domain.Group{ID: recordString(record, "id"), Name: recordString(record, "name"), SortName: recordString(record, "sortName"), Notes: recordString(record, "notes")}
+		for _, member := range readContributors(recordValue[[]any](record, "members")) {
+			group.Members = append(group.Members, domain.Person{ID: member.ID, Name: member.Name})
+		}
+		return group, result.Err()
+	})
+	if err != nil {
+		return domain.Group{}, err
+	}
+	return value.(domain.Group), nil
+}
+
+func (s *Neo4jStore) GetMusicItem(ctx context.Context, id string) (domain.MusicItem, error) {
+	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
+	defer session.Close(ctx)
+
+	value, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+MATCH (m:MusicItem {id: $id})
+OPTIONAL MATCH (m)-[:BY]->(c)
+WITH m, collect(DISTINCT {id: c.id, name: c.name, kind: CASE WHEN c:Band THEN 'group' ELSE 'person' END}) AS contributors
+OPTIONAL MATCH (m)-[:SAME_RELEASE]-(related:MusicItem)
+RETURN m.id AS id, m.title AS title, m.medium AS medium, m.releaseYear AS year,
+       m.status AS status, m.coverPath AS coverPath, m.notes AS notes,
+       contributors,
+       collect(DISTINCT {id: related.id, title: related.title, medium: related.medium}) AS related
+`, map[string]any{"id": id})
+		if err != nil {
+			return domain.MusicItem{}, err
+		}
+		if !result.Next(ctx) {
+			return domain.MusicItem{}, ErrNotFound
+		}
+		record := result.Record()
+		item := domain.MusicItem{
+			ID:        recordString(record, "id"),
+			Title:     recordString(record, "title"),
+			Medium:    domain.MusicMedium(recordString(record, "medium")),
+			Year:      recordInt(record, "year"),
+			Status:    recordString(record, "status"),
+			CoverPath: recordString(record, "coverPath"),
+			Notes:     recordString(record, "notes"),
+			Artists:   readContributors(recordValue[[]any](record, "contributors")),
+			Related:   readMusicReferences(recordValue[[]any](record, "related")),
+		}
+		return item, result.Err()
+	})
+	if err != nil {
+		return domain.MusicItem{}, err
+	}
+	return value.(domain.MusicItem), nil
+}
+
+func (s *Neo4jStore) GetBook(ctx context.Context, id string) (domain.Book, error) {
+	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
+	defer session.Close(ctx)
+
+	value, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+MATCH (b:Book {id: $id})
+OPTIONAL MATCH (b)-[:AUTHORED_BY]->(p:Person)
+RETURN b.id AS id, b.title AS title, b.isbn AS isbn, b.publishedYear AS year,
+       b.status AS status, b.coverPath AS coverPath, b.notes AS notes,
+       collect(DISTINCT {id: p.id, name: p.name}) AS authors
+`, map[string]any{"id": id})
+		if err != nil {
+			return domain.Book{}, err
+		}
+		if !result.Next(ctx) {
+			return domain.Book{}, ErrNotFound
+		}
+		record := result.Record()
+		book := domain.Book{
+			ID:        recordString(record, "id"),
+			Title:     recordString(record, "title"),
+			ISBN:      recordString(record, "isbn"),
+			Year:      recordInt(record, "year"),
+			Status:    recordString(record, "status"),
+			CoverPath: recordString(record, "coverPath"),
+			Notes:     recordString(record, "notes"),
+		}
+		for _, author := range readContributors(recordValue[[]any](record, "authors")) {
+			book.Authors = append(book.Authors, domain.Person{ID: author.ID, Name: author.Name})
+		}
+		return book, result.Err()
+	})
+	if err != nil {
+		return domain.Book{}, err
+	}
+	return value.(domain.Book), nil
+}
+
 func (s *Neo4jStore) CreatePerson(ctx context.Context, person domain.Person) (domain.Person, error) {
 	if err := domain.ValidateNamed(person.Name); err != nil {
 		return person, err
@@ -304,10 +482,16 @@ OPTIONAL MATCH (g:Band {id: contributor.id})
 WITH m, CASE WHEN contributor.kind = 'group' THEN g ELSE p END AS c
 WHERE c IS NOT NULL
 MERGE (m)-[:BY]->(c)
+WITH DISTINCT m
+UNWIND $relatedIDs AS relatedID
+MATCH (related:MusicItem {id: relatedID})
+WHERE related.id <> m.id
+MERGE (m)-[:SAME_RELEASE]->(related)
 `, map[string]any{
 			"id": item.ID, "title": item.Title, "medium": string(item.Medium), "year": item.Year,
 			"status": item.Status, "searchTitle": domain.SearchKey(item.Title), "coverPath": item.CoverPath, "notes": item.Notes,
 			"createdAt": now, "updatedAt": now, "contributors": contributorParams(item.Artists),
+			"relatedIDs": relatedIDs(item),
 		})
 		if err != nil {
 			return nil, err
@@ -355,6 +539,160 @@ MERGE (b)-[:AUTHORED_BY]->(p)
 	return book, err
 }
 
+func (s *Neo4jStore) UpdatePerson(ctx context.Context, person domain.Person) (domain.Person, error) {
+	if err := domain.ValidateNamed(person.Name); err != nil {
+		return person, err
+	}
+	now := time.Now().UTC()
+
+	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
+	defer session.Close(ctx)
+	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+MATCH (p:Person {id: $id})
+SET p.name = $name,
+    p.sortName = $sortName,
+    p.searchName = $searchName,
+    p.notes = $notes,
+    p.updatedAt = $updatedAt
+`, nodeParams(person.ID, person.Name, person.SortName, person.Notes, now))
+		if err != nil {
+			return nil, err
+		}
+		return result.Consume(ctx)
+	})
+	return person, err
+}
+
+func (s *Neo4jStore) UpdateGroup(ctx context.Context, group domain.Group, memberIDs []string) (domain.Group, error) {
+	if err := domain.ValidateNamed(group.Name); err != nil {
+		return group, err
+	}
+	now := time.Now().UTC()
+
+	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
+	defer session.Close(ctx)
+	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+MATCH (g:Band {id: $id})
+SET g.name = $name,
+    g.sortName = $sortName,
+    g.searchName = $searchName,
+    g.notes = $notes,
+    g.updatedAt = $updatedAt
+WITH g
+OPTIONAL MATCH (g)-[old:HAS_MEMBER]->(:Person)
+DELETE old
+WITH g
+UNWIND $memberIDs AS memberID
+MATCH (p:Person {id: memberID})
+MERGE (g)-[:HAS_MEMBER]->(p)
+`, map[string]any{
+			"id": group.ID, "name": group.Name, "sortName": group.SortName, "searchName": domain.SearchKey(group.Name), "notes": group.Notes,
+			"updatedAt": now, "memberIDs": memberIDs,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return result.Consume(ctx)
+	})
+	return group, err
+}
+
+func (s *Neo4jStore) UpdateMusicItem(ctx context.Context, item domain.MusicItem) (domain.MusicItem, error) {
+	if err := domain.ValidateMusicItem(item); err != nil {
+		return item, err
+	}
+	now := time.Now().UTC()
+
+	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
+	defer session.Close(ctx)
+	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+MATCH (m:MusicItem {id: $id})
+SET m.title = $title,
+    m.medium = $medium,
+    m.releaseYear = $year,
+    m.status = $status,
+    m.searchTitle = $searchTitle,
+    m.coverPath = $coverPath,
+    m.notes = $notes,
+    m.updatedAt = $updatedAt
+WITH m
+OPTIONAL MATCH (m)-[old:BY]->()
+DELETE old
+WITH m
+UNWIND $contributors AS contributor
+OPTIONAL MATCH (p:Person {id: contributor.id})
+OPTIONAL MATCH (g:Band {id: contributor.id})
+WITH m, CASE WHEN contributor.kind = 'group' THEN g ELSE p END AS c
+WHERE c IS NOT NULL
+MERGE (m)-[:BY]->(c)
+WITH DISTINCT m
+OPTIONAL MATCH (m)-[oldRelated:SAME_RELEASE]-()
+DELETE oldRelated
+WITH m
+UNWIND $relatedIDs AS relatedID
+MATCH (related:MusicItem {id: relatedID})
+WHERE related.id <> m.id
+MERGE (m)-[:SAME_RELEASE]->(related)
+`, map[string]any{
+			"id": item.ID, "title": item.Title, "medium": string(item.Medium), "year": item.Year,
+			"status": item.Status, "searchTitle": domain.SearchKey(item.Title), "coverPath": item.CoverPath, "notes": item.Notes,
+			"updatedAt": now, "contributors": contributorParams(item.Artists),
+			"relatedIDs": relatedIDs(item),
+		})
+		if err != nil {
+			return nil, err
+		}
+		return result.Consume(ctx)
+	})
+	return item, err
+}
+
+func (s *Neo4jStore) UpdateBook(ctx context.Context, book domain.Book) (domain.Book, error) {
+	if err := domain.ValidateBook(book); err != nil {
+		return book, err
+	}
+	now := time.Now().UTC()
+	authorIDs := make([]string, 0, len(book.Authors))
+	for _, author := range book.Authors {
+		authorIDs = append(authorIDs, author.ID)
+	}
+
+	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
+	defer session.Close(ctx)
+	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, `
+MATCH (b:Book {id: $id})
+SET b.title = $title,
+    b.isbn = $isbn,
+    b.publishedYear = $year,
+    b.status = $status,
+    b.searchTitle = $searchTitle,
+    b.coverPath = $coverPath,
+    b.notes = $notes,
+    b.updatedAt = $updatedAt
+WITH b
+OPTIONAL MATCH (b)-[old:AUTHORED_BY]->(:Person)
+DELETE old
+WITH b
+UNWIND $authorIDs AS authorID
+MATCH (p:Person {id: authorID})
+MERGE (b)-[:AUTHORED_BY]->(p)
+`, map[string]any{
+			"id": book.ID, "title": book.Title, "isbn": book.ISBN, "year": book.Year,
+			"status": book.Status, "searchTitle": domain.SearchKey(book.Title), "coverPath": book.CoverPath, "notes": book.Notes,
+			"updatedAt": now, "authorIDs": authorIDs,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return result.Consume(ctx)
+	})
+	return book, err
+}
+
 func nodeParams(id, name, sortName, notes string, now time.Time) map[string]any {
 	return map[string]any{
 		"id": id, "name": name, "sortName": sortName, "searchName": domain.SearchKey(name), "notes": notes,
@@ -384,6 +722,32 @@ func readContributors(values []any) []domain.Contributor {
 		})
 	}
 	return contributors
+}
+
+func readMusicReferences(values []any) []domain.MusicReference {
+	items := make([]domain.MusicReference, 0, len(values))
+	for _, value := range values {
+		row, ok := value.(map[string]any)
+		if !ok || row["id"] == nil {
+			continue
+		}
+		items = append(items, domain.MusicReference{
+			ID:     asString(row["id"]),
+			Title:  asString(row["title"]),
+			Medium: domain.MusicMedium(asString(row["medium"])),
+		})
+	}
+	return items
+}
+
+func relatedIDs(item domain.MusicItem) []string {
+	ids := make([]string, 0, len(item.Related))
+	for _, related := range item.Related {
+		if related.ID != "" && related.ID != item.ID {
+			ids = append(ids, related.ID)
+		}
+	}
+	return ids
 }
 
 func contributorNames(contributors []domain.Contributor) string {

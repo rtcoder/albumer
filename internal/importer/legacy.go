@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"albumer/internal/domain"
+	"albumer/internal/ids"
+
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
@@ -65,28 +67,42 @@ func ImportLegacyCDs(ctx context.Context, driver neo4j.DriverWithContext, data L
 	value, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		now := time.Now().UTC()
 		summary := LegacyImportSummary{}
+		idMap := map[string]string{}
 
 		for _, artist := range data.Artists {
 			if artist.ID == "" || artist.Name == "" {
 				continue
 			}
+			newID := ids.NewUUID()
+			idMap[artist.ID] = newID
 			if len(artist.ArtistsIDs) == 0 {
-				if err := mergeLegacyPerson(ctx, tx, artist, now); err != nil {
+				if err := createLegacyPerson(ctx, tx, newID, artist, now); err != nil {
 					return summary, err
 				}
 				summary.People++
 				continue
 			}
 
-			if err := mergeLegacyBand(ctx, tx, artist, now); err != nil {
+			if err := createLegacyBand(ctx, tx, newID, artist, now); err != nil {
 				return summary, err
 			}
 			summary.Groups++
+		}
+
+		for _, artist := range data.Artists {
+			bandID := idMap[artist.ID]
+			if bandID == "" || len(artist.ArtistsIDs) == 0 {
+				continue
+			}
 			for _, memberID := range artist.ArtistsIDs {
 				if memberID == "" {
 					continue
 				}
-				if err := mergeLegacyBandMember(ctx, tx, artist.ID, memberID); err != nil {
+				mappedMemberID := idMap[memberID]
+				if mappedMemberID == "" {
+					continue
+				}
+				if err := createLegacyBandMember(ctx, tx, bandID, mappedMemberID); err != nil {
 					return summary, err
 				}
 				summary.GroupLinks++
@@ -97,7 +113,8 @@ func ImportLegacyCDs(ctx context.Context, driver neo4j.DriverWithContext, data L
 			if album.ID == "" || album.Name == "" {
 				continue
 			}
-			if err := mergeLegacyCD(ctx, tx, album, now); err != nil {
+			newID := ids.NewUUID()
+			if err := createLegacyCD(ctx, tx, newID, album, now); err != nil {
 				return summary, err
 			}
 			summary.CDs++
@@ -106,7 +123,11 @@ func ImportLegacyCDs(ctx context.Context, driver neo4j.DriverWithContext, data L
 				if artistID == "" {
 					continue
 				}
-				if err := mergeLegacyCDContributor(ctx, tx, album.ID, artistID); err != nil {
+				mappedArtistID := idMap[artistID]
+				if mappedArtistID == "" {
+					continue
+				}
+				if err := createLegacyCDContributor(ctx, tx, newID, mappedArtistID); err != nil {
 					return summary, err
 				}
 				summary.CDLinks++
@@ -190,15 +211,15 @@ func LegacyStatus(value int) string {
 	return fmt.Sprintf("legacy:%d", value)
 }
 
-func mergeLegacyPerson(ctx context.Context, tx neo4j.ManagedTransaction, artist LegacyArtist, now time.Time) error {
+func createLegacyPerson(ctx context.Context, tx neo4j.ManagedTransaction, id string, artist LegacyArtist, now time.Time) error {
 	result, err := tx.Run(ctx, `
-MERGE (p:Person {id: $id})
+CREATE (p:Person {id: $id})
 SET p.name = $name,
-    p.sortName = coalesce(p.sortName, $name),
+    p.sortName = $name,
     p.searchName = $searchName,
+    p.createdAt = $now,
     p.updatedAt = $now
-SET p.createdAt = coalesce(p.createdAt, $now)
-`, map[string]any{"id": artist.ID, "name": artist.Name, "searchName": domain.SearchKey(artist.Name), "now": now})
+`, map[string]any{"id": id, "name": artist.Name, "searchName": domain.SearchKey(artist.Name), "now": now})
 	if err != nil {
 		return err
 	}
@@ -206,15 +227,15 @@ SET p.createdAt = coalesce(p.createdAt, $now)
 	return err
 }
 
-func mergeLegacyBand(ctx context.Context, tx neo4j.ManagedTransaction, artist LegacyArtist, now time.Time) error {
+func createLegacyBand(ctx context.Context, tx neo4j.ManagedTransaction, id string, artist LegacyArtist, now time.Time) error {
 	result, err := tx.Run(ctx, `
-MERGE (g:Band {id: $id})
+CREATE (g:Band {id: $id})
 SET g.name = $name,
-    g.sortName = coalesce(g.sortName, $name),
+    g.sortName = $name,
     g.searchName = $searchName,
+    g.createdAt = $now,
     g.updatedAt = $now
-SET g.createdAt = coalesce(g.createdAt, $now)
-`, map[string]any{"id": artist.ID, "name": artist.Name, "searchName": domain.SearchKey(artist.Name), "now": now})
+`, map[string]any{"id": id, "name": artist.Name, "searchName": domain.SearchKey(artist.Name), "now": now})
 	if err != nil {
 		return err
 	}
@@ -222,7 +243,7 @@ SET g.createdAt = coalesce(g.createdAt, $now)
 	return err
 }
 
-func mergeLegacyBandMember(ctx context.Context, tx neo4j.ManagedTransaction, bandID, memberID string) error {
+func createLegacyBandMember(ctx context.Context, tx neo4j.ManagedTransaction, bandID, memberID string) error {
 	result, err := tx.Run(ctx, `
 MATCH (g:Band {id: $bandID})
 MATCH (p:Person {id: $memberID})
@@ -235,17 +256,17 @@ MERGE (g)-[:HAS_MEMBER]->(p)
 	return err
 }
 
-func mergeLegacyCD(ctx context.Context, tx neo4j.ManagedTransaction, album LegacyAlbum, now time.Time) error {
+func createLegacyCD(ctx context.Context, tx neo4j.ManagedTransaction, id string, album LegacyAlbum, now time.Time) error {
 	result, err := tx.Run(ctx, `
-MERGE (m:MusicItem {id: $id})
+CREATE (m:MusicItem {id: $id})
 SET m.title = $title,
     m.searchTitle = $searchTitle,
     m.medium = $medium,
     m.status = $status,
+    m.createdAt = $now,
     m.updatedAt = $now
-SET m.createdAt = coalesce(m.createdAt, $now)
 `, map[string]any{
-		"id": album.ID, "title": album.Name, "searchTitle": domain.SearchKey(album.Name), "medium": string(domain.MediumCD),
+		"id": id, "title": album.Name, "searchTitle": domain.SearchKey(album.Name), "medium": string(domain.MediumCD),
 		"status": LegacyStatus(album.Status), "now": now,
 	})
 	if err != nil {
@@ -255,7 +276,7 @@ SET m.createdAt = coalesce(m.createdAt, $now)
 	return err
 }
 
-func mergeLegacyCDContributor(ctx context.Context, tx neo4j.ManagedTransaction, albumID, artistID string) error {
+func createLegacyCDContributor(ctx context.Context, tx neo4j.ManagedTransaction, albumID, artistID string) error {
 	result, err := tx.Run(ctx, `
 MATCH (m:MusicItem {id: $albumID})
 OPTIONAL MATCH (p:Person {id: $artistID})

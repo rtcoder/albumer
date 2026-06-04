@@ -15,10 +15,6 @@ import (
 )
 
 func main() {
-	if err := config.LoadDotenv(".env"); err != nil {
-		log.Fatalf("load .env: %v", err)
-	}
-
 	cfg := config.Load()
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

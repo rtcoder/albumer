@@ -1,0 +1,50 @@
+{{- /*gotype: albumer/internal/web.pageData*/ -}}
+{{define "people_index"}}
+{{template "layout_start" .}}
+  <header class="page-head">
+    <div>
+      <h1>Osoby</h1>
+      <p>Artysci muzyczni i autorzy ksiazek.</p>
+    </div>
+    <a class="button primary" href="/people/new">Dodaj osobe</a>
+  </header>
+  <section class="manage-list">
+    {{range .People}}
+      <article class="manage-row">
+        <div>
+          <h2>{{.Name}}</h2>
+          {{if .SortName}}<p>{{.SortName}}</p>{{end}}
+        </div>
+        <a class="button small" href="/people/{{pathEscape .ID}}/edit">Edytuj</a>
+      </article>
+    {{else}}
+      <div class="empty">Brak osob.</div>
+    {{end}}
+  </section>
+{{template "layout_end" .}}
+{{end}}
+
+{{define "groups_index"}}
+{{template "layout_start" .}}
+  <header class="page-head">
+    <div>
+      <h1>Zespoly</h1>
+      <p>Zespoly i sklady powiazane z osobami.</p>
+    </div>
+    <a class="button primary" href="/groups/new">Dodaj zespol</a>
+  </header>
+  <section class="manage-list">
+    {{range .Groups}}
+      <article class="manage-row">
+        <div>
+          <h2>{{.Name}}</h2>
+          {{if .SortName}}<p>{{.SortName}}</p>{{end}}
+        </div>
+        <a class="button small" href="/groups/{{pathEscape .ID}}/edit">Edytuj</a>
+      </article>
+    {{else}}
+      <div class="empty">Brak zespolow.</div>
+    {{end}}
+  </section>
+{{template "layout_end" .}}
+{{end}}

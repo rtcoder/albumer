@@ -14,6 +14,7 @@ import (
 
 type fakeStore struct {
 	items      []domain.CatalogItem
+	musicRefs  []domain.MusicReference
 	lastFilter domain.CatalogFilter
 }
 
@@ -34,6 +35,27 @@ func (f *fakeStore) ListCatalog(ctx context.Context, filter domain.CatalogFilter
 
 func (f *fakeStore) ListPeople(ctx context.Context) ([]domain.Person, error) { return nil, nil }
 func (f *fakeStore) ListGroups(ctx context.Context) ([]domain.Group, error)  { return nil, nil }
+func (f *fakeStore) ListMusicReferences(ctx context.Context, query, excludeID string) ([]domain.MusicReference, error) {
+	var items []domain.MusicReference
+	for _, item := range f.musicRefs {
+		if item.ID != excludeID {
+			items = append(items, item)
+		}
+	}
+	return items, nil
+}
+func (f *fakeStore) GetPerson(ctx context.Context, id string) (domain.Person, error) {
+	return domain.Person{ID: id, Name: "Person"}, nil
+}
+func (f *fakeStore) GetGroup(ctx context.Context, id string) (domain.Group, error) {
+	return domain.Group{ID: id, Name: "Group"}, nil
+}
+func (f *fakeStore) GetMusicItem(ctx context.Context, id string) (domain.MusicItem, error) {
+	return domain.MusicItem{ID: id, Title: "Music", Medium: domain.MediumCD, Artists: []domain.Contributor{{ID: "p1", Kind: "person"}}}, nil
+}
+func (f *fakeStore) GetBook(ctx context.Context, id string) (domain.Book, error) {
+	return domain.Book{ID: id, Title: "Book", Authors: []domain.Person{{ID: "p1"}}}, nil
+}
 func (f *fakeStore) CreatePerson(ctx context.Context, person domain.Person) (domain.Person, error) {
 	return person, nil
 }
@@ -44,6 +66,18 @@ func (f *fakeStore) CreateMusicItem(ctx context.Context, item domain.MusicItem) 
 	return item, nil
 }
 func (f *fakeStore) CreateBook(ctx context.Context, book domain.Book) (domain.Book, error) {
+	return book, nil
+}
+func (f *fakeStore) UpdatePerson(ctx context.Context, person domain.Person) (domain.Person, error) {
+	return person, nil
+}
+func (f *fakeStore) UpdateGroup(ctx context.Context, group domain.Group, memberIDs []string) (domain.Group, error) {
+	return group, nil
+}
+func (f *fakeStore) UpdateMusicItem(ctx context.Context, item domain.MusicItem) (domain.MusicItem, error) {
+	return item, nil
+}
+func (f *fakeStore) UpdateBook(ctx context.Context, book domain.Book) (domain.Book, error) {
 	return book, nil
 }
 
@@ -79,6 +113,23 @@ func TestCatalogShowsMusicMedium(t *testing.T) {
 	}
 }
 
+func TestCatalogShowsEditLinks(t *testing.T) {
+	store := &fakeStore{items: []domain.CatalogItem{
+		{ID: "hqw(=.-!d#", Kind: "music", Title: "Album", Medium: domain.MediumCD},
+		{ID: "%TZ.a7XrPd", Kind: "book", Title: "Book"},
+	}}
+	server := NewServer(config.Config{}, store)
+	request := authenticatedRequest(server, http.MethodGet, "/", nil)
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	body := response.Body.String()
+	if !strings.Contains(body, `/music/hqw%28=.-%21d%23/edit`) || !strings.Contains(body, `/books/%25TZ.a7XrPd/edit`) {
+		t.Fatalf("catalog should show edit links, body: %s", body)
+	}
+}
+
 func TestCatalogPassesMediumFilter(t *testing.T) {
 	store := &fakeStore{items: []domain.CatalogItem{
 		{ID: "1", Kind: "music", Title: "CD copy", Medium: domain.MediumCD},
@@ -96,6 +147,23 @@ func TestCatalogPassesMediumFilter(t *testing.T) {
 	body := response.Body.String()
 	if strings.Contains(body, "CD copy") || !strings.Contains(body, "Vinyl copy") {
 		t.Fatalf("unexpected filtered body: %s", body)
+	}
+}
+
+func TestMusicSuggestionsShowOtherMedia(t *testing.T) {
+	store := &fakeStore{musicRefs: []domain.MusicReference{
+		{ID: "cd-1", Title: "Album", Medium: domain.MediumCD},
+		{ID: "cassette-1", Title: "Album", Medium: domain.MediumCassette},
+	}}
+	server := NewServer(config.Config{}, store)
+	request := authenticatedRequest(server, http.MethodGet, "/music/suggestions?q=album&exclude=cd-1", nil)
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	body := response.Body.String()
+	if strings.Contains(body, "cd-1") || !strings.Contains(body, "cassette-1") || !strings.Contains(body, "CASSETTE") {
+		t.Fatalf("unexpected suggestions body: %s", body)
 	}
 }
 

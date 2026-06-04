@@ -14,9 +14,6 @@ func main() {
 	path := flag.String("file", "json/data.json", "path to legacy data.json")
 	flag.Parse()
 
-	if err := config.LoadDotenv(".env"); err != nil {
-		log.Fatalf("load .env: %v", err)
-	}
 	cfg := config.Load()
 
 	ctx := context.Background()

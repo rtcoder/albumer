@@ -55,6 +55,7 @@
           {{if eq .Kind "book"}}<span class="badge">Ksiazka</span>{{else}}<span class="badge medium">{{.Medium}}</span>{{end}}
           {{if .Status}}<span class="badge">{{.Status}}</span>{{end}}
         </div>
+        <a class="button small" href="{{if eq .Kind "book"}}/books/{{pathEscape .ID}}/edit{{else}}/music/{{pathEscape .ID}}/edit{{end}}">Edytuj</a>
       </div>
     </article>
   {{end}}
