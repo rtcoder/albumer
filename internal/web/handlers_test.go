@@ -115,6 +115,32 @@ func TestCatalogShowsMusicMedium(t *testing.T) {
 	}
 }
 
+func TestCatalogShowsDefaultCoverImages(t *testing.T) {
+	store := &fakeStore{items: []domain.CatalogItem{
+		{ID: "book", Kind: "book", Title: "Book"},
+		{ID: "cd", Kind: "music", Title: "CD", Medium: domain.MediumCD},
+		{ID: "vinyl", Kind: "music", Title: "Vinyl", Medium: domain.MediumVinyl},
+		{ID: "cassette", Kind: "music", Title: "Cassette", Medium: domain.MediumCassette},
+	}}
+	server := NewServer(config.Config{}, store)
+	request := authenticatedRequest(server, http.MethodGet, "/", nil)
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	body := response.Body.String()
+	for _, path := range []string{
+		"/assets/default-book.svg",
+		"/assets/default-cd.svg",
+		"/assets/default-vinyl.svg",
+		"/assets/default-cassette.svg",
+	} {
+		if !strings.Contains(body, path) {
+			t.Errorf("catalog should show default cover %q", path)
+		}
+	}
+}
+
 func TestCatalogShowsEditLinks(t *testing.T) {
 	store := &fakeStore{items: []domain.CatalogItem{
 		{ID: "hqw(=.-!d#", Kind: "music", Title: "Album", Medium: domain.MediumCD},

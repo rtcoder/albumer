@@ -54,7 +54,19 @@
   <section class="catalog {{.Filter.View}}">
   {{range .Items}}
     <article class="item-card">
-      <div class="item-cover">{{if .CoverPath}}<img src="{{.CoverPath}}" alt="">{{else}}{{if eq .Kind "book"}}{{$.Tr "book"}}{{else}}{{.Medium}}{{end}}{{end}}</div>
+      <div class="item-cover">
+        {{if .CoverPath}}
+          <img src="{{.CoverPath}}" alt="">
+        {{else if eq .Kind "book"}}
+          <img src="/assets/default-book.svg" alt="">
+        {{else if eq .Medium "VINYL"}}
+          <img src="/assets/default-vinyl.svg" alt="">
+        {{else if eq .Medium "CASSETTE"}}
+          <img src="/assets/default-cassette.svg" alt="">
+        {{else}}
+          <img src="/assets/default-cd.svg" alt="">
+        {{end}}
+      </div>
       <div class="item-body">
         <h2 class="item-title">{{.Title}}</h2>
         {{if .Subtitle}}<div class="item-meta">{{.Subtitle}}</div>{{end}}
