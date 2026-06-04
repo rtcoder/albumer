@@ -25,17 +25,26 @@
       <label>Status <input name="status" value="{{.Music.Status}}" placeholder="owned"></label>
       <label>Okladka <input type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
       {{if .Music.CoverPath}}<div class="full small-note">Aktualna okladka: {{.Music.CoverPath}}</div>{{end}}
-      <div class="full">
-        <span class="field-title">Artysci</span>
-        <div class="checks">{{range .People}}<label class="check"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Music.HasContributor "person" .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">Najpierw dodaj osobe.</span>{{end}}</div>
+      <div class="full check-group" data-check-filter>
+        <div class="check-group-head">
+          <span class="field-title">Artysci</span>
+          <input class="check-filter" type="search" placeholder="Filtruj artystow" aria-label="Filtruj artystow" data-check-filter-input>
+        </div>
+        <div class="checks">{{range .People}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Music.HasContributor "person" .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">Najpierw dodaj osobe.</span>{{end}}</div>
       </div>
-      <div class="full">
-        <span class="field-title">Zespoly</span>
-        <div class="checks">{{range .Groups}}<label class="check"><input type="checkbox" name="group_ids" value="{{.ID}}" {{if $.Music.HasContributor "group" .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">Brak zespolow.</span>{{end}}</div>
+      <div class="full check-group" data-check-filter>
+        <div class="check-group-head">
+          <span class="field-title">Zespoly</span>
+          <input class="check-filter" type="search" placeholder="Filtruj zespoly" aria-label="Filtruj zespoly" data-check-filter-input>
+        </div>
+        <div class="checks">{{range .Groups}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="group_ids" value="{{.ID}}" {{if $.Music.HasContributor "group" .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">Brak zespolow.</span>{{end}}</div>
       </div>
-      <div class="full">
-        <span class="field-title">Powiazane wydania / inne nosniki</span>
-        <div class="checks">{{range .MusicReferences}}<label class="check"><input type="checkbox" name="related_ids" value="{{.ID}}" data-related-id="{{.ID}}" {{if $.Music.HasRelated .ID}}checked{{end}}>{{.Title}} ({{.Medium}})</label>{{else}}<span class="small-note">Brak innych pozycji muzycznych.</span>{{end}}</div>
+      <div class="full check-group" data-check-filter>
+        <div class="check-group-head">
+          <span class="field-title">Powiazane wydania / inne nosniki</span>
+          <input class="check-filter" type="search" placeholder="Filtruj wydania" aria-label="Filtruj wydania" data-check-filter-input>
+        </div>
+        <div class="checks">{{range .MusicReferences}}<label class="check" data-check-filter-item data-filter-label="{{.Title}} {{.Medium}}"><input type="checkbox" name="related_ids" value="{{.ID}}" data-related-id="{{.ID}}" {{if $.Music.HasRelated .ID}}checked{{end}}>{{.Title}} ({{.Medium}})</label>{{else}}<span class="small-note">Brak innych pozycji muzycznych.</span>{{end}}</div>
       </div>
       <label class="full">Notatki <textarea name="notes">{{.Music.Notes}}</textarea></label>
     </div>
@@ -68,9 +77,12 @@
       <label>Status <input name="status" value="{{.Book.Status}}" placeholder="owned"></label>
       <label>Okladka <input type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
       {{if .Book.CoverPath}}<div class="full small-note">Aktualna okladka: {{.Book.CoverPath}}</div>{{end}}
-      <div class="full">
-        <span class="field-title">Autorzy</span>
-        <div class="checks">{{range .People}}<label class="check"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Book.HasAuthor .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">Najpierw dodaj osobe.</span>{{end}}</div>
+      <div class="full check-group" data-check-filter>
+        <div class="check-group-head">
+          <span class="field-title">Autorzy</span>
+          <input class="check-filter" type="search" placeholder="Filtruj autorow" aria-label="Filtruj autorow" data-check-filter-input>
+        </div>
+        <div class="checks">{{range .People}}<label class="check" data-check-filter-item data-filter-label="{{.Name}}"><input type="checkbox" name="person_ids" value="{{.ID}}" {{if $.Book.HasAuthor .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">Najpierw dodaj osobe.</span>{{end}}</div>
       </div>
       <label class="full">Notatki <textarea name="notes">{{.Book.Notes}}</textarea></label>
     </div>

@@ -57,3 +57,30 @@
 
   if (title.value.trim()) load();
 })();
+
+(function () {
+  const groups = document.querySelectorAll('[data-check-filter]');
+  if (!groups.length) return;
+
+  const normalize = function (value) {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]+/g, '')
+      .toLowerCase();
+  };
+
+  groups.forEach(function (group) {
+    const input = group.querySelector('[data-check-filter-input]');
+    const items = group.querySelectorAll('[data-check-filter-item]');
+    if (!input || !items.length) return;
+
+    input.addEventListener('input', function () {
+      const query = normalize(input.value);
+      items.forEach(function (item) {
+        const label = normalize(item.dataset.filterLabel || item.textContent);
+        item.hidden = query !== '' && !label.includes(query);
+      });
+    });
+  });
+})();

@@ -367,6 +367,25 @@ textarea {
 
 .full { grid-column: 1 / -1; }
 
+.check-group {
+  display: grid;
+  gap: 7px;
+}
+
+.check-group-head {
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.check-filter {
+  width: min(260px, 100%);
+  min-height: 34px;
+  padding: 6px 9px;
+}
+
 .checks {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -420,6 +439,8 @@ textarea {
   min-height: auto;
 }
 
+.check[hidden] { display: none; }
+
 .error {
   padding: 10px 12px;
   border: 1px solid rgba(209, 107, 107, .8);
@@ -468,6 +489,16 @@ textarea {
   }
   .nav-group { grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); }
   .filters { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 560px) {
+  .check-group-head {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .check-filter { width: 100%; }
 }
 
 @media (max-width: 620px) {
