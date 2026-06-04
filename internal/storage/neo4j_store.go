@@ -409,6 +409,7 @@ func (s *Neo4jStore) CreatePerson(ctx context.Context, person domain.Person) (do
 	if err := domain.ValidateNamed(person.Name); err != nil {
 		return person, err
 	}
+	person.SortName = domain.DefaultSortName(person.Name, person.SortName)
 	person.ID = newID()
 	now := time.Now().UTC()
 	person.CreatedAt = now
@@ -432,6 +433,7 @@ func (s *Neo4jStore) CreateGroup(ctx context.Context, group domain.Group, member
 	if err := domain.ValidateNamed(group.Name); err != nil {
 		return group, err
 	}
+	group.SortName = domain.DefaultSortName(group.Name, group.SortName)
 	group.ID = newID()
 	now := time.Now().UTC()
 	group.CreatedAt = now
@@ -543,6 +545,7 @@ func (s *Neo4jStore) UpdatePerson(ctx context.Context, person domain.Person) (do
 	if err := domain.ValidateNamed(person.Name); err != nil {
 		return person, err
 	}
+	person.SortName = domain.DefaultSortName(person.Name, person.SortName)
 	now := time.Now().UTC()
 
 	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})
@@ -568,6 +571,7 @@ func (s *Neo4jStore) UpdateGroup(ctx context.Context, group domain.Group, member
 	if err := domain.ValidateNamed(group.Name); err != nil {
 		return group, err
 	}
+	group.SortName = domain.DefaultSortName(group.Name, group.SortName)
 	now := time.Now().UTC()
 
 	session := s.driver.NewSession(ctx, neo4j.SessionConfig{})

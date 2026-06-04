@@ -172,3 +172,10 @@ func ValidateNamed(name string) error {
 	}
 	return nil
 }
+
+func DefaultSortName(name, sortName string) string {
+	if strings.TrimSpace(sortName) == "" {
+		return strings.TrimSpace(name)
+	}
+	return sortName
+}
