@@ -6,10 +6,7 @@
       <h1>{{.Tr "catalog"}}</h1>
       <p>{{.Tr "catalog_intro"}}</p>
     </div>
-    <div class="actions">
-      <a class="button primary" href="/music/new">{{.Tr "add_music"}}</a>
-      <a class="button" href="/books/new">{{.Tr "add_book"}}</a>
-    </div>
+    <div class="actions">{{template "add_menu" .}}</div>
   </header>
   <form class="filters" method="get" action="/items" data-catalog-filters>
     <label>{{.Tr "search"}} <input type="search" name="q" value="{{.Filter.Query}}" placeholder="{{.Tr "search_catalog"}}"></label>
@@ -43,7 +40,6 @@
         <option value="list" {{if eq .Filter.View "list"}}selected{{end}}>{{.Tr "view_list"}}</option>
       </select>
     </label>
-    <button class="button" type="submit">{{.Tr "filter"}}</button>
   </form>
   <div id="catalog-results">{{template "catalog_items" .}}</div>
 {{template "layout_end" .}}
@@ -74,7 +70,7 @@
           {{if eq .Kind "book"}}<span class="badge">{{$.Tr "book"}}</span>{{else}}<span class="badge medium">{{.Medium}}</span>{{end}}
           {{if .Status}}<span class="badge">{{$.StatusLabel .Status}}</span>{{end}}
         </div>
-        <a class="button small" href="{{if eq .Kind "book"}}/books/{{pathEscape .ID}}/edit{{else}}/music/{{pathEscape .ID}}/edit{{end}}">{{$.Tr "edit"}}</a>
+        <a class="button icon-button" href="{{if eq .Kind "book"}}/books/{{pathEscape .ID}}/edit{{else}}/music/{{pathEscape .ID}}/edit{{end}}" title="{{$.Tr "edit"}}" aria-label="{{$.Tr "edit"}}">{{template "icon-pencil"}}</a>
       </div>
     </article>
   {{end}}

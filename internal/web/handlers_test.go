@@ -156,6 +156,30 @@ func TestCatalogShowsEditLinks(t *testing.T) {
 	if !strings.Contains(body, `/music/hqw%28=.-%21d%23/edit`) || !strings.Contains(body, `/books/%25TZ.a7XrPd/edit`) {
 		t.Fatalf("catalog should show edit links, body: %s", body)
 	}
+	if !strings.Contains(body, `aria-label="Edytuj"`) {
+		t.Fatalf("catalog edit links should have accessible labels, body: %s", body)
+	}
+	if strings.Contains(body, `type="submit">Filtruj`) {
+		t.Fatalf("catalog should not show a redundant filter submit button, body: %s", body)
+	}
+}
+
+func TestCatalogShowsAddMenu(t *testing.T) {
+	server := NewServer(config.Config{}, &fakeStore{})
+	request := authenticatedRequest(server, http.MethodGet, "/", nil)
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	body := response.Body.String()
+	for _, path := range []string{"/music/new", "/books/new", "/people/new", "/groups/new"} {
+		if !strings.Contains(body, `href="`+path+`"`) {
+			t.Errorf("add menu should link to %q", path)
+		}
+	}
+	if !strings.Contains(body, `<span>Dodaj</span>`) {
+		t.Fatalf("catalog should show a single add menu trigger, body: %s", body)
+	}
 }
 
 func TestCatalogPassesMediumFilter(t *testing.T) {

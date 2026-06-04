@@ -1,0 +1,16 @@
+{{- /*gotype: albumer/internal/web.pageData*/ -}}
+{{define "add_menu"}}
+<details class="add-menu" data-add-menu>
+  <summary class="button primary">
+    {{template "icon-plus"}}
+    <span>{{.Tr "add"}}</span>
+    <span class="add-menu-chevron">{{template "icon-chevron-down"}}</span>
+  </summary>
+  <div class="add-menu-panel">
+    <a href="/music/new"><span class="icon">{{template "icon-disc"}}</span>{{.Tr "add_music"}}</a>
+    <a href="/books/new"><span class="icon">{{template "icon-book"}}</span>{{.Tr "add_book"}}</a>
+    <a href="/people/new"><span class="icon">{{template "icon-user-plus"}}</span>{{.Tr "add_person"}}</a>
+    <a href="/groups/new"><span class="icon">{{template "icon-users-plus"}}</span>{{.Tr "add_group"}}</a>
+  </div>
+</details>
+{{end}}

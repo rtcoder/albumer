@@ -16,6 +16,7 @@ type pageData struct {
 	Title           string
 	TitleKey        string
 	Lang            string
+	Theme           string
 	NextURL         string
 	CSRF            string
 	Error           string

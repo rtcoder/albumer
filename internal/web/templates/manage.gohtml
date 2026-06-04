@@ -6,7 +6,7 @@
       <h1>{{.Tr "people"}}</h1>
       <p>{{.Tr "people_intro"}}</p>
     </div>
-    <a class="button primary" href="/people/new">{{.Tr "add_person"}}</a>
+    {{template "add_menu" .}}
   </header>
   <section class="manage-search" data-list-filter>
     <input type="search" placeholder="{{.Tr "search_people"}}" aria-label="{{.Tr "search_people"}}" data-list-filter-input>
@@ -18,7 +18,7 @@
           <h2>{{.Name}}</h2>
           {{if .SortName}}<p>{{.SortName}}</p>{{end}}
         </div>
-        <a class="button small" href="/people/{{pathEscape .ID}}/edit">{{$.Tr "edit"}}</a>
+        <a class="button icon-button" href="/people/{{pathEscape .ID}}/edit" title="{{$.Tr "edit"}}" aria-label="{{$.Tr "edit"}}">{{template "icon-pencil"}}</a>
       </article>
     {{else}}
       <div class="empty">{{.Tr "no_people"}}</div>
@@ -35,7 +35,7 @@
       <h1>{{.Tr "groups"}}</h1>
       <p>{{.Tr "groups_intro"}}</p>
     </div>
-    <a class="button primary" href="/groups/new">{{.Tr "add_group"}}</a>
+    {{template "add_menu" .}}
   </header>
   <section class="manage-search" data-list-filter>
     <input type="search" placeholder="{{.Tr "search_groups"}}" aria-label="{{.Tr "search_groups"}}" data-list-filter-input>
@@ -47,7 +47,7 @@
           <h2>{{.Name}}</h2>
           {{if .SortName}}<p>{{.SortName}}</p>{{end}}
         </div>
-        <a class="button small" href="/groups/{{pathEscape .ID}}/edit">{{$.Tr "edit"}}</a>
+        <a class="button icon-button" href="/groups/{{pathEscape .ID}}/edit" title="{{$.Tr "edit"}}" aria-label="{{$.Tr "edit"}}">{{template "icon-pencil"}}</a>
       </article>
     {{else}}
       <div class="empty">{{.Tr "no_groups"}}</div>

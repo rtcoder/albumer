@@ -1,7 +1,7 @@
 {{- /*gotype: albumer/internal/web.pageData*/ -}}
 {{define "login"}}
 <!doctype html>
-<html lang="{{.Lang}}">
+<html lang="{{.Lang}}" data-theme="{{.Theme}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,10 +12,16 @@
 <body>
   <main class="login-screen">
     <form class="login-card" method="post" action="/login">
-      <nav class="language-switch login-language" aria-label="{{.Tr "language"}}">
-        <a class="{{if eq .Lang "pl"}}active{{end}}" href="/language/pl?next={{.NextURL}}">PL</a>
-        <a class="{{if eq .Lang "en"}}active{{end}}" href="/language/en?next={{.NextURL}}">EN</a>
-      </nav>
+      <div class="login-preferences">
+        <nav class="segmented-switch login-language" aria-label="{{.Tr "language"}}">
+          <a class="{{if eq .Lang "pl"}}active{{end}}" href="/language/pl?next={{.NextURL}}">PL</a>
+          <a class="{{if eq .Lang "en"}}active{{end}}" href="/language/en?next={{.NextURL}}">EN</a>
+        </nav>
+        <nav class="segmented-switch theme-switch" aria-label="{{.Tr "theme"}}">
+          <a class="{{if eq .Theme "light"}}active{{end}}" href="/theme/light?next={{.NextURL}}" title="{{.Tr "theme.light"}}" aria-label="{{.Tr "theme.light"}}">{{template "icon-sun"}}</a>
+          <a class="{{if eq .Theme "dark"}}active{{end}}" href="/theme/dark?next={{.NextURL}}" title="{{.Tr "theme.dark"}}" aria-label="{{.Tr "theme.dark"}}">{{template "icon-moon"}}</a>
+        </nav>
+      </div>
       <h1>Albumer</h1>
       <p class="small-note">{{.Tr "private_collection_panel"}}</p>
       {{if .Error}}<div class="error">{{.Error}}</div>{{end}}

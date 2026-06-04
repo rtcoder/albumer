@@ -1,4 +1,20 @@
 (function () {
+  const menus = document.querySelectorAll('[data-add-menu]');
+  if (!menus.length) return;
+
+  document.addEventListener('click', function (event) {
+    menus.forEach(function (menu) {
+      if (menu.open && !menu.contains(event.target)) menu.removeAttribute('open');
+    });
+  });
+
+  document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Escape') return;
+    menus.forEach(function (menu) { menu.removeAttribute('open'); });
+  });
+})();
+
+(function () {
   const form = document.querySelector('[data-catalog-filters]');
   const target = document.querySelector('#catalog-results');
   if (!form || !target || !window.fetch) return;

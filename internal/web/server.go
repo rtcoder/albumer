@@ -45,6 +45,7 @@ func (s *Server) Routes() http.Handler {
 	r.Get("/login", s.loginForm)
 	r.Post("/login", s.login)
 	r.Get("/language/{lang}", s.setLanguage)
+	r.Get("/theme/{theme}", s.setTheme)
 	r.Get("/uploads/*", http.StripPrefix("/uploads/", http.FileServer(http.Dir(s.cfg.UploadDir))).ServeHTTP)
 	r.Get("/favicon/*", http.StripPrefix("/favicon/", http.FileServer(http.Dir("favicon"))).ServeHTTP)
 	r.Get("/assets/*", http.StripPrefix("/assets/", http.FileServer(http.FS(assetsFS()))).ServeHTTP)
@@ -81,6 +82,7 @@ func (s *Server) Routes() http.Handler {
 
 func (s *Server) render(w http.ResponseWriter, r *http.Request, status int, name string, data pageData) {
 	data.Lang = languageFromRequest(r)
+	data.Theme = themeFromRequest(r)
 	data.NextURL = r.URL.RequestURI()
 	if data.TitleKey != "" {
 		data.Title = data.Tr(data.TitleKey)

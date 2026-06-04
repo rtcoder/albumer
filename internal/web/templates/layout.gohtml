@@ -1,7 +1,7 @@
 {{- /*gotype: albumer/internal/web.pageData*/ -}}
 {{define "layout_start"}}
 <!doctype html>
-<html lang="{{.Lang}}">
+<html lang="{{.Lang}}" data-theme="{{.Theme}}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,24 +16,27 @@
       <strong>Albumer</strong>
       <span>{{.Tr "private_library"}}</span>
     </div>
+    <div class="utility-controls">
+      <nav class="segmented-switch" aria-label="{{.Tr "language"}}">
+        <a class="{{if eq .Lang "pl"}}active{{end}}" href="/language/pl?next={{.NextURL}}">PL</a>
+        <a class="{{if eq .Lang "en"}}active{{end}}" href="/language/en?next={{.NextURL}}">EN</a>
+      </nav>
+      <nav class="segmented-switch theme-switch" aria-label="{{.Tr "theme"}}">
+        <a class="{{if eq .Theme "light"}}active{{end}}" href="/theme/light?next={{.NextURL}}" title="{{.Tr "theme.light"}}" aria-label="{{.Tr "theme.light"}}">{{template "icon-sun"}}</a>
+        <a class="{{if eq .Theme "dark"}}active{{end}}" href="/theme/dark?next={{.NextURL}}" title="{{.Tr "theme.dark"}}" aria-label="{{.Tr "theme.dark"}}">{{template "icon-moon"}}</a>
+      </nav>
+      <form method="post" action="/logout">
+        <input type="hidden" name="csrf" value="{{.CSRF}}">
+        <button class="logout icon-only" type="submit" title="{{.Tr "logout"}}" aria-label="{{.Tr "logout"}}">{{template "icon-log-out"}}</button>
+      </form>
+    </div>
+    {{template "add_menu" .}}
     <div class="nav-group">
-      <a class="nav-item" href="/"><span class="icon">A</span>{{.Tr "catalog"}}</a>
-      <a class="nav-item" href="/music/new"><span class="icon">M</span>{{.Tr "add_music"}}</a>
-      <a class="nav-item" href="/books/new"><span class="icon">B</span>{{.Tr "add_book"}}</a>
-      <a class="nav-item" href="/people"><span class="icon">P</span>{{.Tr "people"}}</a>
-      <a class="nav-item" href="/groups"><span class="icon">G</span>{{.Tr "groups"}}</a>
-      <a class="nav-item" href="/people/new"><span class="icon">P</span>{{.Tr "add_person"}}</a>
-      <a class="nav-item" href="/groups/new"><span class="icon">G</span>{{.Tr "add_group"}}</a>
+      <a class="nav-item" href="/"><span class="icon">{{template "icon-library"}}</span>{{.Tr "catalog"}}</a>
+      <a class="nav-item" href="/people"><span class="icon">{{template "icon-user"}}</span>{{.Tr "people"}}</a>
+      <a class="nav-item" href="/groups"><span class="icon">{{template "icon-users"}}</span>{{.Tr "groups"}}</a>
     </div>
     <div class="sidebar-spacer"></div>
-    <nav class="language-switch" aria-label="{{.Tr "language"}}">
-      <a class="{{if eq .Lang "pl"}}active{{end}}" href="/language/pl?next={{.NextURL}}">PL</a>
-      <a class="{{if eq .Lang "en"}}active{{end}}" href="/language/en?next={{.NextURL}}">EN</a>
-    </nav>
-    <form method="post" action="/logout">
-      <input type="hidden" name="csrf" value="{{.CSRF}}">
-      <button class="logout" type="submit"><span class="icon">X</span>{{.Tr "logout"}}</button>
-    </form>
   </aside>
   <main class="content">
 {{end}}
