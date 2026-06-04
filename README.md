@@ -1,23 +1,23 @@
 # Albumer
 
-Prywatny katalog kolekcji CD, winyli, kaset i ksiazek. Aplikacja jest pisana jako jedna binarka Go z widokami SSR, malym wbudowanym JS do filtrowania oraz baza Neo4j jako osobna usluga.
+A private catalog for a collection of CDs, vinyl records, cassettes, and books. The application is distributed as a single Go binary with server-side rendered views, a small amount of embedded JavaScript for filtering, and Neo4j running as a separate service.
 
-Frontend jest renderowany przez backend Go, ale trzymany w normalnych plikach HTML/CSS/JS:
+The frontend is rendered by the Go backend, but it is kept in regular HTML, CSS, and JavaScript files:
 
 - `internal/web/templates/*.gohtml`
 - `internal/web/assets/app.css`
 - `internal/web/assets/app.js`
 
-Szablony uzywaja rozszerzenia `.gohtml`, zeby GoLand rozpoznawal Go HTML templates i podpowiadal dane widoku. Pliki sa osadzane w binarce przez `go:embed`, wiec deploy dalej wymaga tylko aplikacji Go. Stary statyczny prototyp (`index.html`, `css/`, `js/`, `svg/`, PWA/service worker) zostal usuniety.
+Templates use the `.gohtml` extension so GoLand can recognize Go HTML templates and provide view data hints. The files are embedded in the binary using `go:embed`, so deployment still requires only the Go application.
 
-## Wymagania
+## Requirements
 
 - Go 1.22+
 - Neo4j 5+
 
-## Konfiguracja
+## Configuration
 
-Aplikacja czyta konfiguracje ze zmiennych srodowiskowych:
+The application reads configuration from environment variables:
 
 ```sh
 ADDR=:4000
@@ -26,72 +26,72 @@ NEO4J_USER=neo4j
 NEO4J_PASSWORD=neo4j
 APP_SECRET=change-me
 UPLOAD_DIR=./uploads
-ADMIN_PASSWORD_HASH='bcrypt-hash'
+ADMIN_PASSWORD_HASH='$2a$10$...'
 ```
 
-Przy starcie aplikacja laduje tez lokalny plik `.env`, jesli istnieje. Zmienne ustawione juz w systemie maja pierwszenstwo przed wartosciami z `.env`.
+At startup, the application also loads a local `.env` file when one exists. Environment variables that are already set take precedence over values from `.env`.
 
-Jesli `ADMIN_PASSWORD_HASH` jest puste, lokalne haslo developerskie to `admin`. Na serwerze ustaw hash bcrypt.
+If `ADMIN_PASSWORD_HASH` is empty, the default development password is `admin`. Use a bcrypt hash on a server. The interactive installer asks for a plain-text password and creates the hash automatically.
 
-## Uruchomienie lokalne
+## Local Development
 
 ```sh
 go mod tidy
 go run ./cmd/albumer
 ```
 
-Po starcie wejdz na `http://localhost:4000`.
+Open `http://localhost:4000` after the application starts.
 
-## Model danych
+## Data Model
 
-- `Person` reprezentuje artyste albo autora.
-- `Group` reprezentuje zespol i ma relacje `HAS_MEMBER` do osob.
-- `MusicItem` reprezentuje fizyczna pozycje muzyczna. Pole `medium` jest wymagane i przyjmuje `CD`, `VINYL` albo `CASSETTE`.
-- `Book` reprezentuje ksiazke.
+- `Person` represents a music artist or book author.
+- `Group` represents a band and has `HAS_MEMBER` relationships to people.
+- `MusicItem` represents a physical music item. Its required `medium` field accepts `CD`, `VINYL`, or `CASSETTE`.
+- `Book` represents a book.
+- Music items and books use one of the statuses: `owned`, `ordered`, or `wanted`.
 
-Ten sam album na CD i winylu to dwie osobne pozycje `MusicItem`.
-Pozycje tego samego albumu na roznych nosnikach mozna polaczyc relacja `SAME_RELEASE`. Formularz muzyki pozwala wybrac relacje recznie i proponuje istniejace pozycje po wpisaniu tytulu.
+The same album on CD and vinyl is represented by two separate `MusicItem` nodes. Releases of the same album on different media can be connected using the `SAME_RELEASE` relationship. The music form allows relationships to be selected manually and suggests existing items after a title is entered.
 
-## Deploy jako systemd
+## systemd Deployment
 
-Przykladowy unit jest w `deploy/albumer.service`. Przed startem ustaw prawdziwe sekrety i katalog uploadow.
+On a Linux server with `systemd` and Neo4j installed, run the interactive installer:
 
 ```sh
-go build -o albumer ./cmd/albumer
-sudo install -m 755 albumer /opt/albumer/albumer
-sudo install -m 644 deploy/albumer.service /etc/systemd/system/albumer.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now albumer
+./install.sh
 ```
 
-## Testy
+The installer checks for Neo4j, asks for configuration values, verifies that the selected port is available, hashes the administrator password with bcrypt, and installs the application as the `albumer` service. Service configuration is stored in `/opt/albumer/.env`.
+
+If no administrator password is provided, the application keeps the default password `admin`.
+
+## Tests
 
 ```sh
 go test ./...
 ```
 
-## Import starego JSON
+## Importing Legacy JSON
 
-Stary `json/data.json` mozna zaladowac do Neo4j jako kolekcje plyt CD:
+The old `json/data.json` file can be loaded into Neo4j as a collection of CDs:
 
 ```sh
 go run ./cmd/import-json -file json/data.json
 ```
 
-Importer tworzy osoby, zespoly (`Band` w Neo4j), relacje czlonkow zespolow oraz `MusicItem` z `medium=CD`. Rekordy w bazie dostaja nowe UUID; stare `id` z JSON sa uzywane tylko tymczasowo podczas importu do zbudowania relacji.
+The importer creates people, bands (`Band` nodes in Neo4j), band member relationships, and `MusicItem` nodes with `medium=CD`. Database records receive new UUIDs; old JSON IDs are used only temporarily while relationships are being built.
 
-Jesli baza byla wypelniona przed dodaniem przyjaznego wyszukiwania, odpal jednorazowo:
+If the database was populated before friendly search was added, run the search backfill once:
 
 ```sh
 go run ./cmd/backfill-search
 ```
 
-To uzupelni pola `searchName` i `searchTitle`, dzieki czemu np. `ostr` znajdzie `O.S.T.R`.
+This fills the `searchName` and `searchTitle` fields, allowing a query such as `ostr` to find `O.S.T.R`.
 
-Stare losowe ID w juz istniejacej bazie mozna zamienic na UUID:
+Existing records with old random IDs can be migrated to UUIDs:
 
 ```sh
 go run ./cmd/migrate-ids
 ```
 
-Skrypt zapisuje poprzednie ID w `legacyId`, wiec relacje zostaja zachowane.
+The migration stores previous IDs in `legacyId`, so relationships are preserved.
