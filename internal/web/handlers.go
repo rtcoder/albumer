@@ -34,7 +34,7 @@ func (s *Server) catalog(w http.ResponseWriter, r *http.Request) {
 		Query:  strings.TrimSpace(r.URL.Query().Get("q")),
 		Kind:   r.URL.Query().Get("kind"),
 		Medium: domain.NormalizeMedium(r.URL.Query().Get("medium")),
-		Status: r.URL.Query().Get("status"),
+		Status: domain.NormalizeStatus(r.URL.Query().Get("status")),
 		View:   r.URL.Query().Get("view"),
 	}
 	if filter.View == "" {
@@ -42,6 +42,9 @@ func (s *Server) catalog(w http.ResponseWriter, r *http.Request) {
 	}
 	if !filter.Medium.Valid() {
 		filter.Medium = ""
+	}
+	if !filter.Status.Valid() {
+		filter.Status = ""
 	}
 
 	items, err := s.store.ListCatalog(r.Context(), filter)
@@ -83,7 +86,7 @@ func (s *Server) createMusic(w http.ResponseWriter, r *http.Request) {
 		Title:     strings.TrimSpace(r.FormValue("title")),
 		Medium:    domain.NormalizeMedium(r.FormValue("medium")),
 		Year:      parseYear(r.FormValue("year")),
-		Status:    strings.TrimSpace(r.FormValue("status")),
+		Status:    domain.NormalizeStatus(r.FormValue("status")),
 		CoverPath: coverPath,
 		Notes:     strings.TrimSpace(r.FormValue("notes")),
 		Artists:   contributorsFromForm(r),
@@ -139,7 +142,7 @@ func (s *Server) updateMusic(w http.ResponseWriter, r *http.Request) {
 		Title:     strings.TrimSpace(r.FormValue("title")),
 		Medium:    domain.NormalizeMedium(r.FormValue("medium")),
 		Year:      parseYear(r.FormValue("year")),
-		Status:    strings.TrimSpace(r.FormValue("status")),
+		Status:    domain.NormalizeStatus(r.FormValue("status")),
 		CoverPath: coverPath,
 		Notes:     strings.TrimSpace(r.FormValue("notes")),
 		Artists:   contributorsFromForm(r),
@@ -182,7 +185,7 @@ func (s *Server) createBook(w http.ResponseWriter, r *http.Request) {
 		Title:     strings.TrimSpace(r.FormValue("title")),
 		ISBN:      strings.TrimSpace(r.FormValue("isbn")),
 		Year:      parseYear(r.FormValue("year")),
-		Status:    strings.TrimSpace(r.FormValue("status")),
+		Status:    domain.NormalizeStatus(r.FormValue("status")),
 		CoverPath: coverPath,
 		Notes:     strings.TrimSpace(r.FormValue("notes")),
 		Authors:   authors,
@@ -237,7 +240,7 @@ func (s *Server) updateBook(w http.ResponseWriter, r *http.Request) {
 		Title:     strings.TrimSpace(r.FormValue("title")),
 		ISBN:      strings.TrimSpace(r.FormValue("isbn")),
 		Year:      parseYear(r.FormValue("year")),
-		Status:    strings.TrimSpace(r.FormValue("status")),
+		Status:    domain.NormalizeStatus(r.FormValue("status")),
 		CoverPath: coverPath,
 		Notes:     strings.TrimSpace(r.FormValue("notes")),
 		Authors:   authorsFromForm(r),

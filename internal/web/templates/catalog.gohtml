@@ -28,7 +28,14 @@
         <option value="CASSETTE" {{if eq .Filter.Medium "CASSETTE"}}selected{{end}}>Kaseta</option>
       </select>
     </label>
-    <label>Status <input name="status" value="{{.Filter.Status}}" placeholder="np. owned"></label>
+    <label>Status
+      <select name="status">
+        <option value="" {{if eq .Filter.Status ""}}selected{{end}}>Wszystkie</option>
+        <option value="owned" {{if eq .Filter.Status "owned"}}selected{{end}}>Posiadane</option>
+        <option value="ordered" {{if eq .Filter.Status "ordered"}}selected{{end}}>Zamówione</option>
+        <option value="wanted" {{if eq .Filter.Status "wanted"}}selected{{end}}>Chcę kupić</option>
+      </select>
+    </label>
     <label>Widok
       <select name="view">
         <option value="grid-large" {{if eq .Filter.View "grid-large"}}selected{{end}}>Grid duzy</option>
@@ -53,7 +60,7 @@
         {{if .Subtitle}}<div class="item-meta">{{.Subtitle}}</div>{{end}}
         <div class="badges">
           {{if eq .Kind "book"}}<span class="badge">Ksiazka</span>{{else}}<span class="badge medium">{{.Medium}}</span>{{end}}
-          {{if .Status}}<span class="badge">{{.Status}}</span>{{end}}
+          {{if .Status}}<span class="badge">{{.Status.Label}}</span>{{end}}
         </div>
         <a class="button small" href="{{if eq .Kind "book"}}/books/{{pathEscape .ID}}/edit{{else}}/music/{{pathEscape .ID}}/edit{{end}}">Edytuj</a>
       </div>

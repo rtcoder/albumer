@@ -22,7 +22,13 @@
         </select>
       </label>
       <label>Rok <input name="year" value="{{if .Music.Year}}{{.Music.Year}}{{end}}" inputmode="numeric"></label>
-      <label>Status <input name="status" value="{{.Music.Status}}" placeholder="owned"></label>
+      <label>Status
+        <select name="status" required>
+          <option value="owned" {{if or (eq .Music.Status "") (eq .Music.Status "owned")}}selected{{end}}>Posiadane</option>
+          <option value="ordered" {{if eq .Music.Status "ordered"}}selected{{end}}>Zamówione</option>
+          <option value="wanted" {{if eq .Music.Status "wanted"}}selected{{end}}>Chcę kupić</option>
+        </select>
+      </label>
       <label>Okladka <input type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
       {{if .Music.CoverPath}}<div class="full small-note">Aktualna okladka: {{.Music.CoverPath}}</div>{{end}}
       <div class="full check-group" data-check-filter>
@@ -74,7 +80,13 @@
       <label class="full">Tytul <input name="title" value="{{.Book.Title}}" required></label>
       <label>ISBN <input name="isbn" value="{{.Book.ISBN}}"></label>
       <label>Rok <input name="year" value="{{if .Book.Year}}{{.Book.Year}}{{end}}" inputmode="numeric"></label>
-      <label>Status <input name="status" value="{{.Book.Status}}" placeholder="owned"></label>
+      <label>Status
+        <select name="status" required>
+          <option value="owned" {{if or (eq .Book.Status "") (eq .Book.Status "owned")}}selected{{end}}>Posiadane</option>
+          <option value="ordered" {{if eq .Book.Status "ordered"}}selected{{end}}>Zamówione</option>
+          <option value="wanted" {{if eq .Book.Status "wanted"}}selected{{end}}>Chcę kupić</option>
+        </select>
+      </label>
       <label>Okladka <input type="file" name="cover" accept="image/jpeg,image/png,image/webp"></label>
       {{if .Book.CoverPath}}<div class="full small-note">Aktualna okladka: {{.Book.CoverPath}}</div>{{end}}
       <div class="full check-group" data-check-filter>

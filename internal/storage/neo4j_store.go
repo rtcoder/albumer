@@ -81,7 +81,7 @@ func (s *Neo4jStore) ListCatalog(ctx context.Context, filter domain.CatalogFilte
 		"q":      domain.SearchKey(filter.Query),
 		"kind":   filter.Kind,
 		"medium": string(filter.Medium),
-		"status": filter.Status,
+		"status": string(filter.Status),
 	}
 
 	var items []domain.CatalogItem
@@ -138,7 +138,7 @@ RETURN m.id AS id, m.title AS title, m.medium AS medium, m.status AS status,
 			Title:        recordString(record, "title"),
 			Subtitle:     contributorNames(contributors),
 			Medium:       domain.MusicMedium(recordString(record, "medium")),
-			Status:       recordString(record, "status"),
+			Status:       domain.NormalizeStatus(recordString(record, "status")),
 			CoverPath:    recordString(record, "coverPath"),
 			Year:         recordInt(record, "year"),
 			Contributors: contributors,
@@ -171,7 +171,7 @@ RETURN b.id AS id, b.title AS title, b.status AS status,
 			Kind:         "book",
 			Title:        recordString(record, "title"),
 			Subtitle:     contributorNames(contributors),
-			Status:       recordString(record, "status"),
+			Status:       domain.NormalizeStatus(recordString(record, "status")),
 			CoverPath:    recordString(record, "coverPath"),
 			Year:         recordInt(record, "year"),
 			Contributors: contributors,
@@ -352,7 +352,7 @@ RETURN m.id AS id, m.title AS title, m.medium AS medium, m.releaseYear AS year,
 			Title:     recordString(record, "title"),
 			Medium:    domain.MusicMedium(recordString(record, "medium")),
 			Year:      recordInt(record, "year"),
-			Status:    recordString(record, "status"),
+			Status:    domain.NormalizeStatus(recordString(record, "status")),
 			CoverPath: recordString(record, "coverPath"),
 			Notes:     recordString(record, "notes"),
 			Artists:   readContributors(recordValue[[]any](record, "contributors")),
@@ -390,7 +390,7 @@ RETURN b.id AS id, b.title AS title, b.isbn AS isbn, b.publishedYear AS year,
 			Title:     recordString(record, "title"),
 			ISBN:      recordString(record, "isbn"),
 			Year:      recordInt(record, "year"),
-			Status:    recordString(record, "status"),
+			Status:    domain.NormalizeStatus(recordString(record, "status")),
 			CoverPath: recordString(record, "coverPath"),
 			Notes:     recordString(record, "notes"),
 		}
@@ -491,7 +491,7 @@ WHERE related.id <> m.id
 MERGE (m)-[:SAME_RELEASE]->(related)
 `, map[string]any{
 			"id": item.ID, "title": item.Title, "medium": string(item.Medium), "year": item.Year,
-			"status": item.Status, "searchTitle": domain.SearchKey(item.Title), "coverPath": item.CoverPath, "notes": item.Notes,
+			"status": string(item.Status), "searchTitle": domain.SearchKey(item.Title), "coverPath": item.CoverPath, "notes": item.Notes,
 			"createdAt": now, "updatedAt": now, "contributors": contributorParams(item.Artists),
 			"relatedIDs": relatedIDs(item),
 		})
@@ -530,7 +530,7 @@ MATCH (p:Person {id: authorID})
 MERGE (b)-[:AUTHORED_BY]->(p)
 `, map[string]any{
 			"id": book.ID, "title": book.Title, "isbn": book.ISBN, "year": book.Year,
-			"status": book.Status, "searchTitle": domain.SearchKey(book.Title), "coverPath": book.CoverPath, "notes": book.Notes,
+			"status": string(book.Status), "searchTitle": domain.SearchKey(book.Title), "coverPath": book.CoverPath, "notes": book.Notes,
 			"createdAt": now, "updatedAt": now, "authorIDs": authorIDs,
 		})
 		if err != nil {
@@ -642,7 +642,7 @@ WHERE related.id <> m.id
 MERGE (m)-[:SAME_RELEASE]->(related)
 `, map[string]any{
 			"id": item.ID, "title": item.Title, "medium": string(item.Medium), "year": item.Year,
-			"status": item.Status, "searchTitle": domain.SearchKey(item.Title), "coverPath": item.CoverPath, "notes": item.Notes,
+			"status": string(item.Status), "searchTitle": domain.SearchKey(item.Title), "coverPath": item.CoverPath, "notes": item.Notes,
 			"updatedAt": now, "contributors": contributorParams(item.Artists),
 			"relatedIDs": relatedIDs(item),
 		})
@@ -686,7 +686,7 @@ MATCH (p:Person {id: authorID})
 MERGE (b)-[:AUTHORED_BY]->(p)
 `, map[string]any{
 			"id": book.ID, "title": book.Title, "isbn": book.ISBN, "year": book.Year,
-			"status": book.Status, "searchTitle": domain.SearchKey(book.Title), "coverPath": book.CoverPath, "notes": book.Notes,
+			"status": string(book.Status), "searchTitle": domain.SearchKey(book.Title), "coverPath": book.CoverPath, "notes": book.Notes,
 			"updatedAt": now, "authorIDs": authorIDs,
 		})
 		if err != nil {

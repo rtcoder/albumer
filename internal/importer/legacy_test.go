@@ -1,15 +1,19 @@
 package importer
 
-import "testing"
+import (
+	"testing"
+
+	"albumer/internal/domain"
+)
 
 func TestLegacyStatus(t *testing.T) {
 	tests := []struct {
 		value int
-		want  string
+		want  domain.ItemStatus
 	}{
-		{1, "owned"},
-		{0, ""},
-		{7, "legacy:7"},
+		{1, domain.StatusOwned},
+		{0, domain.StatusWanted},
+		{7, domain.StatusWanted},
 	}
 
 	for _, tt := range tests {

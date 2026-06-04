@@ -16,6 +16,16 @@ const (
 
 var ValidMusicMedia = []MusicMedium{MediumCD, MediumVinyl, MediumCassette}
 
+type ItemStatus string
+
+const (
+	StatusOwned   ItemStatus = "owned"
+	StatusOrdered ItemStatus = "ordered"
+	StatusWanted  ItemStatus = "wanted"
+)
+
+var ValidItemStatuses = []ItemStatus{StatusOwned, StatusOrdered, StatusWanted}
+
 type Person struct {
 	ID        string
 	Name      string
@@ -40,7 +50,7 @@ type MusicItem struct {
 	Title     string
 	Medium    MusicMedium
 	Year      int
-	Status    string
+	Status    ItemStatus
 	CoverPath string
 	Notes     string
 	Artists   []Contributor
@@ -60,7 +70,7 @@ type Book struct {
 	Title     string
 	ISBN      string
 	Year      int
-	Status    string
+	Status    ItemStatus
 	CoverPath string
 	Notes     string
 	Authors   []Person
@@ -80,7 +90,7 @@ type CatalogItem struct {
 	Title        string
 	Subtitle     string
 	Medium       MusicMedium
-	Status       string
+	Status       ItemStatus
 	CoverPath    string
 	Year         int
 	Contributors []Contributor
@@ -126,7 +136,7 @@ type CatalogFilter struct {
 	Query  string
 	Kind   string
 	Medium MusicMedium
-	Status string
+	Status ItemStatus
 	View   string
 }
 
@@ -143,12 +153,41 @@ func NormalizeMedium(value string) MusicMedium {
 	return MusicMedium(strings.ToUpper(strings.TrimSpace(value)))
 }
 
+func (s ItemStatus) Valid() bool {
+	switch s {
+	case StatusOwned, StatusOrdered, StatusWanted:
+		return true
+	default:
+		return false
+	}
+}
+
+func (s ItemStatus) Label() string {
+	switch s {
+	case StatusOwned:
+		return "Posiadane"
+	case StatusOrdered:
+		return "Zamówione"
+	case StatusWanted:
+		return "Chcę kupić"
+	default:
+		return string(s)
+	}
+}
+
+func NormalizeStatus(value string) ItemStatus {
+	return ItemStatus(strings.ToLower(strings.TrimSpace(value)))
+}
+
 func ValidateMusicItem(item MusicItem) error {
 	if strings.TrimSpace(item.Title) == "" {
 		return errors.New("title is required")
 	}
 	if !item.Medium.Valid() {
 		return errors.New("medium must be CD, VINYL, or CASSETTE")
+	}
+	if !item.Status.Valid() {
+		return errors.New("status must be owned, ordered, or wanted")
 	}
 	if len(item.Artists) == 0 {
 		return errors.New("at least one artist or group is required")
@@ -159,6 +198,9 @@ func ValidateMusicItem(item MusicItem) error {
 func ValidateBook(book Book) error {
 	if strings.TrimSpace(book.Title) == "" {
 		return errors.New("title is required")
+	}
+	if !book.Status.Valid() {
+		return errors.New("status must be owned, ordered, or wanted")
 	}
 	if len(book.Authors) == 0 {
 		return errors.New("at least one author is required")

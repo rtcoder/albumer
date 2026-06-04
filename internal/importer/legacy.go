@@ -201,14 +201,11 @@ func BackfillSearchKeys(ctx context.Context, driver neo4j.DriverWithContext) (Se
 	return value.(SearchBackfillSummary), nil
 }
 
-func LegacyStatus(value int) string {
+func LegacyStatus(value int) domain.ItemStatus {
 	if value == 1 {
-		return "owned"
+		return domain.StatusOwned
 	}
-	if value == 0 {
-		return ""
-	}
-	return fmt.Sprintf("legacy:%d", value)
+	return domain.StatusWanted
 }
 
 func createLegacyPerson(ctx context.Context, tx neo4j.ManagedTransaction, id string, artist LegacyArtist, now time.Time) error {
