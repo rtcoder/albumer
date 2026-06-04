@@ -20,6 +20,7 @@
   --error-bg: #321818;
   --error-line: rgba(209, 107, 107, .8);
   --error-text: #ffd7d7;
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aaa59a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
   --shadow: 0 18px 44px rgba(0, 0, 0, .22);
 }
 
@@ -45,6 +46,7 @@
   --error-bg: #fae7e7;
   --error-line: rgba(180, 71, 71, .55);
   --error-text: #8c2929;
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2368716b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
   --shadow: 0 14px 34px rgba(31, 42, 35, .09);
 }
 
@@ -476,6 +478,15 @@ textarea:focus {
   border-color: var(--blue);
 }
 
+select {
+  appearance: none;
+  padding-right: 38px;
+  background-image: var(--select-arrow);
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px 16px;
+}
+
 textarea {
   min-height: 110px;
   resize: vertical;
@@ -623,9 +634,9 @@ textarea {
 }
 
 .manage-search {
-  max-width: 420px;
+  max-width: 440px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 150px;
+  grid-template-columns: minmax(0, 1fr) 170px;
   gap: 8px;
   margin-bottom: 12px;
 }
