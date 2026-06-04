@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="CD cover placeholder">
+  <circle cx="300" cy="300" r="168" fill="#d8dce2"/>
+  <path d="M300 132a168 168 0 0 1 158 112L328 286z" fill="#7fc8a9"/>
+  <path d="M458 244a168 168 0 0 1-72 196L318 326z" fill="#74a4d8"/>
+  <path d="M386 440a168 168 0 0 1-244-118l132-12z" fill="#d7916b"/>
+  <path d="M142 322a168 168 0 0 1 158-190l-12 144z" fill="#d8c66d"/>
+  <circle cx="300" cy="300" r="55" fill="#202020"/>
+  <circle cx="300" cy="300" r="22" fill="#171717"/>
+  <circle cx="300" cy="300" r="168" fill="none" stroke="#f4f2ed" stroke-width="6" opacity=".45"/>
+</svg>

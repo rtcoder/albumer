@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Cassette cover placeholder">
+  <rect x="80" y="142" width="440" height="316" rx="28" fill="#d7c9a8"/>
+  <rect x="108" y="174" width="384" height="146" rx="16" fill="#eee6d4"/>
+  <rect x="146" y="205" width="308" height="82" rx="12" fill="#242424"/>
+  <circle cx="214" cy="246" r="42" fill="#ddd4bf"/>
+  <circle cx="386" cy="246" r="42" fill="#ddd4bf"/>
+  <circle cx="214" cy="246" r="19" fill="#1b1b1b"/>
+  <circle cx="386" cy="246" r="19" fill="#1b1b1b"/>
+  <path d="M256 246h88" stroke="#98724d" stroke-width="12" stroke-linecap="round"/>
+  <path d="M156 376h288l38 54H118z" fill="#b7a47b"/>
+  <circle cx="194" cy="403" r="12" fill="#423a30"/>
+  <circle cx="406" cy="403" r="12" fill="#423a30"/>
+  <path d="M132 350h336" stroke="#98724d" stroke-width="9" stroke-linecap="round"/>
+</svg>

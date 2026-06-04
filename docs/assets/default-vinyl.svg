@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="Vinyl cover placeholder">
+  <circle cx="300" cy="300" r="180" fill="#111"/>
+  <circle cx="300" cy="300" r="151" fill="none" stroke="#2f2f2f" stroke-width="5"/>
+  <circle cx="300" cy="300" r="125" fill="none" stroke="#292929" stroke-width="4"/>
+  <circle cx="300" cy="300" r="99" fill="none" stroke="#333" stroke-width="4"/>
+  <circle cx="300" cy="300" r="72" fill="#d2b553"/>
+  <circle cx="300" cy="300" r="22" fill="#111"/>
+  <path d="M186 168a180 180 0 0 1 228 0" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".12"/>
+</svg>
