@@ -215,6 +215,25 @@ func TestCatalogNormalizesLegacySmallGridView(t *testing.T) {
 	}
 }
 
+func TestCatalogShowsIconViewSwitch(t *testing.T) {
+	server := NewServer(config.Config{}, &fakeStore{})
+	request := authenticatedRequest(server, http.MethodGet, "/items?view=list", nil)
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	body := response.Body.String()
+	if strings.Contains(body, `<select name="view">`) {
+		t.Fatalf("catalog should not show a view select, body: %s", body)
+	}
+	if !strings.Contains(body, `type="radio" name="view" value="grid"`) {
+		t.Fatalf("catalog should show a grid view option, body: %s", body)
+	}
+	if !strings.Contains(body, `type="radio" name="view" value="list" checked`) {
+		t.Fatalf("catalog should mark the list view option as checked, body: %s", body)
+	}
+}
+
 func TestMusicSuggestionsShowOtherMedia(t *testing.T) {
 	store := &fakeStore{musicRefs: []domain.MusicReference{
 		{ID: "cd-1", Title: "Album", Medium: domain.MediumCD},

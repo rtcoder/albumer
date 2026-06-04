@@ -158,6 +158,18 @@ textarea {
   stroke-linejoin: round;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .theme-switch .icon-svg {
   width: 14px;
   height: 14px;
@@ -362,7 +374,7 @@ textarea {
 
 .filters {
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) repeat(4, minmax(130px, 170px));
+  grid-template-columns: minmax(240px, 1fr) repeat(3, minmax(130px, 170px)) 100px;
   gap: 10px;
   align-items: end;
   padding: 14px;
@@ -371,6 +383,64 @@ textarea {
   background: var(--surface);
   box-shadow: var(--shadow);
   margin-bottom: 18px;
+}
+
+.view-switch {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.view-switch legend {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.view-options {
+  width: max-content;
+  display: grid;
+  grid-template-columns: repeat(2, 40px);
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--field);
+}
+
+.view-options label {
+  display: block;
+  cursor: pointer;
+}
+
+.view-options input {
+  position: absolute;
+  width: 1px;
+  min-height: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.view-option {
+  width: 40px;
+  min-height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: var(--muted);
+}
+
+.view-options label:hover .view-option,
+.view-options input:focus-visible + .view-option,
+.view-options input:checked + .view-option {
+  background: var(--surface-2);
+  color: var(--text);
 }
 
 label,

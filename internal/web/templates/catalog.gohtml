@@ -33,12 +33,19 @@
         <option value="wanted" {{if eq .Filter.Status "wanted"}}selected{{end}}>{{.Tr "status.wanted"}}</option>
       </select>
     </label>
-    <label>{{.Tr "view"}}
-      <select name="view">
-        <option value="grid" {{if eq .Filter.View "grid"}}selected{{end}}>{{.Tr "view_grid"}}</option>
-        <option value="list" {{if eq .Filter.View "list"}}selected{{end}}>{{.Tr "view_list"}}</option>
-      </select>
-    </label>
+    <fieldset class="view-switch">
+      <legend>{{.Tr "view"}}</legend>
+      <div class="view-options">
+        <label title="{{.Tr "view_grid"}}">
+          <input type="radio" name="view" value="grid" {{if eq .Filter.View "grid"}}checked{{end}}>
+          <span class="view-option">{{template "icon-grid"}}<span class="sr-only">{{.Tr "view_grid"}}</span></span>
+        </label>
+        <label title="{{.Tr "view_list"}}">
+          <input type="radio" name="view" value="list" {{if eq .Filter.View "list"}}checked{{end}}>
+          <span class="view-option">{{template "icon-list"}}<span class="sr-only">{{.Tr "view_list"}}</span></span>
+        </label>
+      </div>
+    </fieldset>
   </form>
   <div id="catalog-results">{{template "catalog_items" .}}</div>
 {{template "layout_end" .}}
