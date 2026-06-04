@@ -336,6 +336,27 @@ func TestGroupsIndexShowsSearch(t *testing.T) {
 	}
 }
 
+func TestGroupFormShowsOnlyArtistsAsMembers(t *testing.T) {
+	store := &fakeStore{people: []domain.Person{
+		{ID: "artist", Name: "Artist Person", Roles: []string{domain.PersonRoleArtist}},
+		{ID: "author", Name: "Author Person", Roles: []string{domain.PersonRoleAuthor}},
+		{ID: "both", Name: "Both Person", Roles: []string{domain.PersonRoleArtist, domain.PersonRoleAuthor}},
+	}}
+	server := NewServer(config.Config{}, store)
+	request := authenticatedRequest(server, http.MethodGet, "/groups/new", nil)
+	response := httptest.NewRecorder()
+
+	server.Routes().ServeHTTP(response, request)
+
+	body := response.Body.String()
+	if !strings.Contains(body, `value="artist"`) || !strings.Contains(body, `value="both"`) {
+		t.Fatalf("group form should show artists, body: %s", body)
+	}
+	if strings.Contains(body, `value="author"`) {
+		t.Fatalf("group form should not show author-only people, body: %s", body)
+	}
+}
+
 func authenticatedRequest(server *Server, method, target string, form url.Values) *http.Request {
 	var body *strings.Reader
 	if form == nil {

@@ -137,7 +137,7 @@
       <label>{{.Tr "sort_name"}} <input name="sort_name" value="{{.Group.SortName}}"></label>
       <div class="full">
         <span class="field-title">{{.Tr "members"}}</span>
-        <div class="checks">{{range .People}}<label class="check"><input type="checkbox" name="member_ids" value="{{.ID}}" {{if $.Group.HasMember .ID}}checked{{end}}>{{.Name}}</label>{{else}}<span class="small-note">{{.Tr "add_person_first"}}</span>{{end}}</div>
+        <div class="checks">{{range .People}}{{if .HasRole "artist"}}<label class="check"><input type="checkbox" name="member_ids" value="{{.ID}}" {{if $.Group.HasMember .ID}}checked{{end}}>{{.Name}}</label>{{end}}{{else}}<span class="small-note">{{.Tr "add_artist_first"}}</span>{{end}}</div>
       </div>
       <label class="full">{{.Tr "notes"}} <textarea name="notes">{{.Group.Notes}}</textarea></label>
     </div>

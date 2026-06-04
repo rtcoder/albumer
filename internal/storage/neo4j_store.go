@@ -481,6 +481,8 @@ CREATE (g:Band {id: $id, name: $name, sortName: $sortName, searchName: $searchNa
 WITH g
 UNWIND $memberIDs AS memberID
 MATCH (p:Person {id: memberID})
+WHERE 'artist' IN coalesce(p.roles, [])
+   OR (p.roles IS NULL AND EXISTS { MATCH (:MusicItem)-[:BY]->(p) })
 MERGE (g)-[:HAS_MEMBER]->(p)
 `, map[string]any{
 			"id": group.ID, "name": group.Name, "sortName": group.SortName, "notes": group.Notes,
@@ -625,6 +627,8 @@ DELETE old
 WITH g
 UNWIND $memberIDs AS memberID
 MATCH (p:Person {id: memberID})
+WHERE 'artist' IN coalesce(p.roles, [])
+   OR (p.roles IS NULL AND EXISTS { MATCH (:MusicItem)-[:BY]->(p) })
 MERGE (g)-[:HAS_MEMBER]->(p)
 `, map[string]any{
 			"id": group.ID, "name": group.Name, "sortName": group.SortName, "searchName": domain.SearchKey(group.Name), "notes": group.Notes,
